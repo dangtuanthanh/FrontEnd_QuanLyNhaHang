@@ -3,13 +3,13 @@
 
 ### Đăng Nhập
 
-### Đănng Xuất
+### Đăng Xuất
 
 ### Phân Quyền
 
 ### Hiển Thị MENU Theo Quyền và Chức Năng
 
 #### Truy cập và trải nghiệm: 
-Tài Khoản: thanh
-Mật Khẩu: Admin
+Tài Khoản: 'thanh'
+Mật Khẩu: 'Admin'
 URL: https://vresv1.vercel.app/

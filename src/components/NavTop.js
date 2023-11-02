@@ -7,8 +7,8 @@ import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { useNavigate } from 'react-router-dom';
 const NavTop = (props) => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);//trạng thái loading
     const logout = () => {
+        props.setLoading(true)
         fetch(`https://vres.onrender.com/logout`, {
             method: 'GET',
             headers: {
@@ -19,7 +19,7 @@ const NavTop = (props) => {
             .then(response => {
                 if (response.status === 200) {
                     deleteCookie('ss')
-                    setLoading(false)
+                    props.setLoading(false)
                     navigate(`/`);
                     //window.location.href = "/";//Chuyển trang
                 } else if (response.status === 401) {
@@ -32,7 +32,7 @@ const NavTop = (props) => {
             })
             
             .catch(error => {
-                setLoading(false)
+                props.setLoading(false)
                 if (error instanceof TypeError) {
                     alert('Không thể kết nối tới máy chủ');
                     // setTitleError("Không thể kết nối tới máy chủ")
@@ -54,10 +54,7 @@ const NavTop = (props) => {
                         <li class="breadcrumb-item text-sm text-dark active" aria-current="page">{props.NamePage}</li>
                     </ol>
                 </nav>
-                {loading && <div className="loading">
-                    <img src={logo} />
-                    <h4>Đang tải...</h4>
-                </div>}
+                
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
                         <div class="input-group">

@@ -25,8 +25,6 @@ function Navigation({ menu }) {
       setActiveComponent('BanVaKhuVuc');
     } else if (pathname === '/NhanVien') {
       setActiveComponent('NhanVien');
-    } else if (pathname === '/VaiTroVaQuyen') {
-      setActiveComponent('VaiTroVaQuyen');
     } else if (pathname === '/CaLamViec') {
       setActiveComponent('CaLamViec');
     } else if (pathname === '/KhachHang') {
@@ -52,8 +50,6 @@ function Navigation({ menu }) {
         return <FontAwesomeIcon icon={faTable} />;
       case 'Nhân Viên':
         return <FontAwesomeIcon icon={faUser} />;
-      case 'Vai Trò Và Quyền':
-        return <FontAwesomeIcon icon={faLock} />;
       case 'Ca Làm Việc':
         return <FontAwesomeIcon icon={faCalendarCheck} />;
       case 'Khách Hàng':

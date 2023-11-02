@@ -14,7 +14,6 @@ import HoaDon from "./pages/HoaDon"
 import ThucDon from "./pages/ThucDon"
 import BanVaKhuVuc from "./pages/BanVaKhuVuc"
 import NhanVien from "./pages/NhanVien"
-import VaiTroVaQuyen from "./pages/VaiTroVaQuyen"
 import CaLamViec from "./pages/CaLamViec"
 import KhachHang from "./pages/KhachHang"
 import Kho from "./pages/Kho"
@@ -56,7 +55,6 @@ function App() {
         <Route path="/ThucDon" element={<ThucDon />} />
         <Route path="/BanVaKhuVuc" element={<BanVaKhuVuc />} />
         <Route path="/NhanVien" element={<NhanVien />} />
-        <Route path="/VaiTroVaQuyen" element={<VaiTroVaQuyen />} />
         <Route path="/CaLamViec" element={<CaLamViec />} />
         <Route path="/KhachHang" element={<KhachHang />} />
         <Route path="/Kho" element={<Kho />} />

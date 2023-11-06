@@ -1,0 +1,1 @@
+export const urlGetAccount = 'https://vres.onrender.com/getAccount';

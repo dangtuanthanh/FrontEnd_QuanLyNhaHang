@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPencil, faTrash, faRotate, faAdd, faCheck, faXmark, faRotateLeft, faDownload, faUpload, faFileExcel, faFilePdf, faArrowLeft, faBars, faArrowUp } from '@fortawesome/free-solid-svg-icons'
+import $ from 'jquery';
 import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import NavTop from "../components/NavTop";
 import { getCookie } from "../components/Cookie";
 import '../App.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faTrash, faRotate, faAdd, faCheck, faXmark, faRotateLeft, faDownload, faUpload, faFileExcel, faFilePdf, faArrowLeft, faBars, faArrowUp } from '@fortawesome/free-solid-svg-icons'
-import $ from 'jquery';
+import urlGetAccount from '../components/Url'
 function NhanVien() {
     //Xử lý menu
     const [showNavigation, setShowNavigation] = useState(true);
@@ -21,11 +22,16 @@ function NhanVien() {
     const xuLyLayMenuTuCheckLogin = (data) => {
         setMenu(data);
     };
-    //Hết xử lý menu
 
-    //xử lý trang dữ liệu
+    //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
-    const [dataUser, setdataUser] = useState({});//dữ liệu người dùng
+    const [dataUser, setdataUser] = useState({//dữ liệu người dùng
+        sortBy: 'IDNhanVien',
+        sortOrder: 'asc',
+        searchBy: 'IDNhanVien',
+        search: '',
+        searchExact:'false'
+    });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getAccount
     const [loading, setLoading] = useState(false);//trạng thái loading
     const [buttons, setButtons] = useState([]);//Nút phân trang
@@ -56,18 +62,13 @@ function NhanVien() {
                         { value: customValue, label: `Hiển thị: ${customValue}` },
                     ]);
                 }
-                setdataUser({ ...dataUser, limit: customValue });
+                setdataUser({ ...dataUser, page: 1, limit: customValue });
             }
-        } else setdataUser({ ...dataUser, limit: selectedValue });
+        } else setdataUser({ ...dataUser, page: 1, limit: selectedValue });
     };
     //hàm ngắt trang
     const handleClickButtonPage = (value) => {//chuyển trang
         setdataUser({ ...dataUser, page: value });//đặt số trang
-        // setSelectedIds([]);
-        // setSelectAll(false);
-        // sessionStorage.setItem("pageNhanVienTable", value);
-        // setSelectedNode(value);
-        // setInputCount((prevInputCount) => prevInputCount + 1);
     };
 
     //hàm sắp xếp
@@ -81,12 +82,46 @@ function NhanVien() {
         }
 
     };
-    //hết hàm sắp xếp
+    //hàm tìm kiếm
+    const handleSearch = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'IDNhanVien',
+            sortOrder: 'asc',
+            page:1,
+            search: event.target.value
+        });
+        
+    };
+
+    //hàm lọc tìm kiếm
+    const handleSearchBy = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'IDNhanVien',
+            sortOrder: 'asc',
+            page:1,
+            searchBy: event.target.value
+        });
+        
+    };
+    //hàm chế độ tìm kiếm
+    const handleSearchExact = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'IDNhanVien',
+            sortOrder: 'asc',
+            page:1,
+            searchExact: event.target.value
+        });
+        
+    };
+
 
     //hàm tải dữ liệu
     const TaiDuLieu = () => {
         setLoading(true)
-        fetch(`https://vres.onrender.com/getAccount?page=${dataUser.page}&limit=${dataUser.limit}&sort=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}`, {
+        fetch(`${urlGetAccount}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -175,28 +210,24 @@ function NhanVien() {
 
             });
     };
-    //hết hàm tải dữ liệu
 
     //Sửa dữ liệu
     const editData = () => {
         alert('Sửa dữ liệu')
     }
 
-    // hết Sửa dữ liệu
 
     //Xoá dữ liệu
     const deleteData = () => {
         alert('Xoá dữ liệu')
     }
 
-    // hết Xoá dữ liệu
 
     //hàm hiển thị chi tiết thông tin
     function handleRowClick(SoHD) {
         alert("Hiển thị chi tiết")
     }
 
-    //hàm hết hiển thị chi tiết thông tin
     //xử lý Sửa hàng loạt
     const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
     const [selectAll, setSelectAll] = useState(false);
@@ -242,81 +273,45 @@ function NhanVien() {
 
 
     //Xử lý sắp xếp
-    //sắp xếp với các cột không phải ngày tháng năm
-    const [sortDirection, setSortDirection] = useState('asc');
-    const [sapXep, setSapXep] = useState('Số Hoá Đơn, tăng dần');
-    //const sortArrow = sortDirection === 'asc' ? '▼' : '▲'; //hướng sắp xếp của ký tự mũi tên
-    const handleSort = (columnName) => {
-        const sorted = [...duLieuHienThi].sort((a, b) => {
-            if (a[columnName] < b[columnName]) {
 
-                return sortDirection === 'asc' ? -1 : 1; // đổi hướng sắp xếp nếu cần
-
-            }
-            if (a[columnName] > b[columnName]) {
-
-                return sortDirection === 'asc' ? 1 : -1;
-
-            }
-            return 0;
-        });
-        setDuLieuHienThi(sorted);
-        if (sortDirection === 'asc') {
-            // $(".ThanhCong").text("Sắp xếp tăng  dần theo " + columnName);
-            // $(".ThanhCong").delay(200).show("medium");
-            // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-            setSapXep(columnName + ", tăng dần")
-            alert(`Sắp xếp tăng dần theo:   ${columnName}`)
-        } else {
-            // $(".ThanhCong").text("Sắp xếp  giảm  dần theo " + columnName);
-            // $(".ThanhCong").delay(200).show("medium");
-            // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-            setSapXep(columnName + ", giảm dần")
-            alert(`Sắp xếp giảm dần theo:   ${columnName}`)
-        }
-
-        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc'); // đổi hướng sắp xếp sau mỗi lần nhấp
-    };
     //sắp xếp cột có ngày tháng
-    function formatDate(dateString) {
-        const parts = dateString.split('-');
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-    const [sortDirection2, setSortDirection2] = useState('asc'); // giá trị ban đầu là sắp xếp tăng dần
-    //const sortArrow2 = sortDirection2 === 'asc' ? '▼' : '▲'; //hướng sắp xếp của ký tự mũi tên
-    function handleSortedDate(columnName) {
-        const sorted = [...duLieuHienThi].sort((a, b) => {
-            const dateA = formatDate(a[columnName]);
-            const dateB = formatDate(b[columnName]);
-            if (dateA < dateB) {
-                return sortDirection2 === 'asc' ? -1 : 1; // đổi hướng sắp xếp nếu cần
-            }
-            if (dateA > dateB) {
-                return sortDirection2 === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
+    // function formatDate(dateString) {
+    //     const parts = dateString.split('-');
+    //     return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    // }
+    // const [sortDirection2, setSortDirection2] = useState('asc'); // giá trị ban đầu là sắp xếp tăng dần
+    // //const sortArrow2 = sortDirection2 === 'asc' ? '▼' : '▲'; //hướng sắp xếp của ký tự mũi tên
+    // function handleSortedDate(columnName) {
+    //     const sorted = [...duLieuHienThi].sort((a, b) => {
+    //         const dateA = formatDate(a[columnName]);
+    //         const dateB = formatDate(b[columnName]);
+    //         if (dateA < dateB) {
+    //             return sortDirection2 === 'asc' ? -1 : 1; // đổi hướng sắp xếp nếu cần
+    //         }
+    //         if (dateA > dateB) {
+    //             return sortDirection2 === 'asc' ? 1 : -1;
+    //         }
+    //         return 0;
+    //     });
 
-        setDuLieuHienThi(sorted);
-        if (sortDirection2 === 'asc') {
-            // $(".ThanhCong").text("Sắp xếp cũ nhất ➨ mới nhất theo  " + columnName);
-            // $(".ThanhCong").delay(200).show("medium");
-            // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
+    //     setDuLieuHienThi(sorted);
+    //     if (sortDirection2 === 'asc') {
+    //         // $(".ThanhCong").text("Sắp xếp cũ nhất ➨ mới nhất theo  " + columnName);
+    //         // $(".ThanhCong").delay(200).show("medium");
+    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
 
-            setSapXep(columnName + ", cũ nhất ➨ mới nhất")
-            alert(`Sắp xếp cũ nhất ➨ mới nhất theo:   ${columnName}`)
-        } else {
-            // $(".ThanhCong").text("Sắp xếp mới nhất ➨ cũ nhất theo " + columnName);
-            // $(".ThanhCong").delay(200).show("medium");
-            // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
+    //         setSapXep(columnName + ", cũ nhất ➨ mới nhất")
+    //         alert(`Sắp xếp cũ nhất ➨ mới nhất theo:   ${columnName}`)
+    //     } else {
+    //         // $(".ThanhCong").text("Sắp xếp mới nhất ➨ cũ nhất theo " + columnName);
+    //         // $(".ThanhCong").delay(200).show("medium");
+    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
 
-            setSapXep(columnName + ", mới nhất ➨ cũ nhất")
-            alert(`Sắp xếp mới nhất ➨ cũ nhất theo:   ${columnName}`)
-        }
-        setSortDirection2(sortDirection2 === 'asc' ? 'desc' : 'asc'); // đổi hướng sắp xếp sau mỗi lần nhấp
-    }
+    //         setSapXep(columnName + ", mới nhất ➨ cũ nhất")
+    //         alert(`Sắp xếp mới nhất ➨ cũ nhất theo:   ${columnName}`)
+    //     }
+    //     setSortDirection2(sortDirection2 === 'asc' ? 'desc' : 'asc'); // đổi hướng sắp xếp sau mỗi lần nhấp
+    // }
     //Hết xử lý sắp xếp
 
     return (
@@ -359,6 +354,19 @@ function NhanVien() {
                                             ))}
                                         </select>
                                         ㅤ
+                                        <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                        ㅤ
+                                        <select class="form-select-sm" value={dataUser.searchBy}  onChange={handleSearchBy}>
+                                            <option value="IDNhanVien">Tìm theo IDNhanVien</option>
+                                            <option value="TenNhanVien">Tìm theo TenNhanVien</option>
+                                            <option value="TaiKhoan">Tìm theo TaiKhoan</option>
+                                            <option value="TenVaiTro">Tìm theo VaiTro</option>
+                                        </select>
+                                        ㅤ
+                                        <select class="form-select-sm" value={dataUser.searchExact}  onChange={handleSearchExact}>
+                                            <option value='false'>Chế độ tìm: Gần đúng</option>
+                                            <option value="true">Chế độ tìm: Chính xác</option>
+                                        </select>
 
                                     </div>
                                 </div>
@@ -426,16 +434,13 @@ function NhanVien() {
                                             }
                                         </tbody>
                                     </table>
-                                    <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp {dataRes.sortOrder} theo cột {dataRes.sortBy}  </label>
+                                    <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
                                 </div>
                             </div>
                         </div>
                         <div id='phantrang' style={{ textAlign: "center" }}>
                             {buttons}
                         </div>
-                        {/* <h4 onClick={() => { setdataUser({ ...dataUser, limit: 1 }); }} >
-                            Click
-                        </h4> */}
                         <h4 onClick={handleToggleNavigation}>
                             {showNavigation ? "<<" : ">>"}
                         </h4>

@@ -8,7 +8,7 @@ import NavTop from "../components/NavTop";
 import { getCookie } from "../components/Cookie";
 import '../App.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
-import urlGetAccount from '../components/Url'
+import { urlGetAccount } from '../components/Url'
 function NhanVien() {
     //Xử lý menu
     const [showNavigation, setShowNavigation] = useState(true);

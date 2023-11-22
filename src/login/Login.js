@@ -4,12 +4,13 @@ import curvedImage from '../assets/img/curved-images/logo-removebg-preview.png';
 import unidecode from 'unidecode';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import { urlCheckLogin,urlLogin } from "../components/url";
 function Login() {
     //Kiểm tra đăng nhập trang login
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);// kiểm tra đăng nhập
     useEffect(() => {
-        const url = 'https://vres.onrender.com/session'; // Đường dẫn API của bạn
+        const url = urlCheckLogin; // Đường dẫn API của bạn
         const data = {
             ss: getCookie("ss")
             //ss: '1'
@@ -73,7 +74,7 @@ function Login() {
             TaiKhoan: username,
             MatKhau: password
         };
-        fetch('https://vres.onrender.com/login', {
+        fetch(urlLogin, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

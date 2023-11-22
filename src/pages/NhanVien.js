@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faTrash, faRotate, faAdd, faCheck, faXmark, faRotateLeft, faDownload, faUpload, faFileExcel, faFilePdf, faArrowLeft, faBars, faArrowUp } from '@fortawesome/free-solid-svg-icons'
-import $ from 'jquery';
+
 import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import NavTop from "../components/NavTop";
 import { getCookie } from "../components/Cookie";
 import '../App.css';
-import logo from '../assets/img/logos/logo-removebg-preview.png';
-import { urlGetAccount } from '../components/Url'
+import loadingGif from '../assets/img/loading/loading1.gif'
+import { urlGetAccount,urlDeleteAccount } from "../components/url";
+import Pagination from "../components/Pagination";
+import TableNhanVien from "../components/Table/TableNhanVien";
+import Insert_updateAccount from "../components/Popup/insert_updateAccount";
+import ItemsPerPage from "../components/ItemsPerPage";
+import Export from "../components/Export";
+
+
 function NhanVien() {
     //Xử lý menu
-    const [showNavigation, setShowNavigation] = useState(true);
+    const [showNavigation, setShowNavigation] = useState(false);
     const handleToggleNavigation = () => {
         setShowNavigation(!showNavigation);
     };
@@ -30,68 +37,108 @@ function NhanVien() {
         sortOrder: 'asc',
         searchBy: 'IDNhanVien',
         search: '',
-        searchExact:'false'
+        searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getAccount
     const [loading, setLoading] = useState(false);//trạng thái loading
-    const [buttons, setButtons] = useState([]);//Nút phân trang
-    const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
-    const [optionsDisplay, setOptionsDisplay] = useState([//số hàng hiển thị
-        { value: "10", label: "Hiển thị: 10" },
-        { value: "30", label: "Hiển thị: 30" },
-        { value: "50", label: "Hiển thị: 50" },
-        { value: "100", label: "Hiển thị: 100" },
-        { value: '', label: `Hiển thị toàn bộ` },
-        { value: "custom", label: "Tùy chọn khác" },
-    ]);
 
-    useEffect(() => {
-        TaiDuLieu()
-    }, [dataUser]);
-    //hàm số hàng trên trang
-    const handleChangeDisplayRow = (event) => {
-        const selectedValue = event.target.value;
-        if (selectedValue === "custom") {
-            const customValue = prompt("Nhập số hàng trên mỗi trang:");
-            if (customValue) {
-                if (customValue > dataRes.totalItems) {
-                    alert("Bạn vừa nhập số hàng hiển thị lớn hơn số hàng dữ liệu sẵn có. Hệ thống sẽ hiển thị tất cả dữ liệu");
-                } else {
-                    setOptionsDisplay((prevoptionsDisplay) => [
-                        ...prevoptionsDisplay,
-                        { value: customValue, label: `Hiển thị: ${customValue}` },
-                    ]);
-                }
-                setdataUser({ ...dataUser, page: 1, limit: customValue });
-            }
-        } else setdataUser({ ...dataUser, page: 1, limit: selectedValue });
+
+
+
+    //xử lý popup
+    // popup hộp thoại thông báo
+    const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
+    const [popupMessageAlert, setPopupMessageAlert] = useState('');
+    const [onAction, setOnAction] = useState(() => { });
+    const PopupAlert = (props) => {
+        return (
+            <div className="popup">
+                <div className="popup-box">
+                    <div className="box" style={{ textAlign: 'center' }}>
+                        <h5>Thông Báo</h5>
+
+                        <p>{props.message}</p>
+                        {props.onAction ? <div>
+                            <button style={{ float: 'left' }} className="btn btn-danger" onClick={props.onClose}>Thoát</button>
+                            <button style={{ float: 'right' }} className="btn btn-success" onClick={handleConfirm}>Xác Nhận</button>
+                        </div> :
+                            <button className="btn btn-success" onClick={props.onClose}>Xác Nhận</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        );
     };
-    //hàm ngắt trang
-    const handleClickButtonPage = (value) => {//chuyển trang
-        setdataUser({ ...dataUser, page: value });//đặt số trang
+    const openPopupAlert = (message, actionHandler) => {
+        setPopupMessageAlert(message);
+        setPopupAlert(true);
+        setOnAction(() => actionHandler);
+    }
+    const closePopupAlert = () => {
+        setPopupAlert(false);
+    };
+    const handleConfirm = () => {
+        onAction();
+        closePopupAlert();
+    }
+
+
+    //popup thêm,sửa nhân viên
+    const [popup1, setPopup1] = useState(false);//trạng thái popup1
+    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
+    //popup thông báo góc màn hình
+    const [notifications, setNotifications] = useState([]);
+    const addNotification = (message, btn, duration = 3000) => {
+        const newNotification = {
+            id: Date.now(),
+            message,
+            btn,
+            duration,
+        };
+        setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+        setTimeout(() => {
+            removeNotification(newNotification.id);
+        }, duration);
+    };
+    const removeNotification = (id) => {
+        setNotifications(prevNotifications =>
+            prevNotifications.filter(notification => notification.id !== id)
+        );
+    };
+    const NotificationContainer = ({ notifications }) => {
+        return (
+            <div className="notification-container">
+                {notifications.map(notification => (
+                    <div
+                        key={notification.id}
+                        className={` btn btn-${notification.btn}`}
+                        onClick={() => removeNotification(notification.id)}
+                    >
+                        {notification.message}
+                    </div>
+                ))}
+            </div>
+        );
     };
 
-    //hàm sắp xếp
-    const handleClickSort = (value) => {//Xử lý click cột sắp xếp
-        if (isAsc) {
-            setdataUser({ ...dataUser, sortBy: value, sortOrder: 'asc' })
-            setIsAsc(false)
-        } else {
-            setdataUser({ ...dataUser, sortBy: value, sortOrder: 'desc' })
-            setIsAsc(true)
-        }
-
+    //popup thêm,sửa nhân viên
+    const [popupXuat, setpopupXuat] = useState(false);//trạng thái xuất dữ liệu
+    const closePopupXuat = () => {
+        setpopupXuat(false);
     };
+
+
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
             sortBy: 'IDNhanVien',
             sortOrder: 'asc',
-            page:1,
+            page: 1,
             search: event.target.value
         });
-        
+
     };
 
     //hàm lọc tìm kiếm
@@ -100,10 +147,10 @@ function NhanVien() {
             ...dataUser,
             sortBy: 'IDNhanVien',
             sortOrder: 'asc',
-            page:1,
+            page: 1,
             searchBy: event.target.value
         });
-        
+
     };
     //hàm chế độ tìm kiếm
     const handleSearchExact = (event) => {
@@ -111,14 +158,18 @@ function NhanVien() {
             ...dataUser,
             sortBy: 'IDNhanVien',
             sortOrder: 'asc',
-            page:1,
+            page: 1,
             searchExact: event.target.value
         });
-        
+
     };
 
 
+
     //hàm tải dữ liệu
+    useEffect(() => {
+        TaiDuLieu()
+    }, [dataUser]);
     const TaiDuLieu = () => {
         setLoading(true)
         fetch(`${urlGetAccount}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
@@ -151,125 +202,66 @@ function NhanVien() {
                     totalItems: data.totalItems,
                     totalPages: data.totalPages
                 });
-                //phân trang
-                if (data.totalItems !== 0) {
-                    const newButtons = [];
-                    for (let i = 1; i <= data.totalPages; i++) {
-                        newButtons.push(
-                            <button
-                                style={{
-                                    marginRight: "1%",
-                                    backgroundColor: i === data.currentPage ? '#5e72e4' : 'white',
-                                    color: i === data.currentPage ? 'white' : 'black'
-                                }}
-                                className='btn btn-light'
-                                key={i}
-                                onClick={() => { handleClickButtonPage(i) }}
-                            >
-                                {i}
-                            </button>
-                        );
-                    }
-                    setButtons(newButtons);
-                }
-
-                //cập nhật combobox hiển thị số hàng trên trang
-                setOptionsDisplay((prevOptions) => {
-                    let updatedOptions = prevOptions.map((option) => {
-                        if (option.label === "Hiển thị toàn bộ") {
-                            return { ...option, value: data.totalItems };
-                        }
-                        return option;
-                    });
-
-                    if (data.totalItems < 100) {
-                        // Xoá option dựa trên giá trị (value)
-                        updatedOptions = updatedOptions.filter((option) => option.value !== "100");
-                    }
-
-                    if (data.totalItems < 50) {
-                        updatedOptions = updatedOptions.filter((option) => option.value !== "50");
-                    }
-
-                    if (data.totalItems < 30) {
-                        updatedOptions = updatedOptions.filter((option) => option.value !== "30");
-                    }
-
-                    return updatedOptions;
-                });
                 //ẩn loading
                 setLoading(false)
             })
             .catch(error => {
                 setLoading(false)
                 if (error instanceof TypeError) {
-                    alert('Không thể kết nối tới máy chủ');
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
-                    alert(error.message);
+                    addNotification(error.message, 'warning', 5000)
                 }
 
             });
     };
 
-    //Sửa dữ liệu
-    const editData = () => {
-        alert('Sửa dữ liệu')
-    }
 
 
     //Xoá dữ liệu
-    const deleteData = () => {
-        alert('Xoá dữ liệu')
+    const deleteData = (ID) => {
+        setLoading(true)
+        const IDs = [ID];
+        console.log('IDs', IDs);
+        console.log('json body', JSON.stringify({ IDs }));
+        fetch(`${urlDeleteAccount}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+            body: JSON.stringify({ IDs })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 4000)
+                //ẩn loading
+                setLoading(false)
+                TaiDuLieu()
+
+            })
+            .catch(error => {
+                setLoading(false)
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
     }
 
 
-    //hàm hiển thị chi tiết thông tin
-    function handleRowClick(SoHD) {
-        alert("Hiển thị chi tiết")
-    }
-
-    //xử lý Sửa hàng loạt
-    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
-    const [selectAll, setSelectAll] = useState(false);
-    //Kiểm tra ô sửa hàng loạt
-    function handleSelectAllChange(event) {
-        const isChecked = event.target.checked;
-        if (isChecked) {
-            $(".checkboxCon").prop("checked", true);
-            const allIds = duLieuHienThi.map((item) => item.SoHD.toString());
-            console.log("allIds:", allIds); // Kiểm tra danh sách các id đã chọn
-            setSelectedIds(allIds);
-            setSelectAll(true);
-        } else {
-            $(".checkboxCon").prop("checked", false);
-            setSelectedIds([]);
-            setSelectAll(false);
-        }
-    }
-
-    //kiểm tra ô checkbox được check
-    function handleCheckboxChange(event) {
-        // togglePopup5(); //bật popup sửa hàng loạt
-        const id = event.target.value;
-        const isChecked = event.target.checked;
-
-        let newSelectedIds;
-        if (isChecked) {
-            newSelectedIds = [...selectedIds, id];
-        } else {
-            newSelectedIds = selectedIds.filter((selectedId) => selectedId !== id);
-            setSelectAll(false);
-        }
-
-        console.log("newSelectedIds:", newSelectedIds); // Kiểm tra mảng selectedIds mới
-        setSelectedIds(newSelectedIds);
-
-        const allChecked = newSelectedIds.length === duLieuHienThi.length;
-        console.log("allChecked:", allChecked); // Kiểm tra trạng thái của checkbox "Chọn tất cả"
-        setSelectAll(allChecked);
-
-    }
-    //hết xử lý Sửa hàng loạt
 
 
     //Xử lý sắp xếp
@@ -316,6 +308,10 @@ function NhanVien() {
 
     return (
         <CheckLogin menu={xuLyLayMenuTuCheckLogin} >
+            {loading && <div className="loading">
+                <img src={loadingGif} style={{ width: '30%' }} />
+                {/* <h4>Đang Tải...</h4> */}
+            </div>}
             <div className="row">
                 <div className={navigationColumnClass}>
                     {showNavigation && <Navigation menu={menu} />}
@@ -329,6 +325,7 @@ function NhanVien() {
                         <div class="card mb-4">
                             <div class="card-header pb-0">
                                 <h2> Quản Lý Nhân Viên</h2>
+                                <NotificationContainer notifications={notifications} />
                                 {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
                                 <div>
@@ -340,30 +337,47 @@ function NhanVien() {
                                             <FontAwesomeIcon icon={faRotate} />
                                             ㅤLàm Mới
                                         </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopup1(true)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setpopupXuat(true)
+                                            }}
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faDownload} />
+                                            ㅤXuất
+                                        </button>ㅤ
                                     </div>
                                     <div style={{ 'display': "inline-block", float: 'right' }}>
-                                        <select
-                                            class="form-select-sm"
-                                            value={dataRes.itemsPerPage}
-                                            onChange={handleChangeDisplayRow}//đặt thay đổi khi giá trị thay đổi
-                                        >
-                                            {optionsDisplay.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        {/* số hàng trên trang */}
+                                        <ItemsPerPage
+                                            dataRes={dataRes}
+                                            openPopupAlert={openPopupAlert}
+                                            dataUser={dataUser}
+                                            setdataUser={setdataUser}
+                                        />
                                         ㅤ
                                         <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
                                         ㅤ
-                                        <select class="form-select-sm" value={dataUser.searchBy}  onChange={handleSearchBy}>
+                                        <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
                                             <option value="IDNhanVien">Tìm theo IDNhanVien</option>
                                             <option value="TenNhanVien">Tìm theo TenNhanVien</option>
                                             <option value="TaiKhoan">Tìm theo TaiKhoan</option>
                                             <option value="TenVaiTro">Tìm theo VaiTro</option>
                                         </select>
                                         ㅤ
-                                        <select class="form-select-sm" value={dataUser.searchExact}  onChange={handleSearchExact}>
+                                        <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
                                             <option value='false'>Chế độ tìm: Gần đúng</option>
                                             <option value="true">Chế độ tìm: Chính xác</option>
                                         </select>
@@ -375,72 +389,54 @@ function NhanVien() {
                             </div>
                             <div class="card-body px-0 pt-0 pb-2">
                                 <div class="table-responsive p-0">
-                                    {loading && <div className="loading">
-                                        {/* <img src={logo} style={{width: '50%'}} /> */}
-                                        <h4>Đang Tải...</h4>
-                                    </div>}
-                                    <table id="nhanvien" class="table align-items-center mb-0">
-                                        <thead>
-                                            <tr style={{ textAlign: 'center' }}>
-                                                <th><input
-                                                    type="checkbox"
-                                                    checked={selectAll}
-                                                    onChange={handleSelectAllChange}
-                                                /></th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th>
-                                                <th onClick={() => handleClickSort('IDNhanVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID Nhân Viên </th>
-                                                <th onClick={() => handleClickSort('TenNhanVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Nhân Viên </th>
-                                                <th onClick={() => handleClickSort('TaiKhoan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tài Khoản </th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Hình Ảnh</th>
-                                                <th onClick={() => handleClickSort('TenVaiTro')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Vai Trò Truy Cập</th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10 ps-2">Hành Động</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                duLieuHienThi.map((dulieu, index) =>
-                                                    //<div  onClick={() => handleRowClick(nhanvien)}>
-                                                    <tr style={{ 'textAlign': 'center' }} id='trdata' key={dulieu.SoHD} onClick={() => handleRowClick(dulieu.SoHD)} >
-                                                        <td >
-                                                            <input
-                                                                type="checkbox"
-                                                                value={dulieu.SoHD}
-                                                                className='checkboxCon'
-                                                                //checked={selectedIds.includes(nhanvien.SoHD)}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                onChange={handleCheckboxChange}
-                                                            />
-
-                                                        </td>
-                                                        <td >{index + 1}</td>
-                                                        <td >{dulieu.IDNhanVien}</td>
-                                                        <td >{dulieu.TenNhanVien}</td>
-                                                        <td >{dulieu.TaiKhoan}</td>
-                                                        <td >{dulieu.HinhAnh}</td>
-                                                        <td >{dulieu.TenVaiTro}</td>
-                                                        <td>
-                                                            <a /*onMouseOver={hoverText}*/ onClick={(e) => { e.stopPropagation(); editData(dulieu.SoHD); }} class='btnEdit'>
-                                                                <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />
-                                                                <FontAwesomeIcon icon={faPencil} />
-                                                            </a>
-                                                            ㅤ
-                                                            <a onClick={(e) => { e.stopPropagation(); deleteData(dulieu.SoHD) }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>
-
-                                                        </td>
-
-                                                    </tr>
-                                                    //</div>
-                                                )
-                                            }
-                                        </tbody>
-                                    </table>
+                                    <TableNhanVien
+                                        duLieuHienThi={duLieuHienThi}
+                                        setdataUser={setdataUser}
+                                        dataUser={dataUser}
+                                        addNotification={addNotification}
+                                        setIsInsert={setIsInsert}
+                                        setIDAction={setIDAction}
+                                        setPopup1={setPopup1}
+                                        openPopupAlert={openPopupAlert}
+                                        deleteData={deleteData}
+                                    />
+                                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                                     <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
                                 </div>
                             </div>
                         </div>
-                        <div id='phantrang' style={{ textAlign: "center" }}>
-                            {buttons}
-                        </div>
+                        {/* phân trang */}
+                        <Pagination
+                            setdataUser={setdataUser}
+                            dataUser={dataUser}
+                            dataRes={dataRes}
+                        />
+                        {popup1 && <div className="popup">
+                            <Insert_updateAccount
+                                isInsert={isInsert}
+                                setPopup1={setPopup1}
+                                tieuDe='Thông Tin Nhân Viên'
+                                setLoading={setLoading}
+                                dataUser={dataUser}
+                                setdataUser={setdataUser}
+                                addNotification={addNotification}
+                                openPopupAlert={openPopupAlert}
+                                iDAction={iDAction}
+                            />
+                        </div>}
+                        {popupAlert && <PopupAlert
+                            message={popupMessageAlert}
+                            onClose={closePopupAlert}
+                            onAction={onAction}
+                        />}
+                        {popupXuat && <Export
+                           duLieuHienThi={duLieuHienThi}
+                           totalItems={dataRes.totalItems}
+                           setLoading={setLoading}
+                           openPopupAlert={openPopupAlert}
+                           addNotification={addNotification}
+                           onClose={closePopupXuat}
+                        />}
                         <h4 onClick={handleToggleNavigation}>
                             {showNavigation ? "<<" : ">>"}
                         </h4>

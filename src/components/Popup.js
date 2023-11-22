@@ -1,5 +1,4 @@
 import React from 'react';
-import '../assets/css/popup.css';
 import $ from 'jquery'
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

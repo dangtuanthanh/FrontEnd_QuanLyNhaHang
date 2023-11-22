@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import { getCookie, deleteCookie } from "../components/Cookie";
+import { urlLogout } from "./url";
 import '../App.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +10,7 @@ const NavTop = (props) => {
     const navigate = useNavigate();
     const logout = () => {
         props.setLoading(true)
-        fetch(`https://vres.onrender.com/logout`, {
+        fetch(urlLogout, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

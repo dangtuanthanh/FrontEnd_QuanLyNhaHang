@@ -101,7 +101,6 @@ function NhanVien() {
         <CheckLogin menu={xuLyLayMenuTuCheckLogin} thongTinDangNhap={xuLyLayThongTinDangNhap} >
             {loading && <div className="loading">
                 <img src={loadingGif} style={{ width: '30%' }} />
-                {/* <h4>Đang Tải...</h4> */}
             </div>}
             <div className="row">
                 <div className={navigationColumnClass}>
@@ -109,7 +108,6 @@ function NhanVien() {
                 </div>
                 <div className={contentColumnClass}>
                     <div style={{ marginLeft: '2%', marginRight: '1%' }}>
-                        {showNavigation ? <NavTop NamePage='Nhân Viên' /> : ""}
                         <div className="row">
                             <ul class="nav nav-tabs col-6">
                                 <li class="nav-item">

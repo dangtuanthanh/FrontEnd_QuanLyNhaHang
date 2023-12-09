@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
+import { useDispatch } from 'react-redux'
 import { getCookie, deleteCookie } from "../components/Cookie";
 import { urlLogout } from "./url";
 import '../App.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { useNavigate } from 'react-router-dom';
 const NavTop = (props) => {
+    //xử lý redux
+    const dispatch = useDispatch()
     const navigate = useNavigate();
     const logout = () => {
-        props.setLoading(true)
+        dispatch({type: 'SET_LOADING', payload: true})
         fetch(urlLogout, {
             method: 'GET',
             headers: {
@@ -20,7 +23,7 @@ const NavTop = (props) => {
             .then(response => {
                 if (response.status === 200) {
                     deleteCookie('ss')
-                    props.setLoading(false)
+                    dispatch({type: 'SET_LOADING', payload: false})
                     navigate(`/`);
                     //window.location.href = "/";//Chuyển trang
                 } else if (response.status === 401) {
@@ -33,7 +36,7 @@ const NavTop = (props) => {
             })
             
             .catch(error => {
-                props.setLoading(false)
+                dispatch({type: 'SET_LOADING', payload: false})
                 if (error instanceof TypeError) {
                     alert('Không thể kết nối tới máy chủ');
                     // setTitleError("Không thể kết nối tới máy chủ")

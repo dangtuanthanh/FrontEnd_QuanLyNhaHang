@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getCookie } from "./Cookie";
 import { useNavigate } from 'react-router-dom';
 import { urlCheckLogin } from "./url";
-function CheckLogin({ children,menu }) {
+function CheckLogin({ children,menu,thongTinDangNhap }) {
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(false);
   useEffect(() => {
@@ -22,6 +22,7 @@ function CheckLogin({ children,menu }) {
       .then(result => {
         if (result.success === true) {
           menu(result.menu)
+          thongTinDangNhap(result.NhanVien)
           setIsAuthorized(true);
         } else {
           navigate(`/`);

@@ -1,5 +1,7 @@
 
 import React from "react";
+import { Provider } from 'react-redux';
+import store from "./store";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
@@ -21,48 +23,28 @@ import NotFound from "./pages/NotFound";
 import Login from './login/Login';
 
 function App() {
-  // const router = createBrowserRouter([
-  //   {
-  //     path: "/",
-  //     element: <Login />,
-  //   },
-  //   {
-  //     path: "/BangDieuKhien",
-  //     element: <BangDieuKhien />,
-  //   },
-  //   {
-  //     path: "/NhanVien",
-  //     element: <NhanVien />,
-  //   },
-  //   {
-  //     path: "/HoaDon",
-  //     element: <HoaDon />,
-  //   },
-  //   {
-  //     path: "/ThucDon",
-  //     element: <ThucDon />,
-  //   },
-  // ]);
   return (
 
     //  <RouterProvider router={router} />
     //Chuyển trang
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
-        <Route path="/HoaDon" element={<HoaDon />} />
-        <Route path="/ThucDon" element={<ThucDon />} />
-        <Route path="/BanVaKhuVuc" element={<BanVaKhuVuc />} />
-        <Route path="/NhanVien" element={<NhanVien />} />
-        <Route path="/CaLamViec" element={<CaLamViec />} />
-        <Route path="/KhachHang" element={<KhachHang />} />
-        <Route path="/Kho" element={<Kho />} />
-        <Route element={NotFound} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
+          <Route path="/HoaDon" element={<HoaDon />} />
+          <Route path="/ThucDon" element={<ThucDon />} />
+          <Route path="/BanVaKhuVuc" element={<BanVaKhuVuc />} />
+          <Route path="/NhanVien" element={<NhanVien />} />
+          <Route path="/CaLamViec" element={<CaLamViec />} />
+          <Route path="/KhachHang" element={<KhachHang />} />
+          <Route path="/Kho" element={<Kho />} />
+          <Route element={NotFound} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
-  
+
 }
 
 export default App;

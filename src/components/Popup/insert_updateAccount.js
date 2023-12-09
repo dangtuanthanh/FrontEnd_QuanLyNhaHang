@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from 'react-redux'
 import Combobox from "../Combobox";
 import { getCookie } from "../Cookie";
 import { urlGetRole, urlInsertAccount, urlGetJobPosition, urlGetAccount, urlUpdateAccount } from "../url"
 const Insert_updateAccount = (props) => {
+    //xử lý redux
+    const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
@@ -15,10 +18,10 @@ const Insert_updateAccount = (props) => {
     const [combosVaiTro, setCombosVaiTro] = useState([]);//danh sách vai trò
     const [combosViTriCongViec, setCombosViTriCongViec] = useState([]);//danh sách vị trí công việc
     //bắt buộc nhập
-    const [resTaiKhoan, setResTaiKhoan] = useState(false);
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
+    const [resTaiKhoan, setResTaiKhoan] = useState(false);
     useEffect(() => {
-        props.setLoading(true)
+        dispatch({type: 'SET_LOADING', payload: true})
         const fetchGetAccount = fetch(`${urlGetAccount}?id=${props.iDAction}`, {
             method: 'GET',
             headers: {
@@ -27,7 +30,7 @@ const Insert_updateAccount = (props) => {
             },
         })
 
-        const fetchGetRole = fetch(`${urlGetRole}`, {
+        const fetchGetRole = fetch(`${urlGetRole}?limit=10000`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,8 +60,8 @@ const Insert_updateAccount = (props) => {
                 return Promise.all(processedResponses);
             })
             .then(data => {
-                setCombosVaiTro(data[0])
-                setCombosViTriCongViec(data[1])
+                setCombosVaiTro(data[0].data)
+                setCombosViTriCongViec(data[1].data)
                 //xử lý dữ liệu hiển thị nếu là sửa dữ liệu
                 if (props.isInsert === false) {
                     let getAccountByID = data[2]
@@ -75,9 +78,9 @@ const Insert_updateAccount = (props) => {
                     });
                     setDataReq(getAccountByID)
                     if (data[2].TaiKhoan) {
+                        setResTaiKhoan(true)
                         setIsChecked(true);
                         setIsDisabled(false);
-                        setResTaiKhoan(true)
                     }
                 }
                 else setDataReq({
@@ -85,7 +88,7 @@ const Insert_updateAccount = (props) => {
                     IDViTriCongViec: '1'
                 });
                 //ẩn loading
-                props.setLoading(false)
+                dispatch({type: 'SET_LOADING', payload: false})
             })
             .catch(error => {
                 if (error instanceof TypeError) {
@@ -93,7 +96,7 @@ const Insert_updateAccount = (props) => {
                 } else {
                     props.addNotification(error.message, 'warning', 5000)
                 }
-                props.setLoading(false)
+                dispatch({type: 'SET_LOADING', payload: false})
             });
 
 
@@ -249,92 +252,94 @@ const Insert_updateAccount = (props) => {
     const labelStyle = isDisabled ? { color: 'Silver' } : {};
 
     //xử lý xác nhận
-    const handleSubmit = () => {
-        function handleSubmit1() {
-            props.setLoading(true)
-            const formData = new FormData();
-            for (const key in dataReq) {
-                if (dataReq.hasOwnProperty(key)) {
-                    formData.append(key, dataReq[key]);
-                }
-            }
-            if (props.isInsert === true) {
-                console.log('hành động thêm');
-                fetch(urlInsertAccount, {
-                    method: 'POST',
-                    headers: {
-                        'ss': getCookie('ss'),
-                    },
-                    body: formData
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else if (response.status === 401) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else if (response.status === 500) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else {
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        props.addNotification(data.message, 'success', 3000)
-                        //ẩn loading
-                        props.setLoading(false)
-                        props.setPopup1(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDNhanVien', sortOrder: 'desc' })
-                    })
-                    .catch(error => {
-                        props.setLoading(false)
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
-
-                    });
-            } else {
-                console.log('hành động sửa')
-                fetch(urlUpdateAccount, {
-                    method: 'PUT',
-                    headers: {
-                        'ss': getCookie('ss'),
-                    },
-                    body: formData
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else if (response.status === 401) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else if (response.status === 500) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else {
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        props.addNotification(data.message, 'success', 3000)
-                        //ẩn loading
-                        props.setLoading(false)
-                        props.setPopup1(false)
-                        props.setdataUser({ ...props.dataUser })
-                    })
-                    .catch(error => {
-                        props.setLoading(false)
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
-
-                    });
+    function handleFetchAPISubmit() {
+        dispatch({type: 'SET_LOADING', payload: true})
+        const formData = new FormData();
+        for (const key in dataReq) {
+            if (dataReq.hasOwnProperty(key)) {
+                formData.append(key, dataReq[key]);
             }
         }
+        if (props.isInsert === true) {
+            console.log('hành động thêm');
+            fetch(urlInsertAccount, {
+                method: 'POST',
+                headers: {
+                    'ss': getCookie('ss'),
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else if (response.status === 500) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else {
+                        return;
+                    }
+                })
+                .then(data => {
+                    props.addNotification(data.message, 'success', 3000)
+                    //ẩn loading
+                    dispatch({type: 'SET_LOADING', payload: false})
+                    props.setPopup1(false)
+                    props.setdataUser({ ...props.dataUser,page:1, sortBy: 'IDNhanVien', sortOrder: 'desc' })
+                })
+                .catch(error => {
+                    dispatch({type: 'SET_LOADING', payload: false})
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+
+                });
+        } else {
+            console.log('hành động sửa')
+            fetch(urlUpdateAccount, {
+                method: 'PUT',
+                headers: {
+                    'ss': getCookie('ss'),
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else if (response.status === 500) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else {
+                        return;
+                    }
+                })
+                .then(data => {
+                    props.addNotification(data.message, 'success', 3000)
+                    //ẩn loading
+                    dispatch({type: 'SET_LOADING', payload: false})
+                    props.setPopup1(false)
+                    props.setdataUser({ ...props.dataUser })
+                })
+                .catch(error => {
+                    dispatch({type: 'SET_LOADING', payload: false})
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+
+                });
+        }
+    }
+    const handleSubmit = () => {
         if (isChecked === true) {
-            if (resTaiKhoan === true) {
+            if (props.isInsert) {
+                //trường hợp check và thêm
                 if (!dataReq.TaiKhoan
+                    || !dataReq.MatKhau
                     || !dataReq.IDVaiTro
                     || !dataReq.IDVaiTro.length
                     || !dataReq.TenNhanVien
@@ -346,22 +351,21 @@ const Insert_updateAccount = (props) => {
                     || !dataReq.TinhTrang
                     || !dataReq.NgayVao
                 ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-                else handleSubmit1();
-            } else
-                if (!dataReq.TaiKhoan
-                    || !dataReq.IDVaiTro
-                    || !dataReq.IDVaiTro.length
-                    || !dataReq.MatKhau
-                    || !dataReq.TenNhanVien
-                    || !dataReq.IDViTriCongViec
-                    || !dataReq.NgaySinh
-                    || !dataReq.GioiTinh
-                    || !dataReq.DiaChi
-                    || !dataReq.SoDienThoai
-                    || !dataReq.TinhTrang
-                    || !dataReq.NgayVao
-                )props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-                else handleSubmit1();
+                else handleFetchAPISubmit();
+                //check và sửa
+            } else if (!dataReq.TaiKhoan
+                || !dataReq.IDVaiTro
+                || !dataReq.IDVaiTro.length
+                || !dataReq.TenNhanVien
+                || !dataReq.IDViTriCongViec
+                || !dataReq.NgaySinh
+                || !dataReq.GioiTinh
+                || !dataReq.DiaChi
+                || !dataReq.SoDienThoai
+                || !dataReq.TinhTrang
+                || !dataReq.NgayVao
+            ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
+            else handleFetchAPISubmit();
         } else if (!dataReq.TenNhanVien
             || !dataReq.IDViTriCongViec
             || !dataReq.NgaySinh
@@ -373,17 +377,11 @@ const Insert_updateAccount = (props) => {
             props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
         }
         else {
-            handleSubmit1();
+            handleFetchAPISubmit();
         }
     };
-    const handleFocusPass = () => {
-        if (props.isInsert === false && resTaiKhoan === true) {
-            props.addNotification(`Bạn đang cố gắng sửa đổi mật khẩu của người dùng.
-             Điều này có thể khiến người dùng không còn truy cập được hệ thống nữa.
-              Hãy thận trọng với hành động của bạn !`, 'warning', 6000)
-            // props.openPopupAlert('Bạn đang cố gắng sửa đổi mật khẩu của người dùng. Điều này có thể khiến người dùng không còn truy cập được hệ thống nữa. Hãy thận trọng với hành động của bạn !')
-        }
-    }
+
+
     return (
         <div className="popup-box">
             <div className="box">
@@ -636,24 +634,51 @@ const Insert_updateAccount = (props) => {
                                             />
                                         </div>
 
-                                        <div className="form-group">
-                                            <label style={labelStyle}>Mật Khẩu  {isChecked && <span style={{ color: 'red' }}>*</span>}</label>
-                                            <input
-                                                id="passwordInput"
-                                                type="text"
-                                                className="form-control"
-                                                onChange={(event) => {
-                                                    setDataReq({
-                                                        ...dataReq,
-                                                        MatKhau: event.target.value
-                                                    });
-                                                }}
-                                                onFocus={handleFocusPass}
-                                                value={dataReq.MatKhau}
-                                                disabled={isDisabled}
-                                                placeholder={resTaiKhoan ? "Click để đổi mật khẩu" : null}
-                                            />
+
+                                        {(props.isInsert || (props.isInsert === false && resTaiKhoan === false)) && (
+                                            <div className="form-group">
+                                                <label style={labelStyle}>Mật Khẩu {isChecked && <span style={{ color: 'red' }}>*</span>}</label>
+                                                <input
+                                                    id="passwordInput"
+                                                    type="text"
+                                                    className="form-control"
+                                                    onChange={(event) => {
+                                                        setDataReq({
+                                                            ...dataReq,
+                                                            MatKhau: event.target.value
+                                                        });
+                                                    }}
+                                                    value={dataReq.MatKhau}
+                                                    disabled={isDisabled}
+                                                />
+                                            </div>
+                                        )}
+
+
+                                        {props.isInsert === false && resTaiKhoan === true && (<div className="form-group"
+                                            style={{ display: 'flex', flexDirection: 'column' }}
+                                        >
+                                            <label style={labelStyle}>
+                                                <input
+                                                    type="checkbox"
+                                                    value='1234'
+                                                    checked={dataReq.MatKhau === '1234'}
+                                                    onChange={(event) => {
+                                                        if (dataReq.MatKhau === '1234') {
+                                                            const updatedDataReq = { ...dataReq };
+                                                            delete updatedDataReq.MatKhau;
+                                                            setDataReq(updatedDataReq);
+                                                        } else
+                                                            setDataReq({
+                                                                ...dataReq,
+                                                                MatKhau: event.target.value
+                                                            });
+                                                    }}
+                                                />
+                                                ㅤĐặt lại mật khẩu mặc định: 1234
+                                            </label>
                                         </div>
+                                        )}
                                     </div>
                                 </div>
                                 <button onClick={() => { props.setPopup1(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
@@ -669,8 +694,8 @@ const Insert_updateAccount = (props) => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

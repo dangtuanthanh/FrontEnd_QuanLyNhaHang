@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFastBackward,faStepBackward,faStepForward,faFastForward} from '@fortawesome/free-solid-svg-icons'
 const Pagination = (props) => {
     const [buttons, setButtons] = useState([]);//Nút phân trang
     //hàm ngắt trang
@@ -22,7 +24,7 @@ const Pagination = (props) => {
                 pageNumbers.push(
                     <li key="first" className={'page-item'}>
                         <button className="page-link" onClick={() => handleClickButtonPage(1)}>
-                            Đầu
+                        <FontAwesomeIcon icon={faFastBackward} />
                         </button>
                     </li>
                 );
@@ -34,7 +36,7 @@ const Pagination = (props) => {
                 pageNumbers.push(
                     <li key="prev" className={'page-item'}>
                         <button className="page-link" onClick={() => handleClickButtonPage(props.dataRes.currentPage - 1)}>
-                            Trước
+                        <FontAwesomeIcon icon={faStepBackward} />
                         </button>
                     </li>
                 );
@@ -90,7 +92,7 @@ const Pagination = (props) => {
                 pageNumbers.push(
                     <li key="next" className={`page-item ${props.dataRes.currentPage === props.dataRes.totalPages ? 'disabled' : ''}`}>
                         <button className="page-link" onClick={() => handleClickButtonPage(props.dataRes.currentPage + 1)}>
-                            Sau
+                        <FontAwesomeIcon icon={faStepForward} />
                         </button>
                     </li>
                 );
@@ -102,7 +104,7 @@ const Pagination = (props) => {
                 pageNumbers.push(
                     <li key="last" className={`page-item ${props.dataRes.currentPage === props.dataRes.totalPages ? 'disabled' : ''}`}>
                         <button className="page-link" onClick={() => handleClickButtonPage(props.dataRes.totalPages)}>
-                            Cuối
+                        <FontAwesomeIcon icon={faFastForward} />
                         </button>
                     </li>
                 );

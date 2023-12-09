@@ -1,13 +1,13 @@
-# ỨNG DỤNG QUẢN LÝ NHÀ HÀNG/CAFE VRES Phiên Bản 3.0 
+# ỨNG DỤNG QUẢN LÝ NHÀ HÀNG/CAFE VRES Phiên Bản 5.0 
 ## Tính năng mới trong phiên bản này
 
-### Chức năng tìm kiếm
+### Chức năng Nhập Excel
 
-### Tìm kiếm theo cột
+### Chức năng quản lý Vai trò truy cập: hiển thị, thêm, sửa, xoá, tìm kiếm, sắp xếp, bộ lọc, v..v
 
-### Lựa chọn chế độ tìm kiếm
+### Chức năng quản lý Vị trí công việc: hiển thị, thêm, sửa, xoá, tìm kiếm, sắp xếp, bộ lọc, v..v
 
 #### Truy cập và trải nghiệm: 
 Tài Khoản: 'thanh'
 Mật Khẩu: 'Admin'
-URL: https://vresv3.vercel.app/
+URL: https://vresv1.vercel.app/

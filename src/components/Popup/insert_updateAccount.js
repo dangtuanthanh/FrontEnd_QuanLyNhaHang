@@ -85,7 +85,7 @@ const Insert_updateAccount = (props) => {
                 }
                 else setDataReq({
                     ...dataReq,
-                    IDViTriCongViec: '1'
+                    IDViTriCongViec: data[1].data[0].IDViTriCongViec
                 });
                 //ẩn loading
                 dispatch({type: 'SET_LOADING', payload: false})

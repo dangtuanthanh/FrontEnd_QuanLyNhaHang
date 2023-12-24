@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getCookie } from "./Cookie";
 import { useNavigate } from 'react-router-dom';
 import { urlCheckLogin } from "./url";
-function CheckLogin({ children,menu,thongTinDangNhap }) {
+function CheckLogin({ children,thongTinDangNhap }) {
   const navigate = useNavigate();
   const [isAuthorized, setIsAuthorized] = useState(false);
   useEffect(() => {
@@ -10,7 +10,6 @@ function CheckLogin({ children,menu,thongTinDangNhap }) {
     const data = {
       ss: getCookie("ss")
     };
-
     fetch(url, {
       method: 'POST',
       headers: {
@@ -21,8 +20,7 @@ function CheckLogin({ children,menu,thongTinDangNhap }) {
       .then(response => response.json())
       .then(result => {
         if (result.success === true) {
-          menu(result.menu)
-          thongTinDangNhap(result.NhanVien)
+          thongTinDangNhap(result)
           setIsAuthorized(true);
         } else {
           navigate(`/`);

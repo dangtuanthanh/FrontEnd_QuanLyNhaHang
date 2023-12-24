@@ -28,6 +28,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
     "react-table": "^7.8.0",
+    "read-vietnamese-number": "^2.1.4",
     "redux": "^5.0.0",
     "unidecode": "^0.1.8",
     "web-vitals": "^2.1.4"

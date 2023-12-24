@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetAccount, urlDeleteAccount, urlUndoDeleteAccount } from "../url";
+import { urlGetArea, urlDeleteArea } from "../url";
 import Pagination from "../Pagination";
-import TableNhanVien from "../Table/TableNhanVien";
-import Insert_updateAccount from "../Popup/insert_updateAccount";
 import ItemsPerPage from "../ItemsPerPage";
-import ExportAccount from "../Popup/ExportAccount";
-import ImportAccount from "../Popup/ImportAccount";
-//import SelectedEditAccount from "../components/Popup/SelectedEditAccount";
-function TabNhanVien() {
+import TableKhuVuc from "../Table/TableKhuVuc";
+import Insert_updateKhuVuc from "../Popup/Insert_updateKhuVuc";
+function TabKhuVuc() {
     //xử lý redux
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'IDNhanVien',
+        sortBy: 'IDKhuVuc',
         sortOrder: 'asc',
-        searchBy: 'IDNhanVien',
+        searchBy: 'IDKhuVuc',
         search: '',
         searchExact: 'false'
     });//
-    const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getAccount
+    const [dataRes, setDataRes] = useState({});
 
-
-
-
-    //xử lý popup
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -66,11 +59,6 @@ function TabNhanVien() {
         closePopupAlert();
     }
 
-
-    //popup thêm,sửa nhân viên
-    const [popup1, setPopup1] = useState(false);//trạng thái popup1
-    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
-    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
     //popup thông báo góc màn hình
     const [notifications, setNotifications] = useState([]);
     const addNotification = (message, btn, duration = 3000) => {
@@ -106,68 +94,17 @@ function TabNhanVien() {
         );
     };
 
-    //popup xuất file
-    const [popupXuat, setpopupXuat] = useState(false);//trạng thái xuất dữ liệu
-    const closePopupXuat = () => {
-        setpopupXuat(false);
-    };
+    //popup thêm,sửa nhân viên
+    const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
+    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
 
-    //popup nhập file
-    const [popupNhap, setPopupNhap] = useState(false);//trạng thái xuất dữ liệu
-    const closePopupNhap = () => {
-        setPopupNhap(false);
-    };
-
-      //undo delete
-    const [buttonUndo, setButtonUndo] = useState(false);//trạng thái hiển thị nút undo
-      const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
-    const handleUndo = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
-        fetch(`${urlUndoDeleteAccount}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-            body: JSON.stringify({ undoDelete })
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else if (response.status === 401) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else if (response.status === 400) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else if (response.status === 500) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else {
-                    return;
-                }
-            })
-            .then(data => {
-                addNotification(data.message, 'success', 4000)
-                //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
-                setButtonUndo(false)
-                setUndoDelete([])
-                TaiDuLieu()
-            })
-            .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
-                if (error instanceof TypeError) {
-                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    addNotification(error.message, 'warning', 5000)
-                }
-
-            });
-    };
 
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDNhanVien',
+            sortBy: 'IDKhuVuc',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -179,7 +116,7 @@ function TabNhanVien() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDNhanVien',
+            sortBy: 'IDKhuVuc',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -190,7 +127,7 @@ function TabNhanVien() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDNhanVien',
+            sortBy: 'IDKhuVuc',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -198,15 +135,62 @@ function TabNhanVien() {
 
     };
 
-   
+
+    //Xoá dữ liệu
+    const deleteData = (ID) => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            IDs = ID.map(item => Number(item));
+            console.log('mảng số đã được chuyển', IDs);
+        } else IDs = [ID];
+        fetch(`${urlDeleteArea}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+            body: JSON.stringify({ IDs })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 4000)
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+                setSelectedIds([])
+                TaiDuLieu()
+
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    }
+    // sửa hàng loạt
+    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
 
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
-        fetch(`${urlGetAccount}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        fetch(`${urlGetArea}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -241,12 +225,13 @@ function TabNhanVien() {
                         ...dataUser,
                         page: data.totalPages
                     });
+
                 }
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -255,105 +240,11 @@ function TabNhanVien() {
 
             });
     };
-    //Xoá dữ liệu
-    const deleteData = (ID) => {
-        dispatch({type: 'SET_LOADING', payload: true})
-        let IDs = [ID]
-        if (Array.isArray(ID)) {
-            console.log('là mảng');
-            IDs = ID.map(item => Number(item));
-            console.log('mảng số đã được chuyển', IDs);
-        } else IDs = [ID];
-        fetch(`${urlDeleteAccount}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-            body: JSON.stringify({ IDs })
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else if (response.status === 401) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else if (response.status === 500) {
-                    return response.json().then(errorData => { throw new Error(errorData.message); });
-                } else {
-                    return;
-                }
-            })
-            .then(data => {
-                addNotification(data.message, 'success', 4000)
-                //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
-                setButtonUndo(true)
-                setSelectedIds([])
-                setUndoDelete(IDs)
-                TaiDuLieu()
-
-            })
-            .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
-                if (error instanceof TypeError) {
-                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    addNotification(error.message, 'warning', 5000)
-                }
-
-            });
-    }
-   
-    // sửa hàng loạt
-    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
-
-
-    //Xử lý sắp xếp
-
-    //sắp xếp cột có ngày tháng
-    // function formatDate(dateString) {
-    //     const parts = dateString.split('-');
-    //     return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    // }
-    // const [sortDirection2, setSortDirection2] = useState('asc'); // giá trị ban đầu là sắp xếp tăng dần
-    // //const sortArrow2 = sortDirection2 === 'asc' ? '▼' : '▲'; //hướng sắp xếp của ký tự mũi tên
-    // function handleSortedDate(columnName) {
-    //     const sorted = [...duLieuHienThi].sort((a, b) => {
-    //         const dateA = formatDate(a[columnName]);
-    //         const dateB = formatDate(b[columnName]);
-    //         if (dateA < dateB) {
-    //             return sortDirection2 === 'asc' ? -1 : 1; // đổi hướng sắp xếp nếu cần
-    //         }
-    //         if (dateA > dateB) {
-    //             return sortDirection2 === 'asc' ? 1 : -1;
-    //         }
-    //         return 0;
-    //     });
-
-    //     setDuLieuHienThi(sorted);
-    //     if (sortDirection2 === 'asc') {
-    //         // $(".ThanhCong").text("Sắp xếp cũ nhất ➨ mới nhất theo  " + columnName);
-    //         // $(".ThanhCong").delay(200).show("medium");
-    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-    //         setSapXep(columnName + ", cũ nhất ➨ mới nhất")
-    //         alert(`Sắp xếp cũ nhất ➨ mới nhất theo:   ${columnName}`)
-    //     } else {
-    //         // $(".ThanhCong").text("Sắp xếp mới nhất ➨ cũ nhất theo " + columnName);
-    //         // $(".ThanhCong").delay(200).show("medium");
-    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-    //         setSapXep(columnName + ", mới nhất ➨ cũ nhất")
-    //         alert(`Sắp xếp mới nhất ➨ cũ nhất theo:   ${columnName}`)
-    //     }
-    //     setSortDirection2(sortDirection2 === 'asc' ? 'desc' : 'asc'); // đổi hướng sắp xếp sau mỗi lần nhấp
-    // }
-    //Hết xử lý sắp xếp
     return (
         <div>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Nhân Viên</h2>
+                    <h2> Quản Lý Khu Vực</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
@@ -372,7 +263,7 @@ function TabNhanVien() {
                                         style={{ 'display': "inline-block" }}
                                         onClick={() => {
                                             setIsInsert(true)
-                                            setPopup1(true)
+                                            setPopupInsertUpdate(true)
                                             setIDAction()
                                         }}
 
@@ -380,34 +271,6 @@ function TabNhanVien() {
                                         <FontAwesomeIcon icon={faAdd} />
                                         ㅤThêm
                                     </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setPopupNhap(true)
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faUpload} />
-                                        ㅤNhập
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setpopupXuat(true)
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faDownload} />
-                                        ㅤXuất
-                                    </button>ㅤ
-
-                                    {buttonUndo && <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            handleUndo()
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faRotateLeft} />
-                                        ㅤHoàn Tác
-                                    </button>}
                                 </div>
                                 : <div style={{ 'display': "inline-block", float: 'left' }}>
                                     <button
@@ -418,13 +281,6 @@ function TabNhanVien() {
                                         <FontAwesomeIcon icon={faArrowLeft} />
                                         ㅤQuay Lại
                                     </button>ㅤ
-                                    {/* <button
-                                                    style={{ display: "inline-block" }}
-                                                    //onClick={() => {togglePopup6();}}
-                                                    className="btn btn-primary">
-                                                    <FontAwesomeIcon icon={faPencil} />
-                                                    ㅤSửa ô đã chọn
-                                                </button>ㅤ */}
                                     <button
                                         style={{ display: "inline-block" }}
                                         onClick={() => {
@@ -436,14 +292,6 @@ function TabNhanVien() {
                                         className="btn btn-primary">
                                         <FontAwesomeIcon icon={faTrash} />
                                         ㅤXoá ô đã chọn
-                                    </button>ㅤ
-
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => { setpopupXuat(true) }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faDownload} />
-                                        ㅤXuất ô đã chọn
                                     </button>ㅤ
                                 </div>
                         }
@@ -475,10 +323,8 @@ function TabNhanVien() {
                             }
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="IDNhanVien">Tìm theo IDNhanVien</option>
-                                <option value="TenNhanVien">Tìm theo TenNhanVien</option>
-                                <option value="TaiKhoan">Tìm theo TaiKhoan</option>
-                                <option value="TenViTriCongViec">Tìm theo ViTriCongViec</option>
+                                <option value="IDKhuVuc">Tìm theo IDKhuVuc</option>
+                                <option value="TenKhuVuc">Tìm theo TenKhuVuc</option>
                             </select>
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -491,14 +337,14 @@ function TabNhanVien() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableNhanVien
+                        <TableKhuVuc
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
-                            setPopup1={setPopup1}
+                            setPopupInsertUpdate={setPopupInsertUpdate}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                             selectedIds={selectedIds}
@@ -516,11 +362,11 @@ function TabNhanVien() {
                 dataRes={dataRes}
             />
             {
-                popup1 && <div className="popup">
-                    <Insert_updateAccount
+                popupInsertUpdate && <div className="popup">
+                    <Insert_updateKhuVuc
                         isInsert={isInsert}
-                        setPopup1={setPopup1}
-                        tieuDe='Thông Tin Nhân Viên'
+                        setPopupInsertUpdate={setPopupInsertUpdate}
+                        tieuDe='Thông Tin Khu Vực'
                         dataUser={dataUser}
                         setdataUser={setdataUser}
                         addNotification={addNotification}
@@ -536,34 +382,9 @@ function TabNhanVien() {
                     onAction={onAction}
                 />
             }
-            {
-                popupXuat && <div className="popup">
-                <ExportAccount
-                    duLieuHienThi={duLieuHienThi}
-                    totalItems={dataRes.totalItems}
-                    openPopupAlert={openPopupAlert}
-                    addNotification={addNotification}
-                    onClose={closePopupXuat}
-                    selectedIds={selectedIds}
-                />
-                </div>
-            }
-
-            {
-                popupNhap && <div className="popup">
-                <ImportAccount
-                    openPopupAlert={openPopupAlert}
-                    addNotification={addNotification}
-                    onClose={closePopupNhap}
-                    dataUser={dataUser}
-                    setdataUser={setdataUser}
-                />
-                </div>
-            }
-           
         </div>
     )
 
 }
 
-export default TabNhanVien
+export default TabKhuVuc

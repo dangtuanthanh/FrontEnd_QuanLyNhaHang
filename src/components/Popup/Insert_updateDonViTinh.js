@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlInsertArea, urlGetArea, urlUpdateArea } from "../url"
-const Insert_updateArea = (props) => {
+import { urlInsertUnit, urlGetUnit, urlUpdateUnit } from "../url"
+const Insert_updateDonViTinh = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
@@ -14,7 +14,7 @@ const Insert_updateArea = (props) => {
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true });
-        fetch(`${urlGetArea}?id=${props.iDAction}`, {
+        fetch(`${urlGetUnit}?id=${props.iDAction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,16 +51,14 @@ const Insert_updateArea = (props) => {
     }, []);
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!dataReq.TenKhuVuc
-        ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-        else {
+        if (dataReq.TenDonViTinh) {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
-                IDKhuVuc: dataReq.IDKhuVuc,
-                TenKhuVuc: dataReq.TenKhuVuc
+                IDDonViTinh: dataReq.IDDonViTinh,
+                TenDonViTinh: dataReq.TenDonViTinh
             };
             if (props.isInsert === true) {
-                fetch(urlInsertArea, {
+                fetch(urlInsertUnit, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -84,7 +82,7 @@ const Insert_updateArea = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhuVuc', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, sortBy: 'IDDonViTinh', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -96,8 +94,7 @@ const Insert_updateArea = (props) => {
 
                     });
             } else {
-                console.log('hành động sửa')
-                fetch(urlUpdateArea, {
+                fetch(urlUpdateUnit, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -133,7 +130,7 @@ const Insert_updateArea = (props) => {
 
                     });
             }
-        }
+        }else props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
     }
     return (
         <div className="popup-box">
@@ -141,18 +138,18 @@ const Insert_updateArea = (props) => {
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <h4 >Thông Tin Đơn Vị Tính<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group">
-                                    <label>Tên Khu Vực {batBuocNhap}</label>
+                                    <label>Tên Đơn Vị Tính {batBuocNhap}</label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={dataReq.TenKhuVuc}
+                                        value={dataReq.TenDonViTinh}
                                         onChange={(event) => {
                                             setDataReq({
                                                 ...dataReq,
-                                                TenKhuVuc: event.target.value
+                                                TenDonViTinh: event.target.value
                                             });
                                         }}
                                     />
@@ -160,7 +157,8 @@ const Insert_updateArea = (props) => {
                                 <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
+                                    style={{ float: "right" }} 
+                                    type="submit"
                                     className="btn btn-primary mt-3"
                                 >
                                     Xác Nhận
@@ -174,4 +172,4 @@ const Insert_updateArea = (props) => {
         </div >
     );
 }
-export default Insert_updateArea;
+export default Insert_updateDonViTinh;

@@ -21,83 +21,134 @@ const Insert_updateAccount = (props) => {
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     const [resTaiKhoan, setResTaiKhoan] = useState(false);
     useEffect(() => {
-        dispatch({type: 'SET_LOADING', payload: true})
-        const fetchGetAccount = fetch(`${urlGetAccount}?id=${props.iDAction}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
+        dispatch({ type: 'SET_LOADING', payload: true })
+        if (props.iDAction) {
+            const fetchGetAccount = fetch(`${urlGetAccount}?id=${props.iDAction}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
 
-        const fetchGetRole = fetch(`${urlGetRole}?limit=10000`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
-        const fetchGetJobPosition = fetch(`${urlGetJobPosition}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
-        Promise.all([fetchGetRole, fetchGetJobPosition, fetchGetAccount])
-            .then(responses => {
-                const processedResponses = responses.map(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else if (response.status === 401 || response.status === 500) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message);
-                        });
-                    } else {
-                        return null;
-                    }
-                });
-                return Promise.all(processedResponses);
+            const fetchGetRole = fetch(`${urlGetRole}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
             })
-            .then(data => {
-                setCombosVaiTro(data[0].data)
-                setCombosViTriCongViec(data[1].data)
-                //xử lý dữ liệu hiển thị nếu là sửa dữ liệu
-                if (props.isInsert === false) {
-                    let getAccountByID = data[2]
-                    const NgaySinh = new Date(data[2].NgaySinh);
-                    const formattedDate = NgaySinh.toISOString().split("T")[0];
-                    const NgayVao = new Date(data[2].NgayVao);
-                    const formattedDate2 = NgayVao.toISOString().split("T")[0];
-                    const strings = data[2].IDVaiTro.map(num => num.toString());
-                    getAccountByID = ({
-                        ...getAccountByID,
-                        NgaySinh: formattedDate,
-                        NgayVao: formattedDate2,
-                        IDVaiTro: strings
+            const fetchGetJobPosition = fetch(`${urlGetJobPosition}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
+            Promise.all([fetchGetRole, fetchGetJobPosition, fetchGetAccount])
+                .then(responses => {
+                    const processedResponses = responses.map(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401 || response.status === 500) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.message);
+                            });
+                        } else {
+                            return null;
+                        }
                     });
-                    setDataReq(getAccountByID)
-                    if (data[2].TaiKhoan) {
-                        setResTaiKhoan(true)
-                        setIsChecked(true);
-                        setIsDisabled(false);
+                    return Promise.all(processedResponses);
+                })
+                .then(data => {
+                    setCombosVaiTro(data[0].data)
+                    setCombosViTriCongViec(data[1].data)
+                    //xử lý dữ liệu hiển thị nếu là sửa dữ liệu
+                    if (props.isInsert === false) {
+                        let getAccountByID = data[2]
+                        const NgaySinh = new Date(data[2].NgaySinh);
+                        const formattedDate = NgaySinh.toISOString().split("T")[0];
+                        const NgayVao = new Date(data[2].NgayVao);
+                        const formattedDate2 = NgayVao.toISOString().split("T")[0];
+                        const strings = data[2].IDVaiTro.map(num => num.toString());
+                        getAccountByID = ({
+                            ...getAccountByID,
+                            NgaySinh: formattedDate,
+                            NgayVao: formattedDate2,
+                            IDVaiTro: strings
+                        });
+                        setDataReq(getAccountByID)
+                        if (data[2].TaiKhoan) {
+                            setResTaiKhoan(true)
+                            setIsChecked(true);
+                            setIsDisabled(false);
+                        }
                     }
-                }
-                else setDataReq({
-                    ...dataReq,
-                    IDViTriCongViec: data[1].data[0].IDViTriCongViec
+                    else setDataReq({
+                        ...dataReq,
+                        IDViTriCongViec: data[1].data[0].IDViTriCongViec
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
                 });
-                //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+        } else {
+            const fetchGetRole = fetch(`${urlGetRole}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
             })
-            .catch(error => {
-                if (error instanceof TypeError) {
-                    props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    props.addNotification(error.message, 'warning', 5000)
-                }
-                dispatch({type: 'SET_LOADING', payload: false})
-            });
+            const fetchGetJobPosition = fetch(`${urlGetJobPosition}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
+            Promise.all([fetchGetRole, fetchGetJobPosition])
+                .then(responses => {
+                    const processedResponses = responses.map(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401 || response.status === 500) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.message);
+                            });
+                        } else {
+                            return null;
+                        }
+                    });
+                    return Promise.all(processedResponses);
+                })
+                .then(data => {
+                    setCombosVaiTro(data[0].data)
+                    setCombosViTriCongViec(data[1].data)
+                    setDataReq({
+                        ...dataReq,
+                        IDViTriCongViec: data[1].data[0].IDViTriCongViec
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                });
+        }
+
 
 
     }, []);
@@ -253,7 +304,7 @@ const Insert_updateAccount = (props) => {
 
     //xử lý xác nhận
     function handleFetchAPISubmit() {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         const formData = new FormData();
         for (const key in dataReq) {
             if (dataReq.hasOwnProperty(key)) {
@@ -283,12 +334,12 @@ const Insert_updateAccount = (props) => {
                 .then(data => {
                     props.addNotification(data.message, 'success', 3000)
                     //ẩn loading
-                    dispatch({type: 'SET_LOADING', payload: false})
+                    dispatch({ type: 'SET_LOADING', payload: false })
                     props.setPopup1(false)
-                    props.setdataUser({ ...props.dataUser,page:1, sortBy: 'IDNhanVien', sortOrder: 'desc' })
+                    props.setdataUser({ ...props.dataUser, page: 1, sortBy: 'IDNhanVien', sortOrder: 'desc' })
                 })
                 .catch(error => {
-                    dispatch({type: 'SET_LOADING', payload: false})
+                    dispatch({ type: 'SET_LOADING', payload: false })
                     if (error instanceof TypeError) {
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
@@ -319,12 +370,12 @@ const Insert_updateAccount = (props) => {
                 .then(data => {
                     props.addNotification(data.message, 'success', 3000)
                     //ẩn loading
-                    dispatch({type: 'SET_LOADING', payload: false})
+                    dispatch({ type: 'SET_LOADING', payload: false })
                     props.setPopup1(false)
                     props.setdataUser({ ...props.dataUser })
                 })
                 .catch(error => {
-                    dispatch({type: 'SET_LOADING', payload: false})
+                    dispatch({ type: 'SET_LOADING', payload: false })
                     if (error instanceof TypeError) {
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
@@ -334,7 +385,8 @@ const Insert_updateAccount = (props) => {
                 });
         }
     }
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (isChecked === true) {
             if (props.isInsert) {
                 //trường hợp check và thêm
@@ -389,7 +441,7 @@ const Insert_updateAccount = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input

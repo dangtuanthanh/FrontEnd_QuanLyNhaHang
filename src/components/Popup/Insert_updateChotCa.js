@@ -60,7 +60,7 @@ const Insert_updateChotCa = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông tin chốt ca<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form>
+                            <form >
                                 <div className="row">
                                     <div className="col-6">
                                         <div className="form-group">

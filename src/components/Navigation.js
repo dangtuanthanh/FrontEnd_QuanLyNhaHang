@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import '../assets/css/nucleo-icons.css';
 import '../assets/css/nucleo-svg.css';
-import '../assets/css/soft-ui-dashboard.css';
-import '../assets/css/soft-ui-dashboard.css.map';
 import '../assets/css/soft-ui-dashboard.min.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -100,7 +98,7 @@ function Navigation({ menu }) {
           })}
 
 
-
+{/* 
           <li class="nav-item mt-3">
             <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
           </li>
@@ -166,7 +164,7 @@ function Navigation({ menu }) {
               </div>
               <span class="nav-link-text ms-1">Sign Up</span>
             </a>
-          </li>
+          </li> */}
         </ul>
 
 

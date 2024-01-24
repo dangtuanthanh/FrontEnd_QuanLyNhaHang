@@ -85,7 +85,8 @@ const Insert_updateRole = (props) => {
         updatedDataReq.IDQuyen = IDQuyen;
         setDataReq(updatedDataReq);
     }
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (!dataReq.TenVaiTro
             || !dataReq.IDQuyen
             || !dataReq.IDQuyen.length
@@ -181,7 +182,7 @@ const Insert_updateRole = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <div className="form-group">
                                     <label>Tên Vai Trò {batBuocNhap}</label>
                                     <input

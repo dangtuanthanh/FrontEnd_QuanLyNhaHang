@@ -4,20 +4,20 @@ import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-s
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetShifts, urlDeleteShifts } from "../url";
+import { urlGetUnit, urlDeleteUnit } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableCaLamViec from "../Table/TableCaLamViec";
-import Insert_updateCaLamViec from "../Popup/Insert_updateCaLamViec";
-function TabKhuVuc() {
+import TableDonViTinh from "../Table/TableDonViTinh";
+import Insert_updateDonViTinh from "../Popup/Insert_updateDonViTinh";
+function TabDonViTinh() {
     //xử lý redux
     const dispatch = useDispatch();
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'IDCaLamViec',
+        sortBy: 'IDDonViTinh',
         sortOrder: 'asc',
-        searchBy: 'IDCaLamViec',
+        searchBy: 'IDDonViTinh',
         search: '',
         searchExact: 'false'
     });//
@@ -104,7 +104,7 @@ function TabKhuVuc() {
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'IDDonViTinh',
             sortOrder: 'asc',
             page: 1,
             search: event.target.value
@@ -116,7 +116,7 @@ function TabKhuVuc() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'IDDonViTinh',
             sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
@@ -127,7 +127,7 @@ function TabKhuVuc() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'IDCaLamViec',
+            sortBy: 'IDDonViTinh',
             sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
@@ -143,7 +143,7 @@ function TabKhuVuc() {
         if (Array.isArray(ID)) {
             IDs = ID.map(item => Number(item));
         } else IDs = [ID];
-        fetch(`${urlDeleteShifts}`, {
+        fetch(`${urlDeleteUnit}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ function TabKhuVuc() {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetShifts}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetUnit}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ function TabKhuVuc() {
         <div>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Ca Làm Việc</h2>
+                    <h2> Quản Lý Đơn Vị Tính</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
@@ -322,10 +322,8 @@ function TabKhuVuc() {
                             }
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="IDCaLamViec">Tìm theo ID Ca Làm Việc</option>
-                                <option value="TenCaLamViec">Tìm theo Tên Ca Làm Việc</option>
-                                <option value="GioBatDau">Tìm theo Giờ Bắt Đầu </option>
-                                <option value="GioKetThuc">Tìm theo Giờ Kết Thúc</option>
+                                <option value="IDDonViTinh">Tìm theo ID Đơn Vị Tính</option>
+                                <option value="TenDonViTinh">Tìm theo Tên Đơn Vị Tính</option>
                             </select>
                             ㅤ
                             <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -338,7 +336,7 @@ function TabKhuVuc() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableCaLamViec
+                        <TableDonViTinh
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
@@ -352,15 +350,7 @@ function TabKhuVuc() {
                             setSelectedIds={setSelectedIds}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "GioBatDau" || dataRes.sortBy === "GioKetThuc" ?
-                            (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray' , marginRight:'3px'}}>mới nhất đến cũ nhất </label>)
-                            : (
-                                dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray' , marginRight:'3px'}}>giảm dần</label>)}
-                             theo cột {dataRes.sortBy}   </label>
+                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
                     </div>
                 </div>
             </div>
@@ -372,7 +362,7 @@ function TabKhuVuc() {
             />
             {
                 popupInsertUpdate && <div className="popup">
-                    <Insert_updateCaLamViec
+                    <Insert_updateDonViTinh
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         dataUser={dataUser}
@@ -395,4 +385,4 @@ function TabKhuVuc() {
 
 }
 
-export default TabKhuVuc
+export default TabDonViTinh

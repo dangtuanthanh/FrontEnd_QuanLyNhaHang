@@ -15,56 +15,90 @@ const Insert_updateBan = (props) => {
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        const fetchGetTable = fetch(`${urlGetTable}?id=${props.iDAction}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
+        if (props.iDAction) {
+            const fetchGetTable = fetch(`${urlGetTable}?id=${props.iDAction}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
 
-        const fetchGetArea = fetch(`${urlGetArea}?limit=10000`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
-        Promise.all([fetchGetTable, fetchGetArea])
-            .then(responses => {
-                const processedResponses = responses.map(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else if (response.status === 401 || response.status === 500 || response.status === 400) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message);
-                        });
-                    } else {
-                        return null;
+            const fetchGetArea = fetch(`${urlGetArea}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
+            Promise.all([fetchGetTable, fetchGetArea])
+                .then(responses => {
+                    const processedResponses = responses.map(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401 || response.status === 500 || response.status === 400) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.message);
+                            });
+                        } else {
+                            return null;
+                        }
+                    });
+                    return Promise.all(processedResponses);
+                })
+                .then(data => {
+                    setCombosKhuVuc(data[1].data)
+                    if (props.isInsert === false) {
+                        setDataReq(data[0])
                     }
+                    else setDataReq({
+                        ...dataReq,
+                        IDKhuVuc: data[1].data[0].IDKhuVuc
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
                 });
-                return Promise.all(processedResponses);
+        } else {
+            fetch(`${urlGetArea}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
             })
-            .then(data => {
-                setCombosKhuVuc(data[1].data)
-                if (props.isInsert === false) {
-                    setDataReq(data[0])
-                }
-                else setDataReq({
-                    ...dataReq,
-                    IDKhuVuc: data[1].data[0].IDKhuVuc
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error', response.message);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setCombosKhuVuc(data.data)
+                    setDataReq({
+                        ...dataReq,
+                        IDKhuVuc: data.data[0].IDKhuVuc
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
                 });
-                //ẩn loading
-                dispatch({ type: 'SET_LOADING', payload: false })
-            })
-            .catch(error => {
-                if (error instanceof TypeError) {
-                    props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    props.addNotification(error.message, 'warning', 5000)
-                }
-                dispatch({ type: 'SET_LOADING', payload: false })
-            });
+        }
+
 
 
     }, []);
@@ -79,7 +113,8 @@ const Insert_updateBan = (props) => {
 
     //xử lý xác nhận
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (dataReq.TenBan && dataReq.TrangThai && dataReq.IDKhuVuc) {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
@@ -175,7 +210,7 @@ const Insert_updateBan = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <div className="form-group">
                                     <label>Tên Bàn {batBuocNhap}</label>
                                     <input
@@ -258,7 +293,7 @@ const Insert_updateBan = (props) => {
                                         }}
                                     />
                                 </div>
-                                
+
                                 <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}

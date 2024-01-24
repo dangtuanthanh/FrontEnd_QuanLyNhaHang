@@ -49,7 +49,8 @@ const Insert_updateJobPosition = (props) => {
 
             });
     }, []);
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (!dataReq.TenViTriCongViec
         ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
         else {
@@ -142,7 +143,7 @@ const Insert_updateJobPosition = (props) => {
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <div className="form-group">
                                     <label>Tên Vị Trí Công Việc {batBuocNhap}</label>
                                     <input

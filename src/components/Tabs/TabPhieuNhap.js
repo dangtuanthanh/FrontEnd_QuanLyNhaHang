@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faFilter, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faFilter, faArrowLeft, faArrowUp, faArrowDown, faAdd } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetCloseShifts, urlDeleteCloseShifts } from "../url";
+import { urlGetReceipt, urlDeleteReceipt } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TableChotCa from "../Table/TableChotCa";
-import Insert_updateChotCa from "../Popup/Insert_updateChotCa";
-function TabChotCa() {
+import TablePhieuNhap from "../Table/TablePhieuNhap";
+import Insert_updatePhieuNhap from "../Popup/Insert_updatePhieuNhap";
+function TabPhieuNhap(props) {
     //xử lý redux
     const dispatch = useDispatch();
+    //Xử lý phân biệt nhập nguyên liệu và sản phẩm
+    const [nhapNguyenLieu, setNhapNguyenLieu] = useState(true);
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(true);
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'NgayLamViec',
+        sortBy: 'NgayNhap',
         sortOrder: 'desc',
-        searchBy: 'NgayLamViec',
+        searchBy: 'NgayNhap',
         search: '',
         searchExact: 'false'
     });//
@@ -104,7 +111,7 @@ function TabChotCa() {
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayLamViec',
+            sortBy: 'NgayNhap',
             sortOrder: 'desc',
             page: 1,
             search: event.target.value
@@ -116,7 +123,7 @@ function TabChotCa() {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayLamViec',
+            sortBy: 'NgayNhap',
             sortOrder: 'desc',
             page: 1,
             searchBy: event.target.value
@@ -127,7 +134,7 @@ function TabChotCa() {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayLamViec',
+            sortBy: 'NgayNhap',
             sortOrder: 'desc',
             page: 1,
             searchExact: event.target.value
@@ -138,22 +145,33 @@ function TabChotCa() {
     const filterHomNay = () => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayLamViec',
+            sortBy: 'NgayNhap',
             sortOrder: 'desc',
             page: 1,
             search: dataRes.DateCurrent,
-            searchBy: 'NgayLamViec'
+            searchBy: 'NgayNhap'
         });
     };
-     //hàm lọc chưa chốt
-     const filterChuaChot = () => {
+    //hàm lọc chưa chốt
+    const filterNhapNguyenLieu = () => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayLamViec',
+            sortBy: 'NgayNhap',
+            sortOrder: 'desc',
+            page: 1,
+            search: true,
+            searchBy: 'NhapNguyenLieu'
+        });
+    };
+    //hàm lọc chưa chốt
+    const filterNhapSanPham = () => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'NgayNhap',
             sortOrder: 'desc',
             page: 1,
             search: false,
-            searchBy: 'XacNhanGiaoCa'
+            searchBy: 'NhapNguyenLieu'
         });
     };
 
@@ -166,7 +184,7 @@ function TabChotCa() {
             IDs = ID.map(item => Number(item));
             console.log('mảng số đã được chuyển', IDs);
         } else IDs = [ID];
-        fetch(`${urlDeleteCloseShifts}`, {
+        fetch(`${urlDeleteReceipt}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -212,7 +230,7 @@ function TabChotCa() {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetCloseShifts}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetReceipt}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -241,7 +259,7 @@ function TabChotCa() {
                     sortOrder: data.sortOrder,
                     totalItems: data.totalItems,
                     totalPages: data.totalPages,
-                    DateCurrent:data.DateCurrent
+                    DateCurrent: data.DateCurrent
                 });
                 if (data.currentPage > data.totalPages && data.totalPages !== null) {
                     setdataUser({
@@ -267,35 +285,71 @@ function TabChotCa() {
         <div>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Chốt Ca</h2>
+
+                    <h2> Quản Lý Phiếu Nhập {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
+
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
-                    <div>
-                        {
-                            selectedIds.length == 0
-                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => { TaiDuLieu(); }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faRotate} />
-                                        ㅤLàm Mới
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={filterHomNay}
-                                        className="btn btn-light">
-                                        <FontAwesomeIcon icon={faFilter} />
-                                        ㅤHôm Nay
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={filterChuaChot}
-                                        className="btn btn-light">
-                                        <FontAwesomeIcon icon={faFilter} />
-                                        ㅤChưa Chốt
-                                    </button>ㅤ
-                                    {/* <button
+                    {showButtonFunction &&
+                        <div>
+                            {
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setNhapNguyenLieu(true)
+                                                setIsInsert(true)
+                                                setPopupInsertUpdate(true)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤNhập NL Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setNhapNguyenLieu(false)
+                                                setIsInsert(true)
+                                                setPopupInsertUpdate(true)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤNhập SP mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterHomNay}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤHôm Nay
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterNhapNguyenLieu}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤNhập Nguyên Liệu
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterNhapSanPham}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤNhập Sản Phẩm
+                                        </button>ㅤ
+                                        {/* <button
                                         style={{ 'display': "inline-block" }}
                                         onClick={() => {
                                             setIsInsert(true)
@@ -307,76 +361,78 @@ function TabChotCa() {
                                         <FontAwesomeIcon icon={faAdd} />
                                         ㅤThêm
                                     </button>ㅤ */}
-                                </div>
-                                : <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        //onClick={setSelectedIds([])}
-                                        onClick={() => { setSelectedIds([]); }}
-                                        className="btn btn-danger">
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                        ㅤQuay Lại
-                                    </button>ㅤ
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => {
-                                            openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
-                                                () => { deleteData(selectedIds) }
-                                            )
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                        ㅤXoá ô đã chọn
-                                    </button>ㅤ
-                                </div>
-                        }
-
-                        <div style={{ 'display': "inline-block", float: 'right' }}>
-                            {/* số hàng trên trang */}
-                            <ItemsPerPage
-                                dataRes={dataRes}
-                                openPopupAlert={openPopupAlert}
-                                dataUser={dataUser}
-                                setdataUser={setdataUser}
-                            />
-                            ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                            {
-                                dataUser.search !== '' &&
-                                <button
-                                    className="btn btn-close"
-                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                    onClick={() => {
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: ''
-                                        });
-                                    }}
-                                >
-                                    X
-                                </button>
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
+                                    </div>
                             }
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="TenCaLamViec">Tìm theo Tên ca làm việc</option>
-                                <option value="TenNhanVien">Tìm theo Tên nhân viên</option>
-                                <option value="NgayLamViec">Tìm theo Ngày làm việc</option>
-                                {/* <option value="XacNhanGiaoCa">Tìm theo Trạng Thái (true hoặc false)</option> */}
-                                <option value="IDChotCa">Tìm theo ID Chốt Ca</option>
-                            </select>
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                <option value='false'>Chế độ tìm: Gần đúng</option>
-                                <option value="true">Chế độ tìm: Chính xác</option>
-                            </select>
 
-                        </div>
-                    </div>
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm " />
+                                {
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            setdataUser({
+                                                ...dataUser,
+                                                search: ''
+                                            });
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="IDPhieuNhap">Tìm theo ID Phiếu Nhập</option>
+                                    <option value="IDNhanVien">Tìm theo ID Nhân Viên</option>
+                                    <option value="TenNhanVien">Tìm theo Tên nhân viên</option>
+                                    <option value="NgayNhap">Tìm theo Ngày Nhập</option>
+                                    {/* <option value="XacNhanGiaoCa">Tìm theo Trạng Thái (true hoặc false)</option> */}
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
+                                {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
+                            </div>
+                        </div>}
+
                 </div>
+
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TableChotCa
+                        <TablePhieuNhap
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
@@ -388,16 +444,17 @@ function TabChotCa() {
                             deleteData={deleteData}
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
+                            setNhapNguyenLieu={setNhapNguyenLieu}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLamViec" ?
+                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayNhap" ?
                             (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray' , marginRight:'3px'}}>mới nhất đến cũ nhất </label>)
+                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
                             : (
                                 dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray', marginRight:'3px' }}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray', marginRight:'3px' }}>giảm dần</label>)}
+                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
                             theo cột {dataRes.sortBy}   </label>
                     </div>
                 </div>
@@ -410,7 +467,7 @@ function TabChotCa() {
             />
             {
                 popupInsertUpdate && <div className="popup">
-                    <Insert_updateChotCa
+                    <Insert_updatePhieuNhap
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         dataUser={dataUser}
@@ -418,6 +475,9 @@ function TabChotCa() {
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
+                        thongTinDangNhap={props.thongTinDangNhap}
+                        DateCurrent={dataRes.DateCurrent}
+                        nhapNguyenLieu={nhapNguyenLieu}
                     />
                 </div>
             }
@@ -433,4 +493,4 @@ function TabChotCa() {
 
 }
 
-export default TabChotCa
+export default TabPhieuNhap

@@ -1,66 +1,128 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlInsertArea, urlGetArea, urlUpdateArea } from "../url"
-const Insert_updateArea = (props) => {
-    //xử lý redux
+import Combobox from "../Combobox";
+import { urlInsertIngredient, urlGetIngredient, urlUpdateIngredient, urlGetUnit } from "../url"
+const Insert_updateNguyenLieu = (props) => {
     const dispatch = useDispatch()
-    //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    // combobox
+    const [combosDonViTinh, setCombosDonViTinh] = useState([]);//danh sách đơn vị tính
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
-        dispatch({ type: 'SET_LOADING', payload: true });
-        fetch(`${urlGetArea}?id=${props.iDAction}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'ss': getCookie('ss'),
-            },
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else if (response.status === 401 || response.status === 500) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.message);
-                    });
-                } else {
-                    return null;
-                }
+        dispatch({ type: 'SET_LOADING', payload: true })
+        if (props.iDAction) {
+            const fetchGetInforByID = fetch(`${urlGetIngredient}?id=${props.iDAction}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
             })
-            .then(data => {
-                if (props.isInsert === false) {
-                    setDataReq(data)
-                }
-                //ẩn loading
-                dispatch({ type: 'SET_LOADING', payload: false })
-            })
-            .catch(error => {
-                dispatch({ type: 'SET_LOADING', payload: false })
-                if (error instanceof TypeError) {
-                    props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                } else {
-                    props.addNotification(error.message, 'warning', 5000)
-                }
 
-            });
+            const fetchGetCombos1 = fetch(`${urlGetUnit}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
+            Promise.all([fetchGetInforByID, fetchGetCombos1])
+                .then(responses => {
+                    const processedResponses = responses.map(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401 || response.status === 500 || response.status === 400) {
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.message);
+                            });
+                        } else {
+                            return null;
+                        }
+                    });
+                    return Promise.all(processedResponses);
+                })
+                .then(data => {
+                    setCombosDonViTinh(data[1].data)
+                    if (props.isInsert === false) {
+                        setDataReq(data[0])
+                    }
+                    else setDataReq({
+                        ...dataReq,
+                        IDDonViTinh: data[1].data[0].IDDonViTinh
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                });
+        } else {
+            fetch(`${urlGetUnit}?limit=10000`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ss': getCookie('ss'),
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error', response.message);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setCombosDonViTinh(data.data)
+                    setDataReq({
+                        ...dataReq,
+                        IDDonViTinh: data.data[0].IDDonViTinh
+                    });
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                })
+                .catch(error => {
+                    if (error instanceof TypeError) {
+                        props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                    } else {
+                        props.addNotification(error.message, 'warning', 5000)
+                    }
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                });
+        }
+
+
+
     }, []);
+
+    function handleCombos1Change(selectedValue) {
+        setDataReq({
+            ...dataReq,
+            IDDonViTinh: selectedValue
+        });
+    }
+
+    //xử lý xác nhận
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!dataReq.TenKhuVuc
-        ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-        else {
+        if (dataReq.TenNguyenLieu && dataReq.IDDonViTinh) {
             dispatch({ type: 'SET_LOADING', payload: true })
             const data = {
-                IDKhuVuc: dataReq.IDKhuVuc,
-                TenKhuVuc: dataReq.TenKhuVuc
+                IDNguyenLieu: dataReq.IDNguyenLieu,
+                TenNguyenLieu: dataReq.TenNguyenLieu,
+                IDDonViTinh: dataReq.IDDonViTinh
             };
             if (props.isInsert === true) {
-                fetch(urlInsertArea, {
+                fetch(urlInsertIngredient, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -84,7 +146,7 @@ const Insert_updateArea = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhuVuc', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, sortBy: 'IDNguyenLieu', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -96,8 +158,7 @@ const Insert_updateArea = (props) => {
 
                     });
             } else {
-                console.log('hành động sửa')
-                fetch(urlUpdateArea, {
+                fetch(urlUpdateIngredient, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -134,7 +195,11 @@ const Insert_updateArea = (props) => {
                     });
             }
         }
+        else props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
+
     }
+
+
     return (
         <div className="popup-box">
             <div className="box">
@@ -144,19 +209,29 @@ const Insert_updateArea = (props) => {
                             <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group">
-                                    <label>Tên Khu Vực {batBuocNhap}</label>
+                                    <label>Tên Nguyên Liệu {batBuocNhap}</label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={dataReq.TenKhuVuc}
+                                        value={dataReq.TenNguyenLieu}
                                         onChange={(event) => {
                                             setDataReq({
                                                 ...dataReq,
-                                                TenKhuVuc: event.target.value
+                                                TenNguyenLieu: event.target.value
                                             });
                                         }}
                                     />
                                 </div>
+                                <Combobox
+                                    combos={combosDonViTinh}
+                                    columnValue="IDDonViTinh"
+                                    columnAdd="TenDonViTinh"
+                                    nameCombo="Đơn Vị Tính: "
+                                    batBuocNhap={batBuocNhap}
+                                    value={dataReq.IDDonViTinh}
+                                    onChange={handleCombos1Change}
+                                />
+
                                 <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
@@ -173,5 +248,5 @@ const Insert_updateArea = (props) => {
             </div >
         </div >
     );
-}
-export default Insert_updateArea;
+};
+export default Insert_updateNguyenLieu;

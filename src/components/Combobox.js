@@ -29,7 +29,7 @@ function Combobox(props) {
       >
         {props.combos.map((combo) => (
           <option key={combo[props.columnValue]} value={combo[props.columnValue]}>
-            {`${combo[props.columnValue]} - ${combo[props.columnAdd]}`}
+            {`${combo[props.columnAdd]}`}
           </option>
         ))}
       </select>

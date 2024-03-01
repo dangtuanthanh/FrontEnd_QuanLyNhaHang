@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { getCookie } from "../Cookie";
 import {
     urlInsertReceipt, urlGetReceipt, urlUpdateReceipt,
-    urlGetIngredient, urlGetFinishedProduct,// lấy danh sách nguyên liệu, sản phẩm chế biến
+    urlGetIngredient, urlGetProduct,// lấy danh sách nguyên liệu, sản phẩm chế biến
     urlGetUnit
 } from "../url"//lấy danh sách đơn vị tính
 const Insert_updatePhieuNhap = (props) => {
@@ -34,17 +34,17 @@ const Insert_updatePhieuNhap = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            var fetchGetIngredientGetFinishedProduct
+            var fetchGetIngredientGetProduct
             //lấy danh sách nguyên liệu hoặc sản phẩm thành phẩm
             if (props.nhapNguyenLieu) {
-                fetchGetIngredientGetFinishedProduct = fetch(`${urlGetIngredient}?limit=10000`, {
+                fetchGetIngredientGetProduct = fetch(`${urlGetIngredient}?limit=10000`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
                     },
                 })
-            } else fetchGetIngredientGetFinishedProduct = fetch(`${urlGetFinishedProduct}?limit=10000`, {
+            } else fetchGetIngredientGetProduct = fetch(`${urlGetProduct}?limit=10000&searchBy=SanPhamThanhPham&search=true`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ const Insert_updatePhieuNhap = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            Promise.all([fetchGetReceipt, fetchGetIngredientGetFinishedProduct, fetchGetUnit])
+            Promise.all([fetchGetReceipt, fetchGetIngredientGetProduct, fetchGetUnit])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
@@ -96,17 +96,17 @@ const Insert_updatePhieuNhap = (props) => {
                     dispatch({ type: 'SET_LOADING', payload: false })
                 });
         } else {
-            var fetchGetIngredientGetFinishedProduct
+            var fetchGetIngredientGetProduct
             //lấy danh sách nguyên liệu hoặc sản phẩm thành phẩm
             if (props.nhapNguyenLieu) {
-                fetchGetIngredientGetFinishedProduct = fetch(`${urlGetIngredient}?limit=10000`, {
+                fetchGetIngredientGetProduct = fetch(`${urlGetIngredient}?limit=10000`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
                     },
                 })
-            } else fetchGetIngredientGetFinishedProduct = fetch(`${urlGetFinishedProduct}?limit=10000`, {
+            } else fetchGetIngredientGetProduct = fetch(`${urlGetProduct}?limit=10000&search=true&searchBy=SanPhamThanhPham`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const Insert_updatePhieuNhap = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            Promise.all([fetchGetIngredientGetFinishedProduct, fetchGetUnit])
+            Promise.all([fetchGetIngredientGetProduct, fetchGetUnit])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {

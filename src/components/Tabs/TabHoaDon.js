@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faFilter, faArrowLeft, faArrowUp, faArrowDown, faAdd } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetReceipt, urlDeleteReceipt } from "../url";
+import { urlGetInvoice, urlDeleteProduct } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
-import TablePhieuNhap from "../Table/TablePhieuNhap";
-import Insert_updatePhieuNhap from "../Popup/Insert_updatePhieuNhap";
-function TabPhieuNhap(props) {
+import TableHoaDon from "../Table/TableHoaDon";
+import GoiMon from "../Popup/GoiMon";
+function TabHoaDon() {
     //xử lý redux
     const dispatch = useDispatch();
-    //Xử lý phân biệt nhập nguyên liệu và sản phẩm
-    const [nhapNguyenLieu, setNhapNguyenLieu] = useState(true);
     //Xử lý hiển thị các nút chức năng
     const [showButtonFunction, setShowButtonFunction] = useState(true);
     const handleToggleButtonFunction = () => {
@@ -22,13 +20,13 @@ function TabPhieuNhap(props) {
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'NgayNhap',
+        sortBy: 'IDHoaDon',
         sortOrder: 'desc',
-        searchBy: 'NgayNhap',
+        searchBy: 'TenBan',
         search: '',
         searchExact: 'false'
     });//
-    const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getRole
+    const [dataRes, setDataRes] = useState({});
 
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
@@ -101,7 +99,7 @@ function TabPhieuNhap(props) {
         );
     };
 
-    //popup thêm,sửa nhân viên
+    //popup thêm,sửa
     const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
@@ -111,8 +109,8 @@ function TabPhieuNhap(props) {
     const handleSearch = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
             search: event.target.value
         });
@@ -123,8 +121,8 @@ function TabPhieuNhap(props) {
     const handleSearchBy = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
             searchBy: event.target.value
         });
@@ -134,44 +132,63 @@ function TabPhieuNhap(props) {
     const handleSearchExact = (event) => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
             searchExact: event.target.value
         });
 
     };
+
     //hàm lọc Hôm nay
     const filterHomNay = () => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
             search: dataRes.DateCurrent,
-            searchBy: 'NgayNhap'
+            searchBy: 'NgayLapHoaDon'
         });
     };
-    //hàm lọc nhập nguyên liệu
-    const filterNhapNguyenLieu = () => {
+    // Hàm lọc Hôm qua
+    const filterHomQua = () => {
+
+        // Parse ngày thành đối tượng Date
+        let dateParts = dataRes.DateCurrent.split('/');
+        let date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+
+        // Trừ 1 ngày
+        date.setDate(date.getDate() - 1);
+
+        // Định dạng ngày thành chuỗi 
+        let yesterday =
+            addLeadingZero(date.getDate()) + "/" +
+            addLeadingZero(date.getMonth() + 1) + "/" +
+            date.getFullYear();
+
+        // Hàm bổ sung thêm số 0
+        function addLeadingZero(num) {
+            return num.toString().padStart(2, '0');
+        }
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
-            search: true,
-            searchBy: 'NhapNguyenLieu'
+            search: yesterday,
+            searchBy: 'NgayLapHoaDon'
         });
-    };
-    //hàm lọc nhập sản phẩm
-    const filterNhapSanPham = () => {
+    }
+    //hàm lọc chưa thanh toán
+    const filterChuaThanhToan = () => {
         setdataUser({
             ...dataUser,
-            sortBy: 'NgayNhap',
-            sortOrder: 'desc',
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
             page: 1,
             search: false,
-            searchBy: 'NhapNguyenLieu'
+            searchBy: 'TrangThaiThanhToan'
         });
     };
 
@@ -180,11 +197,9 @@ function TabPhieuNhap(props) {
         dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
-            console.log('là mảng');
             IDs = ID.map(item => Number(item));
-            console.log('mảng số đã được chuyển', IDs);
         } else IDs = [ID];
-        fetch(`${urlDeleteReceipt}`, {
+        fetch(`${urlDeleteProduct}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -230,7 +245,7 @@ function TabPhieuNhap(props) {
     }, [dataUser]);
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        fetch(`${urlGetReceipt}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+        fetch(`${urlGetInvoice}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -285,9 +300,7 @@ function TabPhieuNhap(props) {
         <div>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-
-                    <h2> Quản Lý Phiếu Nhập {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
-
+                    <h2> Quản Lý Hoá Đơn {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
@@ -305,7 +318,6 @@ function TabPhieuNhap(props) {
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={() => {
-                                                setNhapNguyenLieu(true)
                                                 setIsInsert(true)
                                                 setPopupInsertUpdate(true)
                                                 setIDAction()
@@ -313,12 +325,11 @@ function TabPhieuNhap(props) {
 
                                             className="btn btn-primary">
                                             <FontAwesomeIcon icon={faAdd} />
-                                            ㅤNhập NL Mới
+                                            ㅤGọi Món
                                         </button>ㅤ
-                                        <button
+                                        {/* <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={() => {
-                                                setNhapNguyenLieu(false)
                                                 setIsInsert(true)
                                                 setPopupInsertUpdate(true)
                                                 setIDAction()
@@ -326,8 +337,8 @@ function TabPhieuNhap(props) {
 
                                             className="btn btn-primary">
                                             <FontAwesomeIcon icon={faAdd} />
-                                            ㅤNhập SP mới
-                                        </button>ㅤ
+                                            ㅤThêm SP Chế Biến
+                                        </button>ㅤ */}
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterHomNay}
@@ -337,30 +348,18 @@ function TabPhieuNhap(props) {
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
-                                            onClick={filterNhapNguyenLieu}
+                                            onClick={filterHomQua}
                                             className="btn btn-light">
                                             <FontAwesomeIcon icon={faFilter} />
-                                            ㅤNhập Nguyên Liệu
+                                            ㅤHôm Qua
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
-                                            onClick={filterNhapSanPham}
+                                            onClick={filterChuaThanhToan}
                                             className="btn btn-light">
                                             <FontAwesomeIcon icon={faFilter} />
-                                            ㅤNhập Sản Phẩm
+                                            ㅤChưa Thanh Toán
                                         </button>ㅤ
-                                        {/* <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setIsInsert(true)
-                                            setPopupInsertUpdate(true)
-                                            setIDAction()
-                                        }}
-
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faAdd} />
-                                        ㅤThêm
-                                    </button>ㅤ */}
                                     </div>
                                     : <div style={{ 'display': "inline-block", float: 'left' }}>
                                         <button
@@ -395,7 +394,7 @@ function TabPhieuNhap(props) {
                                     setdataUser={setdataUser}
                                 />
                                 ㅤ
-                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm " />
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
                                 {
                                     dataUser.search !== '' &&
                                     <button
@@ -413,11 +412,13 @@ function TabPhieuNhap(props) {
                                 }
                                 ㅤ
                                 <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                    <option value="IDPhieuNhap">Tìm theo ID Phiếu Nhập</option>
+                                    <option value="IDHoaDon">Tìm theo ID Hoá Đơn</option>
+                                    <option value="TenBan">Tìm theo Tên Bàn</option>
+                                    <option value="TenNhanVien">Tìm theo Tên Nhân Viên</option>
+                                    <option value="TenKhachHang">Tìm theo Tên Khách Hàng</option>
+                                    <option value="NgayLapHoaDon">Tìm theo Ngày Hoá Đơn</option>
                                     <option value="IDNhanVien">Tìm theo ID Nhân Viên</option>
-                                    <option value="TenNhanVien">Tìm theo Tên nhân viên</option>
-                                    <option value="NgayNhap">Tìm theo Ngày Nhập</option>
-                                    {/* <option value="XacNhanGiaoCa">Tìm theo Trạng Thái (true hoặc false)</option> */}
+                                    <option value="IDKhachHang">Tìm theo ID Khách Hàng</option>
                                 </select>
                                 ㅤ
                                 <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
@@ -427,12 +428,10 @@ function TabPhieuNhap(props) {
                                 {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
                             </div>
                         </div>}
-
                 </div>
-
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                        <TablePhieuNhap
+                        <TableHoaDon
                             duLieuHienThi={duLieuHienThi}
                             setdataUser={setdataUser}
                             dataUser={dataUser}
@@ -444,10 +443,9 @@ function TabPhieuNhap(props) {
                             deleteData={deleteData}
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
-                            setNhapNguyenLieu={setNhapNguyenLieu}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayNhap" ?
+                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLapHoaDon" ?
                             (dataRes.sortOrder === 'asc'
                                 ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
                                 : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
@@ -466,8 +464,8 @@ function TabPhieuNhap(props) {
                 dataRes={dataRes}
             />
             {
-                popupInsertUpdate && <div className="popup">
-                    <Insert_updatePhieuNhap
+                popupInsertUpdate && (<div className="popup">
+                    <GoiMon
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         dataUser={dataUser}
@@ -475,11 +473,8 @@ function TabPhieuNhap(props) {
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
-                        thongTinDangNhap={props.thongTinDangNhap}
-                        DateCurrent={dataRes.DateCurrent}
-                        nhapNguyenLieu={nhapNguyenLieu}
                     />
-                </div>
+                </div>)
             }
             {
                 popupAlert && <PopupAlert
@@ -493,4 +488,4 @@ function TabPhieuNhap(props) {
 
 }
 
-export default TabPhieuNhap
+export default TabHoaDon

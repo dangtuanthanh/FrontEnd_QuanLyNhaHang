@@ -83,7 +83,7 @@ const Insert_updateKhachHang = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhachHang', sortOrder: 'asc' })
+                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhachHang', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })

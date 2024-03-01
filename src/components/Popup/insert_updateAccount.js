@@ -38,7 +38,7 @@ const Insert_updateAccount = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            const fetchGetJobPosition = fetch(`${urlGetJobPosition}`, {
+            const fetchGetJobPosition = fetch(`${urlGetJobPosition}?limit=10000`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ const Insert_updateAccount = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            const fetchGetJobPosition = fetch(`${urlGetJobPosition}`, {
+            const fetchGetJobPosition = fetch(`${urlGetJobPosition}?limit=10000`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -610,10 +610,11 @@ const Insert_updateAccount = (props) => {
                                                 ㅤCho Phép Truy Cập Ứng Dụng Quản Lý
                                             </label>
                                         </div>
+                                        <label style={labelStyle}>Vai Trò Truy Cập: {isChecked && <span style={{ color: 'red' }}>*</span>}ㅤ</label>
                                         <div className="form-group"
                                             style={{ maxHeight: '90px', overflow: 'auto' }}
                                         >
-                                            <label style={labelStyle}>Vai Trò Truy Cập: {isChecked && <span style={{ color: 'red' }}>*</span>}ㅤ</label>
+                                            
                                             {combosVaiTro.map(combo => (
                                                 <div key={combo.IDVaiTro} >
                                                     <label style={labelStyle}>

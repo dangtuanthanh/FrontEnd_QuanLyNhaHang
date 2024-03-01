@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faTrash,faArchive,faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faTrash, faArchive, faFireBurner } from '@fortawesome/free-solid-svg-icons'
 const TableSanPham = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
     //hàm sắp xếp
@@ -90,6 +90,7 @@ const TableSanPham = (props) => {
                     {/* <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th> */}
                     <th style={{ textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('IDSanPham')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID Sản Phẩm </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenSanPham')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Sản Phẩm </th>
+                    <th style={{textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('GiaBan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Giá</th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Hình Ảnh </th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Loại Sản Phẩm </th>
                     {/* <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mô Tả</th> */}
@@ -107,6 +108,9 @@ const TableSanPham = (props) => {
                             onClick={() => {
                                 props.setIsInsert(false)
                                 props.setIDAction(dulieu.IDSanPham)
+                                if (dulieu.SanPhamThanhPham)
+                                    props.setSanPhamThanhPham(true)
+                                else props.setSanPhamThanhPham(false)
                                 props.setPopupInsertUpdate(true)
                             }} >
                             <td >
@@ -123,15 +127,21 @@ const TableSanPham = (props) => {
                             {/* <td >{index + 1}</td> */}
                             <td >{dulieu.IDSanPham}</td>
                             <td style={{ textAlign: 'left' }} >{dulieu.TenSanPham}</td>
+                            <td>
+                                {new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(dulieu.GiaBan)}
+                            </td>
                             <td style={{ padding: '0' }}>
                                 <img
                                     height={'40px'}
                                     src={dulieu.HinhAnh}></img>
                             </td>
-                            {dulieu.SanPhamThanhPham === "true" ?
-                                <td style={{color:'green'}} ><FontAwesomeIcon icon={faArchive} /> Thành Phẩm</td>
+                            {dulieu.SanPhamThanhPham ?
+                                <td style={{ color: 'green' }} ><FontAwesomeIcon icon={faArchive} /> Thành Phẩm</td>
                                 :
-                                <td style={{color:'darkorange'}} ><FontAwesomeIcon icon={faFireBurner} /> Chế Biến</td>
+                                <td style={{ color: 'darkorange' }} ><FontAwesomeIcon icon={faFireBurner} /> Chế Biến</td>
                             }
                             {/* <td
                                 style={{
@@ -149,6 +159,9 @@ const TableSanPham = (props) => {
                                     e.stopPropagation();
                                     props.setIsInsert(false)
                                     props.setIDAction(dulieu.IDSanPham)
+                                    if (dulieu.SanPhamThanhPham)
+                                        props.setSanPhamThanhPham(true)
+                                    else props.setSanPhamThanhPham(false)
                                     props.setPopupInsertUpdate(true)
                                 }}>
                                     <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />

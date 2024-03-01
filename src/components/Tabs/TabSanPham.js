@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft,faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetProduct, urlDeleteTypeProduct } from "../url";
+import { urlGetProduct, urlDeleteProduct } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableSanPham from "../Table/TableSanPham";
-import Insert_updateLoaiSanPham from "../Popup/Insert_updateLoaiSanPham";
+import Insert_updateSPThanhPham from "../Popup/Insert_updateSPThanhPham";
+import Insert_updateSPCheBien from "../Popup/Insert_updateSPCheBien";
 function TabSanPham() {
     //xử lý redux
     const dispatch = useDispatch();
+    //Xử lý phân biệt sản phẩm thành phẩm và sản phẩm chế biến 
+    const [sanPhamThanhPham, setSanPhamThanhPham] = useState(true);
+    useEffect(() => {
+       console.log('sanPhamThanhPham',sanPhamThanhPham);
+    }, [sanPhamThanhPham]);
     //Xử lý hiển thị các nút chức năng
     const [showButtonFunction, setShowButtonFunction] = useState(true);
     const handleToggleButtonFunction = () => {
@@ -170,7 +176,7 @@ function TabSanPham() {
         if (Array.isArray(ID)) {
             IDs = ID.map(item => Number(item));
         } else IDs = [ID];
-        fetch(`${urlDeleteTypeProduct}`, {
+        fetch(`${urlDeleteProduct}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -274,106 +280,120 @@ function TabSanPham() {
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
-                    <div>
-                        {
-                            selectedIds.length == 0
-                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => { TaiDuLieu(); }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faRotate} />
-                                        ㅤLàm Mới
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setIsInsert(true)
-                                            setPopupInsertUpdate(true)
-                                            setIDAction()
-                                        }}
-
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faAdd} />
-                                        ㅤThêm
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={filterSanPhamThanhPham}
-                                        className="btn btn-light">
-                                        <FontAwesomeIcon icon={faFilter} />
-                                        ㅤSP Thành Phẩm
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={filterSanPhamCheBien}
-                                        className="btn btn-light">
-                                        <FontAwesomeIcon icon={faFilter} />
-                                        ㅤSP Chế Biến
-                                    </button>ㅤ
-                                </div>
-                                : <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        //onClick={setSelectedIds([])}
-                                        onClick={() => { setSelectedIds([]); }}
-                                        className="btn btn-danger">
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                        ㅤQuay Lại
-                                    </button>ㅤ
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => {
-                                            openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
-                                                () => { deleteData(selectedIds) }
-                                            )
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                        ㅤXoá ô đã chọn
-                                    </button>ㅤ
-                                </div>
-                        }
-
-                        <div style={{ 'display': "inline-block", float: 'right' }}>
-                            {/* số hàng trên trang */}
-                            <ItemsPerPage
-                                dataRes={dataRes}
-                                openPopupAlert={openPopupAlert}
-                                dataUser={dataUser}
-                                setdataUser={setdataUser}
-                            />
-                            ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                        <div>
                             {
-                                dataUser.search !== '' &&
-                                <button
-                                    className="btn btn-close"
-                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                    onClick={() => {
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: ''
-                                        });
-                                    }}
-                                >
-                                    X
-                                </button>
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopupInsertUpdate(true)
+                                                setSanPhamThanhPham(true)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm SP Thành Phẩm
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopupInsertUpdate(true)
+                                                setSanPhamThanhPham(false)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm SP Chế Biến
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterSanPhamThanhPham}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤSP Thành Phẩm
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterSanPhamCheBien}
+                                            className="btn btn-light">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤSP Chế Biến
+                                        </button>ㅤ
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn btn-primary">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
+                                    </div>
                             }
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="IDSanPham">Tìm theo ID Sản Phẩm</option>
-                                <option value="TenSanPham">Tìm theo Tên Sản Phẩm</option>
-                            </select>
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                <option value='false'>Chế độ tìm: Gần đúng</option>
-                                <option value="true">Chế độ tìm: Chính xác</option>
-                            </select>
-                            {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
-                        </div>
-                    </div>}
+
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                {
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            setdataUser({
+                                                ...dataUser,
+                                                search: ''
+                                            });
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="IDSanPham">Tìm theo ID Sản Phẩm</option>
+                                    <option value="TenSanPham">Tìm theo Tên Sản Phẩm</option>
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
+                                {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
+                            </div>
+                        </div>}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -389,6 +409,7 @@ function TabSanPham() {
                             deleteData={deleteData}
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
+                            setSanPhamThanhPham={setSanPhamThanhPham}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                         <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
@@ -402,8 +423,8 @@ function TabSanPham() {
                 dataRes={dataRes}
             />
             {
-                popupInsertUpdate && <div className="popup">
-                    <Insert_updateLoaiSanPham
+                popupInsertUpdate && sanPhamThanhPham && (<div className="popup">
+                    <Insert_updateSPThanhPham
                         isInsert={isInsert}
                         setPopupInsertUpdate={setPopupInsertUpdate}
                         dataUser={dataUser}
@@ -412,7 +433,20 @@ function TabSanPham() {
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
                     />
-                </div>
+                </div>)
+            }
+            {
+                popupInsertUpdate && !sanPhamThanhPham && (<div className="popup">
+                    <Insert_updateSPCheBien
+                        isInsert={isInsert}
+                        setPopupInsertUpdate={setPopupInsertUpdate}
+                        dataUser={dataUser}
+                        setdataUser={setdataUser}
+                        addNotification={addNotification}
+                        openPopupAlert={openPopupAlert}
+                        iDAction={iDAction}
+                    />
+                </div>)
             }
             {
                 popupAlert && <PopupAlert

@@ -6,7 +6,7 @@ import { getCookie } from "../Cookie";
 import { urlGetUnit, urlGetIngredient, urlGetTypeProduct, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign, faIdCard, faBell,faClone } from '@fortawesome/free-solid-svg-icons'
+import { faDollarSign, faIdCard, faBell, faClone,faFile } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 
 import TabChonBan from "./ChonBan";
@@ -14,7 +14,9 @@ import TabChonMon from "./ChonMon";
 import ChonKhachHang from "./ChonKhachHang";
 const GoiMon = (props) => {
     //lưu trữ dữ liệu gửi đi
-    const [dataReq, setDataReq] = useState({});
+    const [dataReq, setDataReq] = useState({
+        DanhSach: []
+    });
     const [popupChonKhachHang, setPopupChonKhachHang] = useState(false);
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
@@ -55,6 +57,19 @@ const GoiMon = (props) => {
         .replace(/}/g, '\n}')
         .replace(/,/g, ',\n')
         .split('\n');
+    /*xử lý phần chi tiết*/
+    function handleDetailChange(ID, value, TenCot) {
+        const index = dataReq.DanhSach.findIndex(
+            item => {
+                return item.IDSanPham === ID;
+            }
+        );
+        dataReq.DanhSach[index][TenCot] = value
+        setDataReq({
+            ...dataReq,
+            DanhSach: [...dataReq.DanhSach]
+        })
+    }
     return (
         <div className="full-popup-box">
             <div className="full-box">
@@ -116,7 +131,7 @@ const GoiMon = (props) => {
                                             >
                                                 {dataReq.TenKhachHang ? (
                                                     <>
-                                                        <FontAwesomeIcon icon={faIdCard} /> 
+                                                        <FontAwesomeIcon icon={faIdCard} />
 
                                                         {dataReq.TenKhachHang}
                                                     </>
@@ -127,6 +142,49 @@ const GoiMon = (props) => {
                                         </div>
                                     </div>
                                     <div style={{ height: '600px', maxHeight: '64%', overflow: 'auto' }}>
+                                        {dataReq.DanhSach.map((item,index)=> (
+                                            <div key={item.IDSanPham}
+                                                className="row card-body">
+                                                <div className="col-6">
+                                                    <h6>{index + 1}. {item.TenSanPham} </h6>
+                                                     <label 
+                                                     onClick={()=>{
+                                                        const GhiChuMonAn = prompt("Nhập Ghi Chú Cho Món Ăn:");
+                                                        if(GhiChuMonAn){
+                                                            handleDetailChange(item.IDSanPham,
+                                                                GhiChuMonAn,
+                                                                'GhiChu'
+                                                            )
+                                                        }
+                                                     }}
+                                                     style={{color:'#9d9d9d'}}
+                                                     >
+                                                        {item.GhiChu ? (
+                                                    <>
+                                                        {item.GhiChu}
+                                                    </>
+                                                ) : <><FontAwesomeIcon icon={faFile} />
+                                                    ' Nhập Ghi Chú / Món Thêm'
+                                                    </>
+                                                }
+                                                        </label> 
+                                                </div>
+                                                <div className="col-6">
+                                                    <input
+                                                        type="number"
+                                                        className="form-control-sm"
+                                                        value={item.KhoiLuong}
+                                                        onChange={(event) =>
+                                                            handleDetailChange(item.IDNguyenLieu,
+                                                                event.target.value,
+                                                                'KhoiLuong'
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                                <hr></hr>
+                                            </div>
+                                        ))}
                                         <pre
                                             style={{
                                                 background: '#333',
@@ -154,7 +212,7 @@ const GoiMon = (props) => {
                                                     className="form-control-sm"
                                                     placeholder="Ghi Chú"
                                                     value={dataReq.GhiChu}
-                                                    style={{ border: '0.8px grey solid', width: '100%',height:'33px'}}
+                                                    style={{ border: '0.8px grey solid', width: '100%', height: '33px' }}
                                                     onChange={(event) => {
                                                         setDataReq({
                                                             ...dataReq,
@@ -168,7 +226,7 @@ const GoiMon = (props) => {
                                             <button
                                                 style={{ width: '85%' }}
                                                 className="btn btn-light btn-sm"
-                                            > 
+                                            >
                                                 <FontAwesomeIcon icon={faClone} />  Tách / Ghép
                                             </button>
                                         </div>

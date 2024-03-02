@@ -152,6 +152,23 @@ const ChonMon = (props) => {
     };
     const navigationColumnClass = showNavigation ? "col-2" : "col-0";
     const contentColumnClass = showNavigation ? "col-10" : "col-12";
+
+    //thêm dữ liệu vào danh sách
+    const handleListChange = (ID, Ten) => {
+        let updatedDataReq = { ...props.dataReq };
+        let newDanhSach = updatedDataReq.DanhSach;
+        if (newDanhSach.some(item => item.IDSanPham === ID)) {
+            newDanhSach = newDanhSach.filter(item => item.IDSanPham !== ID);
+        } else {
+            newDanhSach.push({
+                IDSanPham: ID,
+                TenSanPham: Ten,
+                SoLuong: 1
+            });
+        }
+        updatedDataReq.DanhSach = newDanhSach;
+        props.setDataReq(updatedDataReq);
+    }
     return (
         <div>
             <div className="row"  >
@@ -218,12 +235,7 @@ const ChonMon = (props) => {
                                 className="col"
                                 style={{ textAlign: 'center', borderRadius: '6px', boxShadow: '0 20px 27px 0 rgba(0,0,0,.05)', margin: '2px' }}
                                 onClick={() => {
-                                    props.setDataReq({
-                                        ...props.dataReq,
-                                        IDSanPham: item.IDSanPham,
-                                        TenSanPham: item.TenSanPham
-                                    });
-                                    console.log('Đã thêm sản phẩm: ', item.IDSanPham, item.TenSanPham);
+                                    handleListChange(item.IDSanPham,item.TenSanPham)
                                 }}
                             >
 

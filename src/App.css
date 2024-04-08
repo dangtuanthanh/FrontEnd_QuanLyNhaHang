@@ -153,3 +153,8 @@
   border: 1px solid #999;
   overflow: auto;
 }
+@keyframes blink {
+  50% {
+    border-color: orange;
+  }
+}

@@ -62,7 +62,7 @@ const Insert_updateSPCheBien = (props) => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
                             return response.json();
-                        } else if (response.status === 401 || response.status === 500) {
+                        } else if (response.status === 400 ||response.status === 401 || response.status === 500) {
                             return response.json().then(errorData => {
                                 throw new Error(errorData.message);
                             });

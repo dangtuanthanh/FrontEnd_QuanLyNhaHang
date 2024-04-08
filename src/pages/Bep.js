@@ -10,10 +10,11 @@ import { urlLogout } from "../components/url";
 import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import loadingGif from '../assets/img/loading/loading1.gif'
-import TabBangDieuKhien from "../components/Tabs/TabBangDieuKhien";
+import TabBoiBan from "../components/Tabs/TabBoiBan";
+import TabDauBep from "../components/Tabs/TabDauBep";
 import Logout_ChotCa from "../components/Popup/Logout_ChotCa";
 import '../App.css';
-function BangDieuKhien() {
+function Bep() {
     const [thongTinDangNhap, setThongTinDangNhap] = useState({
         menu: [],
         NhanVien: {},
@@ -75,7 +76,8 @@ function BangDieuKhien() {
 
 
     const tabs = {
-        tab1: 'TabBangDieuKhien'
+        tab1: 'TabDauBep',
+        tab2: 'TabBoiBan'
     }
 
     const [activeTab, setActiveTab] = useState(tabs.tab1);
@@ -86,9 +88,12 @@ function BangDieuKhien() {
     let TabComponent;
 
     if (activeTab === tabs.tab1) {
-        TabComponent = TabBangDieuKhien;
+        TabComponent = TabDauBep;
     }
 
+    if (activeTab === tabs.tab2) {
+        TabComponent = TabBoiBan;
+    }
 
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap}  >
@@ -110,27 +115,22 @@ function BangDieuKhien() {
                                 </li>
                                 <li class="nav-item">
                                     <button
-                                        className={activeTab === 'TabBangDieuKhien' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab1)}>Bảng Điều Khiển</button>
+                                        className={activeTab === 'TabDauBep' ? 'nav-link active' : 'nav-link'}
+                                        onClick={() => handleTabClick(tabs.tab1)}>Đầu Bếp</button>
                                 </li>
-                                {/* <li class="nav-item">
+                                <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabBoiBan' ? 'nav-link active' : 'nav-link'}
                                         onClick={() => handleTabClick(tabs.tab2)}>Bồi Bàn</button>
-                                </li> */}
+                                </li>
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <div onClick={() => {
                                         navigate(`/TrangCaNhan`);
                                     }}>
-                                        <div onClick={() => {
-                                        navigate(`/TrangCaNhan`);
-                                    }}>
                                         <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
                                     </div>
-                                    </div>
-
                                 </span>
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <FontAwesomeIcon icon={faCog} />
@@ -155,4 +155,4 @@ function BangDieuKhien() {
     );
 }
 
-export default BangDieuKhien
+export default Bep

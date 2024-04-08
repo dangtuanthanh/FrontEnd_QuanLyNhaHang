@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
@@ -10,10 +10,11 @@ import { urlLogout } from "../components/url";
 import CheckLogin from "../components/CheckLogin"
 import Navigation from "../components/Navigation"
 import loadingGif from '../assets/img/loading/loading1.gif'
-import TabBangDieuKhien from "../components/Tabs/TabBangDieuKhien";
+import TabHoSo from "../components/Tabs/TabHoSo";
+import TabTaiKhoan from "../components/Tabs/TabTaiKhoan";
 import Logout_ChotCa from "../components/Popup/Logout_ChotCa";
 import '../App.css';
-function BangDieuKhien() {
+function TrangCaNhan() {
     const [thongTinDangNhap, setThongTinDangNhap] = useState({
         menu: [],
         NhanVien: {},
@@ -75,7 +76,8 @@ function BangDieuKhien() {
 
 
     const tabs = {
-        tab1: 'TabBangDieuKhien'
+        tab1: 'TabHoSo',
+        tab2:'TabTaiKhoan'
     }
 
     const [activeTab, setActiveTab] = useState(tabs.tab1);
@@ -86,7 +88,10 @@ function BangDieuKhien() {
     let TabComponent;
 
     if (activeTab === tabs.tab1) {
-        TabComponent = TabBangDieuKhien;
+        TabComponent = TabHoSo;
+    }
+    if (activeTab === tabs.tab2) {
+        TabComponent = TabTaiKhoan;
     }
 
 
@@ -110,27 +115,22 @@ function BangDieuKhien() {
                                 </li>
                                 <li class="nav-item">
                                     <button
-                                        className={activeTab === 'TabBangDieuKhien' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab1)}>Bảng Điều Khiển</button>
+                                        className={activeTab === 'TabHoSo' ? 'nav-link active' : 'nav-link'}
+                                        onClick={() => handleTabClick(tabs.tab1)}>Hồ Sơ</button>
                                 </li>
-                                {/* <li class="nav-item">
+                                <li class="nav-item">
                                     <button
-                                        className={activeTab === 'TabBoiBan' ? 'nav-link active' : 'nav-link'}
-                                        onClick={() => handleTabClick(tabs.tab2)}>Bồi Bàn</button>
-                                </li> */}
+                                        className={activeTab === 'TabTaiKhoan' ? 'nav-link active' : 'nav-link'}
+                                        onClick={() => handleTabClick(tabs.tab2)}>Tài Khoản</button>
+                                </li>
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <div onClick={() => {
                                         navigate(`/TrangCaNhan`);
                                     }}>
-                                        <div onClick={() => {
-                                        navigate(`/TrangCaNhan`);
-                                    }}>
                                         <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
                                     </div>
-                                    </div>
-
                                 </span>
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <FontAwesomeIcon icon={faCog} />
@@ -143,7 +143,7 @@ function BangDieuKhien() {
                                 </button>
                             </div>
                         </div>
-                        <TabComponent />
+                        <TabComponent  thongTinDangNhap={thongTinDangNhap}/>
                         {popupChotCa && <Logout_ChotCa
                             setPopupChotCa={setPopupChotCa}
                             thongTinDangNhap={thongTinDangNhap}
@@ -155,4 +155,4 @@ function BangDieuKhien() {
     );
 }
 
-export default BangDieuKhien
+export default TrangCaNhan

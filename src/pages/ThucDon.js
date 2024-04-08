@@ -123,11 +123,11 @@ function ThucDon() {
                                         className={activeTab === 'TabSanPham' ? 'nav-link active' : 'nav-link'}
                                         onClick={() => handleTabClick(tabs.tab1)}>Sản Phẩm</button>
                                 </li>
-                                <li class="nav-item">
+                                {/* <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabNguyenLieu' ? 'nav-link active' : 'nav-link'}
                                         onClick={() => handleTabClick(tabs.tab2)}>Nguyên Liệu</button>
-                                </li>
+                                </li> */}
                                 <li class="nav-item">
                                     <button
                                         className={activeTab === 'TabLoaiSanPham' ? 'nav-link active' : 'nav-link'}
@@ -136,7 +136,11 @@ function ThucDon() {
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                    <div onClick={() => {
+                                        navigate(`/TrangCaNhan`);
+                                    }}>
+                                        <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                    </div>
                                 </span>
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
                                     <FontAwesomeIcon icon={faCog} />

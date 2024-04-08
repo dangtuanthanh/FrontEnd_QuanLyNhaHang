@@ -181,7 +181,7 @@ const Insert_updateRole = (props) => {
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <h4 id='tieudepop'>Thông Tin Vai Trò Truy Cập<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group">
                                     <label>Tên Vai Trò {batBuocNhap}</label>

@@ -91,8 +91,11 @@ const TableSanPham = (props) => {
                     <th style={{ textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('IDSanPham')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID Sản Phẩm </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenSanPham')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên Sản Phẩm </th>
                     <th style={{textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('GiaBan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Giá</th>
+                    <th style={{textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('SoLuongTon')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">SL Tồn</th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Hình Ảnh </th>
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Loại Sản Phẩm </th>
+                    
+                    
                     {/* <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mô Tả</th> */}
 
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10 ps-2">Hành Động</th>
@@ -133,6 +136,8 @@ const TableSanPham = (props) => {
                                     currency: 'VND'
                                 }).format(dulieu.GiaBan)}
                             </td>
+                            <td >{dulieu.SoLuongTon}</td>
+                           
                             <td style={{ padding: '0' }}>
                                 <img
                                     height={'40px'}

@@ -149,7 +149,7 @@ const Insert_updateBan = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhuVuc', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser,page:1, sortBy: 'IDBan', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })

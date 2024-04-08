@@ -21,7 +21,8 @@ import KhachHang from "./pages/KhachHang"
 import Kho from "./pages/Kho"
 import NotFound from "./pages/NotFound";
 import Login from './login/Login';
-
+import Bep from "./pages/Bep"
+import TrangCaNhan from "./pages/TrangCaNhan"
 function App() {
   return (
 
@@ -30,7 +31,7 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login /> } />
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
           <Route path="/HoaDon" element={<HoaDon />} />
           <Route path="/ThucDon" element={<ThucDon />} />
@@ -39,7 +40,9 @@ function App() {
           <Route path="/CaLamViec" element={<CaLamViec />} />
           <Route path="/KhachHang" element={<KhachHang />} />
           <Route path="/Kho" element={<Kho />} />
-          <Route element={NotFound} />
+          <Route path="/Bep" element={<Bep />} />
+          <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
+          <Route path="*" element={<NotFound />}/>
         </Routes>
       </BrowserRouter>
     </Provider>

@@ -27,9 +27,6 @@ const ChonBan = (props) => {
         limit: 24
     });//
 
-    useEffect(() => {
-        console.log('dataUser: ', dataUser);
-    }, [dataUser]);
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
@@ -42,11 +39,16 @@ const ChonBan = (props) => {
         });
 
     };
-
+    useEffect(() => {
+        TaiDuLieu();
+        TaiKhuVuc();
+    }, []);
     //hàm tải dữ liệu
     useEffect(() => {
-        TaiDuLieu()
+        TaiDuLieu();
+        console.log('dataUser: ', dataUser);
     }, [dataUser]);
+    
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlGetTable}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
@@ -98,6 +100,8 @@ const ChonBan = (props) => {
                 }
 
             });
+    }
+    const TaiKhuVuc = () => {
         fetch(`${urlGetArea}?limit=10000`, {
             method: 'GET',
             headers: {
@@ -143,6 +147,7 @@ const ChonBan = (props) => {
 
         return 'transparent';
     }
+    // lỗi phần này 
     //combo combosKhuVuc
     function handleKhuVucChange(selectedValue) {
         if (selectedValue === 'Tất Cả') {
@@ -207,7 +212,14 @@ const ChonBan = (props) => {
                             </label>
                         </div>
                         <div style={{ width: '40%', textAlign: 'end', marginRight: '15px' }}>
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Tên Bàn' type="text" className="form-control-sm" />
+                            <input 
+                            id="search" 
+                            value={dataUser.search} 
+                            onChange={handleSearch} 
+                            placeholder='Tìm Tên Bàn' 
+                            type="text" 
+                            className="form-control-sm" 
+                            style={{border: '0.8px grey solid'}}/>
                             {
                                 (dataUser.search.length != 0) &&
                                 <button
@@ -231,12 +243,15 @@ const ChonBan = (props) => {
                             key={item.IDBan}
                             className="col"
                             onClick={() => {
-                                props.setDataReq({
-                                    ...props.dataReq,
-                                    IDBan: item.IDBan,
-                                    TenBan: item.TenBan,
-                                    TenKhuVuc:item.TenKhuVuc
-                                });
+                                if (props.dataReq.IDBan !== item.IDBan) {
+                                    props.setDataReq({
+                                        ...props.dataReq,
+                                        IDBan: item.IDBan,
+                                        TenBan: item.TenBan,
+                                        TenKhuVuc: item.TenKhuVuc
+                                    });
+                                }
+
                                 props.setActiveTab('TabChonMon')
 
                             }}

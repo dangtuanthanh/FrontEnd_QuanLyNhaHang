@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+
 import Combobox from "../Combobox";
 import { getCookie } from "../Cookie";
+import Insert_updateJobPosition from "./Insert_updateJobPosition";
+import Insert_updateRole from "./Insert_updateRole";
 import { urlGetRole, urlInsertAccount, urlGetJobPosition, urlGetAccount, urlUpdateAccount } from "../url"
+
 const Insert_updateAccount = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
@@ -11,12 +17,17 @@ const Insert_updateAccount = (props) => {
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    const [dataUser, setdataUser] = useState({});//
     //xử lý hiển thị ô tài khoản, mật khẩu
     const [isChecked, setIsChecked] = useState(false);
+
     const [isDisabled, setIsDisabled] = useState(true);
     // combobox
     const [combosVaiTro, setCombosVaiTro] = useState([]);//danh sách vai trò
     const [combosViTriCongViec, setCombosViTriCongViec] = useState([]);//danh sách vị trí công việc
+    //hiển thị popup thêm vị trí công việc và vai trò truy cập
+    const [themVTCV, setThemVTCV] = useState(false);
+    const [themVTTC, setThemVTTC] = useState(false);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     const [resTaiKhoan, setResTaiKhoan] = useState(false);
@@ -151,7 +162,7 @@ const Insert_updateAccount = (props) => {
 
 
 
-    }, []);
+    }, [dataUser]);
 
     //combo vai trò
     const handleVaiTroChange = (ID) => {
@@ -432,6 +443,9 @@ const Insert_updateAccount = (props) => {
             handleFetchAPISubmit();
         }
     };
+    const batPopupThemKhachHang = () => {
+        setThemVTCV(true)
+    }
 
 
     return (
@@ -478,6 +492,8 @@ const Insert_updateAccount = (props) => {
                                             //defaultValue=''
                                             value={dataReq.IDViTriCongViec}
                                             onChange={handleViTriCongViecChange}
+                                            onClick={batPopupThemKhachHang}
+                                            isAdd={true}
                                         />
                                         <div className="form-group">
                                             <label>Ngày Sinh {batBuocNhap}</label>
@@ -610,11 +626,30 @@ const Insert_updateAccount = (props) => {
                                                 ㅤCho Phép Truy Cập Ứng Dụng Quản Lý
                                             </label>
                                         </div>
-                                        <label style={labelStyle}>Vai Trò Truy Cập: {isChecked && <span style={{ color: 'red' }}>*</span>}ㅤ</label>
+                                        <label style={{
+                                            ...labelStyle,
+                                            display: 'flex',
+                                            alignItems: 'center'
+                                        }}>
+
+                                            Vai Trò Truy Cập:
+
+                                            <div
+                                                style={{
+                                                    marginLeft: '10px'
+                                                }}
+                                                onClick={() => setThemVTTC(true)}
+                                            >
+                                                <FontAwesomeIcon icon={faPlusCircle} />
+                                            </div>
+
+                                            {isChecked && <span style={{ color: 'red' }}>*</span>}
+
+                                        </label>
                                         <div className="form-group"
                                             style={{ maxHeight: '90px', overflow: 'auto' }}
                                         >
-                                            
+
                                             {combosVaiTro.map(combo => (
                                                 <div key={combo.IDVaiTro} >
                                                     <label style={labelStyle}>
@@ -743,7 +778,30 @@ const Insert_updateAccount = (props) => {
                                     Xác Nhận
                                 </button>
                             </form>
-
+                            {
+                                themVTCV && <div className="popup">
+                                    <Insert_updateJobPosition
+                                        isInsert={true}
+                                        setPopupInsertUpdate={setThemVTCV}
+                                        dataUser={dataUser}
+                                        setdataUser={setdataUser}
+                                        addNotification={props.addNotification}
+                                        openPopupAlert={props.openPopupAlert}
+                                    />
+                                </div>
+                            }
+                            {
+                                themVTTC && <div className="popup">
+                                    <Insert_updateRole
+                                        isInsert={true}
+                                        setPopupInsertUpdate={setThemVTTC}
+                                        dataUser={dataUser}
+                                        setdataUser={setdataUser}
+                                        addNotification={props.addNotification}
+                                        openPopupAlert={props.openPopupAlert}
+                                    />
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

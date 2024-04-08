@@ -193,7 +193,8 @@ const ChonKhachHang = (props) => {
                                             props.setDataReq({
                                                 ...props.dataReq,
                                                 IDKhachHang: dulieu.IDKhachHang,
-                                                TenKhachHang: dulieu.TenKhachHang
+                                                TenKhachHang: dulieu.TenKhachHang,
+                                                DiemKhachHang:dulieu.DiemTichLuy
                                             })
                                             props.setPopupChonKhachHang(false)
                                         }} >

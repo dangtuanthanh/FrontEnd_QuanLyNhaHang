@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faTrash, faCheck, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faTrash, faCheck, faTimesCircle,faPrint } from '@fortawesome/free-solid-svg-icons'
+import ChonInHoaDon from "../Popup/ChonInHoaDon";
 const TableHoaDon = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
     //hàm sắp xếp
@@ -88,17 +89,17 @@ const TableHoaDon = (props) => {
         <table class="table align-items-center mb-0">
             <thead>
                 <tr >
-                    <th style={{ textAlign: 'center' }}><input
+                    {/* <th style={{ textAlign: 'center' }}><input
                         type="checkbox"
                         checked={selectAll}
                         onChange={handleSelectAllChange}
-                    /></th>
+                    /></th> */}
                     {/* <th style={{ textAlign: 'center' }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">STT</th> */}
                     <th style={{ textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('IDHoaDon')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID Hoá Đơn </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenBan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Bàn </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenNhanVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Nhân Viên</th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenKhachHang')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Khách Hàng</th>
-                    <th style={{ textAlign:  'center', padding: 8 }} onClick={() => handleClickSort('NgayLapHoaDon')}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày </th>
+                    <th style={{ textAlign:  'center', padding: 8 }} onClick={() => handleClickSort('NgayLapHoaDon')}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày Giờ</th>
                     <th style={{ textAlign:  'center',padding: 8 }} onClick={() => handleClickSort('TrangThaiThanhToan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Trạng Thái </th>
                     {/* <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mô Tả</th> */}
 
@@ -117,7 +118,7 @@ const TableHoaDon = (props) => {
                                 props.setIDAction(dulieu.IDHoaDon)
                                 props.setPopupInsertUpdate(true)
                             }} >
-                            <td >
+                            {/* <td >
                                 <input
                                     type="checkbox"
                                     value={dulieu.IDHoaDon}
@@ -127,7 +128,7 @@ const TableHoaDon = (props) => {
                                     onChange={handleCheckboxChange}
                                 />
 
-                            </td>
+                            </td> */}
                             {/* <td >{index + 1}</td> */}
                             <td >{dulieu.IDHoaDon}</td>
                             <td style={{ textAlign: 'left' }} >{dulieu.TenBan}</td>
@@ -164,10 +165,12 @@ const TableHoaDon = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.IDHoaDon}`,
-                                        () => { props.deleteData(dulieu.IDHoaDon) }
+                                        `Bạn có chắc chắn muốn xoá hoá đơn có ID là: ${dulieu.IDHoaDon}`,
+                                        () => { props.deleteData(dulieu.IDHoaDon,dulieu.IDBan) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>
+                                 
+                               
 
                             </td>
 
@@ -176,6 +179,20 @@ const TableHoaDon = (props) => {
                     )
                 }
             </tbody>
+            {
+                props.popupChonInHoaDon && (<div className="popup">
+                    <ChonInHoaDon
+                        popupChonInHoaDon={props.popupChonInHoaDon}
+                        setPopupChonInHoaDon={props.setPopupChonInHoaDon}
+                        // dataUser={dataUser}
+                        // setdataUser={setdataUser}
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        iDAction={props.iDAction}
+                        thongTinDangNhap={props.thongTinDangNhap}
+                    />
+                </div>)
+            }
         </table>
     )
 };

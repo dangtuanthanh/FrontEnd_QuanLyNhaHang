@@ -127,7 +127,11 @@ function CaLamViec() {
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
                                 <span style={{marginLeft:'20px'}} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                    <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                    <div onClick={() => {
+                                        navigate(`/TrangCaNhan`);
+                                    }}>
+                                        <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                    </div>
                                 </span>
                                 <span style={{marginLeft:'20px'}} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0 ">
                                     <FontAwesomeIcon icon={faCog} />

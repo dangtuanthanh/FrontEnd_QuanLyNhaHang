@@ -8,7 +8,7 @@ import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGaugeHigh, faFileInvoice, faLock, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse } from '@fortawesome/free-solid-svg-icons'
+import { faGaugeHigh, faFileInvoice, faLock, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
 
 function Navigation({ menu }) {
   const [activeComponent, setActiveComponent] = useState('');
@@ -31,6 +31,8 @@ function Navigation({ menu }) {
       setActiveComponent('Kho');
     } else if (pathname === '/BangDieuKhien') {
       setActiveComponent('BangDieuKhien');
+    } else if (pathname === '/Bep') {
+      setActiveComponent('Bep');
     } else {
 
     }
@@ -54,7 +56,8 @@ function Navigation({ menu }) {
         return <FontAwesomeIcon icon={faIdCard} />;
       case 'Kho':
         return <FontAwesomeIcon icon={faWarehouse} />;
-
+      case 'Bếp':
+        return <FontAwesomeIcon icon={faFireBurner} />;
       default:
         return null;
     }
@@ -98,7 +101,7 @@ function Navigation({ menu }) {
           })}
 
 
-{/* 
+          {/* 
           <li class="nav-item mt-3">
             <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
           </li>

@@ -4,7 +4,7 @@ import { getCookie } from "../Cookie";
 import {
     urlInsertReceipt, urlGetReceipt, urlUpdateReceipt,
     urlGetIngredient, urlGetProduct,// lấy danh sách nguyên liệu, sản phẩm chế biến
-    urlGetUnit
+    urlGetUnit, urlGetListUnitConversionsByIDUnit
 } from "../url"//lấy danh sách đơn vị tính
 const Insert_updatePhieuNhap = (props) => {
     const dispatch = useDispatch()
@@ -17,7 +17,8 @@ const Insert_updatePhieuNhap = (props) => {
     });
     // combobox
     const [combosSPNL, setCombosSPNL] = useState([]);//danh sách sản phẩm, nguyên liệu
-    const [combosDonViTinh, setCombosDonViTinh] = useState([]);//danh sách đơn vị tính
+    const [statusDataReqDanhSachCombo, setStatusDataReqDanhSachCombo] = useState(false);
+    // const [combosDonViTinh, setCombosDonViTinh] = useState([]);//danh sách đơn vị tính
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
@@ -51,15 +52,15 @@ const Insert_updatePhieuNhap = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            // lấy danh sách đơn vị tính
-            const fetchGetUnit = fetch(`${urlGetUnit}?limit=10000`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ss': getCookie('ss'),
-                },
-            })
-            Promise.all([fetchGetReceipt, fetchGetIngredientGetProduct, fetchGetUnit])
+            // // lấy danh sách đơn vị tính
+            // const fetchGetUnit = fetch(`${urlGetUnit}?limit=10000`, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'ss': getCookie('ss'),
+            //     },
+            // })
+            Promise.all([fetchGetReceipt, fetchGetIngredientGetProduct])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
@@ -76,7 +77,7 @@ const Insert_updatePhieuNhap = (props) => {
                 })
                 .then(data => {
                     setCombosSPNL(data[1].data)
-                    setCombosDonViTinh(data[2].data)
+                    // setCombosDonViTinh(data[2].data)
                     if (props.isInsert === false) {
                         setDataReq(data[0])
                     }
@@ -113,15 +114,15 @@ const Insert_updatePhieuNhap = (props) => {
                     'ss': getCookie('ss'),
                 },
             })
-            // lấy danh sách đơn vị tính
-            const fetchGetUnit = fetch(`${urlGetUnit}?limit=10000`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ss': getCookie('ss'),
-                },
-            })
-            Promise.all([fetchGetIngredientGetProduct, fetchGetUnit])
+            // // lấy danh sách đơn vị tính
+            // const fetchGetUnit = fetch(`${urlGetUnit}?limit=10000`, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'ss': getCookie('ss'),
+            //     },
+            // })
+            Promise.all([fetchGetIngredientGetProduct])
                 .then(responses => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
@@ -138,7 +139,7 @@ const Insert_updatePhieuNhap = (props) => {
                 })
                 .then(data => {
                     setCombosSPNL(data[0].data)
-                    setCombosDonViTinh(data[1].data)
+                    // setCombosDonViTinh(data[1].data)
                     // setDataReq({
                     //     ...dataReq,
                     //     IDNguyenLieu: data[0].data[0].IDNguyenLieu
@@ -163,13 +164,13 @@ const Insert_updatePhieuNhap = (props) => {
     function handleDetailChange(ID, value, TenCot) {
         const index = dataReq.DanhSach.findIndex(
             item => {
-              if(props.nhapNguyenLieu) {
-                return item.IDNguyenLieu === ID;
-              } else {  
-                return item.IDSanPham === ID;
-              }
+                if (props.nhapNguyenLieu) {
+                    return item.IDNguyenLieu === ID;
+                } else {
+                    return item.IDSanPham === ID;
+                }
             }
-          );
+        );
         if (TenCot === 'GhiChu') dataReq.DanhSach[index][TenCot] = value
         else dataReq.DanhSach[index][TenCot] = parseInt(value)
         setDataReq({
@@ -178,41 +179,112 @@ const Insert_updatePhieuNhap = (props) => {
         })
     }
     //checkbox danh sách
-    const handleListChange = (ID, Ten) => {
+    const handleListChange = (ID, Ten, IDDonViTinh,TenDonViTinh) => {
         let updatedDataReq = { ...dataReq };
         let newDanhSach = updatedDataReq.DanhSach;
-        if(props.nhapNguyenLieu){
+        if (props.nhapNguyenLieu) {
             if (newDanhSach.some(item => item.IDNguyenLieu === ID)) {
                 newDanhSach = newDanhSach.filter(item => item.IDNguyenLieu !== ID);
+                updatedDataReq.DanhSach = newDanhSach;
+                setDataReq(updatedDataReq);
             } else {
-                newDanhSach.push({
-                    TenNguyenLieu: Ten,
-                    IDNguyenLieu: ID,
-                    SoLuongNhap: 0,
-                    SoLuongTon: 0,
-                    IDDonViTinh: 1,
-                    DonGiaNhap: 0,
-                    GhiChu: ''
-                });
+                fetch(`${urlGetListUnitConversionsByIDUnit}?IDDonViTinh=${IDDonViTinh}&TenDonViTinh=${TenDonViTinh}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else if (response.status === 500) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else {
+                            return;
+                        }
+                    })
+                    .then(data => {
+                        newDanhSach.push({
+                            DanhSachCombo: data,
+                            TenNguyenLieu: Ten,
+                            IDNguyenLieu: ID,
+                            SoLuongNhap: 0,
+                            SoLuongTon: 0,
+                            IDDonViTinh: data[0].IDDonViMoi,
+                            DonGiaNhap: 0,
+                            GhiChu: ''
+                        });
+
+                        updatedDataReq.DanhSach = newDanhSach;
+                        setDataReq(updatedDataReq);
+                        setStatusDataReqDanhSachCombo(true)
+                        dispatch({ type: 'SET_LOADING', payload: false })
+                    })
+                    .catch(error => {
+                        console.log('error', error);
+                        if (error instanceof TypeError) {
+                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                        } else {
+                            props.addNotification(error.message, 'warning', 5000)
+                        }
+                        dispatch({ type: 'SET_LOADING', payload: false })
+                    });
+
             }
-        }else{
+        } else {
             if (newDanhSach.some(item => item.IDSanPham === ID)) {
                 newDanhSach = newDanhSach.filter(item => item.IDSanPham !== ID);
+                updatedDataReq.DanhSach = newDanhSach;
+                setDataReq(updatedDataReq);
             } else {
-                newDanhSach.push({
-                    TenSanPham: Ten,
-                    IDSanPham: ID,
-                    SoLuongNhap: 0,
-                    SoLuongTon: 0,
-                    IDDonViTinh: 1,
-                    DonGiaNhap: 0,
-                    GhiChu: ''
-                });
+                fetch(`${urlGetListUnitConversionsByIDUnit}?IDDonViTinh=${IDDonViTinh}&TenDonViTinh=${TenDonViTinh}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else if (response.status === 500) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else {
+                            return;
+                        }
+                    })
+                    .then(data => {
+                        newDanhSach.push({
+                            DanhSachCombo: data,
+                            TenSanPham: Ten,
+                            IDSanPham: ID,
+                            SoLuongNhap: 0,
+                            SoLuongTon: 0,
+                            IDDonViTinh: data[0].IDDonViMoi,
+                            DonGiaNhap: 0,
+                            GhiChu: ''
+                        });
+
+                        updatedDataReq.DanhSach = newDanhSach;
+                        setDataReq(updatedDataReq);
+                        setStatusDataReqDanhSachCombo(true)
+                        dispatch({ type: 'SET_LOADING', payload: false })
+                    })
+                    .catch(error => {
+                        console.log('error', error);
+                        if (error instanceof TypeError) {
+                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                        } else {
+                            props.addNotification(error.message, 'warning', 5000)
+                        }
+                        dispatch({ type: 'SET_LOADING', payload: false })
+                    });
             }
         }
-        
-        updatedDataReq.DanhSach = newDanhSach;
-        setDataReq(updatedDataReq);
+
     }
     //xử lý xác nhận
     const handleSubmit = (e) => {
@@ -268,7 +340,7 @@ const Insert_updatePhieuNhap = (props) => {
                             //ẩn loading
                             dispatch({ type: 'SET_LOADING', payload: false })
                             props.setPopupInsertUpdate(false)
-                            props.setdataUser({ ...props.dataUser, sortBy: 'NgayNhap', sortOrder: 'desc' })
+                            props.setdataUser({ ...props.dataUser, sortBy: 'IDPhieuNhap', sortOrder: 'desc' })
                         })
                         .catch(error => {
                             dispatch({ type: 'SET_LOADING', payload: false })
@@ -408,7 +480,7 @@ const Insert_updatePhieuNhap = (props) => {
                                                                         style={{ marginRight: '4px' }}
                                                                         type="checkbox"
                                                                         checked={checked}
-                                                                        onChange={() => handleListChange(combo.IDNguyenLieu, combo.TenNguyenLieu)}
+                                                                        onChange={() => handleListChange(combo.IDNguyenLieu, combo.TenNguyenLieu, combo.IDDonViTinh,combo.TenDonViTinh)}
                                                                     />
                                                                     {`${combo["IDNguyenLieu"]} - ${combo["TenNguyenLieu"]}`}
                                                                 </label>
@@ -420,7 +492,7 @@ const Insert_updatePhieuNhap = (props) => {
                                                                         style={{ marginRight: '4px' }}
                                                                         type="checkbox"
                                                                         checked={checked}
-                                                                        onChange={() => handleListChange(combo.IDSanPham, combo.TenSanPham)}
+                                                                        onChange={() => handleListChange(combo.IDSanPham, combo.TenSanPham, combo.IDDonViTinh,combo.TenDonViTinh)}
                                                                     />
                                                                     {`${combo["IDSanPham"]} - ${combo["TenSanPham"]}`}
                                                                 </label>
@@ -438,7 +510,7 @@ const Insert_updatePhieuNhap = (props) => {
                                             <h6 style={{ textAlign: 'center' }}><u>Chi Tiết</u></h6>
                                         </div>
                                         <div className="row" >
-                                            <div className="col-2">
+                                            <div className="col-4">
                                                 <label>Tên</label>
                                             </div>
                                             <div className="col-2">
@@ -450,9 +522,9 @@ const Insert_updatePhieuNhap = (props) => {
                                             <div className="col-2">
                                                 <label>Đơn Giá Nhập</label>
                                             </div>
-                                            <div className="col-2">
+                                            {/* <div className="col-2">
                                                 <label>Số Lượng Tồn </label>
-                                            </div>
+                                            </div> */}
                                             <div className="col-2">
                                                 <label>Ghi Chú</label>
                                             </div>
@@ -463,48 +535,45 @@ const Insert_updatePhieuNhap = (props) => {
                                             overflowX: 'hidden'
                                         }}>
                                             {dataReq.DanhSach.map(item => (
-                                                <div key={props.nhapNguyenLieu 
-                                                    ? item.IDNguyenLieu 
-                                                    : item.IDSanPham} 
+                                                <div key={props.nhapNguyenLieu
+                                                    ? item.IDNguyenLieu
+                                                    : item.IDSanPham}
                                                     className="row">
-                                                    <div className="col-2">
-                                                        <label>{props.nhapNguyenLieu 
-                                                    ? item.TenNguyenLieu 
-                                                    : item.TenSanPham} </label>
+                                                    <div className="col-4">
+                                                        <label>{props.nhapNguyenLieu
+                                                            ? item.TenNguyenLieu
+                                                            : item.TenSanPham} </label>
                                                     </div>
                                                     <div className="col-2">
                                                         <input
                                                             type="number"
                                                             className="form-control"
                                                             value={item.SoLuongNhap}
-                                                            onChange={(event) => 
+                                                            onChange={(event) =>
                                                                 handleDetailChange(
-                                                                  props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham,
-                                                                  event.target.value, 
-                                                                  'SoLuongNhap'
+                                                                    props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham,
+                                                                    event.target.value,
+                                                                    'SoLuongNhap'
                                                                 )
-                                                              }
+                                                            }
                                                         />
                                                     </div>
                                                     <div className="col-2">
-                                                        <select className="form-select"
-                                                            value={item.IDDonViTinh}
-                                                            onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'IDDonViTinh')}
-                                                        >
-                                                            {combosDonViTinh.map(item => (
-                                                                <option
-                                                                    key={item.id}
-                                                                    value={item.IDDonViTinh}
-                                                                >
-                                                                    {item.TenDonViTinh}
-                                                                </option>
-                                                            ))}
+                                                            <select className="form-select"
+                                                                value={item.IDDonViTinh}
+                                                                onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'IDDonViTinh')}
+                                                            >
+                                                                {item.DanhSachCombo.map(item2 => (
+                                                                    <option
+                                                                        key={item2.IDDonViMoi}
+                                                                        value={item2.IDDonViMoi}
+                                                                    >
+                                                                        {item2.TenDonViTinh}
+                                                                    </option>
+                                                                ))}
 
-                                                        </select>
-                                                        {/* <input
-                                                            className="form-control"
-                                                            value={item.IDDonViTinh}>
-                                                        </input> */}
+                                                            </select>
+                                                    
                                                     </div>
                                                     <div className="col-2">
                                                         <input
@@ -514,14 +583,14 @@ const Insert_updatePhieuNhap = (props) => {
                                                             onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'DonGiaNhap')}
                                                         />
                                                     </div>
-                                                    <div className="col-2">
+                                                    {/* <div className="col-2">
                                                         <input
                                                             type="number"
                                                             className="form-control"
                                                             value={item.SoLuongTon}
                                                             onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'SoLuongTon')}
                                                         />
-                                                    </div>
+                                                    </div> */}
                                                     <div className="col-2">
                                                         <input
                                                             type="text"

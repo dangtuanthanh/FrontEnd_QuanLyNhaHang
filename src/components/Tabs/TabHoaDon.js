@@ -4,12 +4,12 @@ import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown
 import { useDispatch } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetInvoice, urlDeleteProduct } from "../url";
+import { urlGetInvoice, urlDeleteInvoice, urlUpdateStatusTable } from "../url";
 import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableHoaDon from "../Table/TableHoaDon";
 import GoiMon from "../Popup/GoiMon";
-function TabHoaDon() {
+function TabHoaDon(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //Xử lý hiển thị các nút chức năng
@@ -101,9 +101,17 @@ function TabHoaDon() {
 
     //popup thêm,sửa
     const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
+    // popup in hoá đơn
+    const [popupChonInHoaDon, setPopupChonInHoaDon] = useState(false);//trạng thái popupInsertUpdate
+    useEffect(() => {
+        console.log('popupChonInHoaDon',popupChonInHoaDon);
+    }, [popupChonInHoaDon]);
+    useEffect(() => {
+        if (!popupInsertUpdate)
+            TaiDuLieu()
+    }, [popupInsertUpdate]);
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
-
 
     //hàm tìm kiếm
     const handleSearch = (event) => {
@@ -192,14 +200,51 @@ function TabHoaDon() {
         });
     };
 
+
+    const TaiDanhSachHoaDon = (IDBan) => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        return fetch(`${urlGetInvoice}?search=${IDBan}&searchBy=IDBan`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 400) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                dispatch({ type: 'SET_LOADING', payload: false });
+                return data.data.some(item => item.TrangThaiThanhToan === false);
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    }
     //Xoá dữ liệu
-    const deleteData = (ID) => {
+    const deleteData =(ID, IDBan) => {
         dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
             IDs = ID.map(item => Number(item));
         } else IDs = [ID];
-        fetch(`${urlDeleteProduct}`, {
+        fetch(`${urlDeleteInvoice}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -218,22 +263,69 @@ function TabHoaDon() {
                     return;
                 }
             })
-            .then(data => {
-                addNotification(data.message, 'success', 4000)
-                //ẩn loading
-                dispatch({ type: 'SET_LOADING', payload: false })
-                setSelectedIds([])
-                TaiDuLieu()
-
+            .then(async() => {
+                //kiểm tra xem bàn ăn có hoá đơn nào chưa thanh toán không
+                
+                const KTBanAn = await TaiDanhSachHoaDon(IDBan)
+                if (KTBanAn) {
+                    //nếu như có hoá đơn chưa thanh toán
+                    //không cần cập nhật trạng thái bàn ăn
+                    addNotification('Xoá dữ liệu thành công', 'success', 3000)
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                    setSelectedIds([])
+                    TaiDuLieu()
+                } else {
+                    //nếu như không có hoá đơn chưa thanh toán
+                    //cập nhật trạng thái bàn ăn về trống
+                    const capNhatBanAn = {
+                        IDBan: IDBan,
+                        TrangThai: 'Bàn trống'
+                    }
+                    fetch(urlUpdateStatusTable, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ss': getCookie('ss'),
+                        },
+                        body: JSON.stringify(capNhatBanAn)
+                    }).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else if (response.status === 401) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else if (response.status === 500) {
+                            return response.json().then(errorData => { throw new Error(errorData.message); });
+                        } else {
+                            return;
+                        }
+                    })
+                        .then(data => {
+                            addNotification('Xoá dữ liệu thành công', 'success', 3000)
+                            //ẩn loading
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            setSelectedIds([])
+                            TaiDuLieu()
+                        })
+                        .catch(error => {
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            console.log('error',error);
+                            if (error instanceof TypeError) {
+                                openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                            } else {
+                                addNotification(error.message, 'warning', 5000)
+                            }
+                        });
+                }
             })
             .catch(error => {
                 dispatch({ type: 'SET_LOADING', payload: false })
+                console.log('error',error);
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
                     addNotification(error.message, 'warning', 5000)
                 }
-
             });
     }
     // sửa hàng loạt
@@ -438,11 +530,15 @@ function TabHoaDon() {
                             addNotification={addNotification}
                             setIsInsert={setIsInsert}
                             setIDAction={setIDAction}
+                            iDAction={iDAction}
                             setPopupInsertUpdate={setPopupInsertUpdate}
                             openPopupAlert={openPopupAlert}
                             deleteData={deleteData}
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
+                            popupChonInHoaDon={popupChonInHoaDon}
+                            setPopupChonInHoaDon={setPopupChonInHoaDon}
+                            thongTinDangNhap={props.thongTinDangNhap}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                         <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLapHoaDon" ?
@@ -473,6 +569,7 @@ function TabHoaDon() {
                         addNotification={addNotification}
                         openPopupAlert={openPopupAlert}
                         iDAction={iDAction}
+                        thongTinDangNhap={props.thongTinDangNhap}
                     />
                 </div>)
             }

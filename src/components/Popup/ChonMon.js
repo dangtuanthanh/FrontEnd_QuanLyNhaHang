@@ -139,12 +139,12 @@ const ChonMon = (props) => {
     //Xử lý menu
     const [showNavigation, setShowNavigation] = useState(true);
     const handleToggleNavigation = () => {
-        if(showNavigation){
+        if (showNavigation) {
             setdataUser({
                 ...dataUser,
                 limit: 15
             })
-        }else setdataUser({
+        } else setdataUser({
             ...dataUser,
             limit: 12
         })
@@ -154,16 +154,22 @@ const ChonMon = (props) => {
     const contentColumnClass = showNavigation ? "col-10" : "col-12";
 
     //thêm dữ liệu vào danh sách
-    const handleListChange = (ID, Ten) => {
+    const handleListChange = async (ID, Ten, GiaBan) => {
         let updatedDataReq = { ...props.dataReq };
         let newDanhSach = updatedDataReq.DanhSach;
-        if (newDanhSach.some(item => item.IDSanPham === ID)) {
-            newDanhSach = newDanhSach.filter(item => item.IDSanPham !== ID);
+        const foundItem = newDanhSach.find(item => item.IDSanPham === ID);
+        if (foundItem) {
+            props.handleDetailChange(
+                foundItem.IDSanPham,
+                foundItem.SoLuong + 1,
+                'SoLuong'
+            );
         } else {
             newDanhSach.push({
                 IDSanPham: ID,
                 TenSanPham: Ten,
-                SoLuong: 1
+                SoLuong: 1,
+                GiaBan: GiaBan
             });
         }
         updatedDataReq.DanhSach = newDanhSach;
@@ -175,14 +181,14 @@ const ChonMon = (props) => {
                 <div className={navigationColumnClass}>
                     {showNavigation && <div>
                         <div>
-                            <input 
-                            style={{width:'83%'}}
-                            id="search" 
-                            value={dataUser.search} 
-                            onChange={handleSearch} 
-                            placeholder='Tìm Tên Món' 
-                            type="text" 
-                            className="form-control-sm" />
+                            <input
+                                style={{ width: '83%',border: '0.8px grey solid',marginTop:'2%' }}
+                                id="search"
+                                value={dataUser.search}
+                                onChange={handleSearch}
+                                placeholder='Tìm Tên Món'
+                                type="text"
+                                className="form-control-sm" />
                             {
                                 (dataUser.search.length != 0) &&
                                 <button
@@ -200,7 +206,7 @@ const ChonMon = (props) => {
                                 </button>
                             }
                         </div>
-                        <div style={{ marginTop: '5px', display: 'flex', width: '100%', overflowY: 'auto',height:'100%' }}>
+                        <div style={{ marginTop: '5px', display: 'flex', width: '100%', overflowY: 'auto', height: '100%' }}>
                             <div >
                                 {combosLoaiSanPham.map(item => (
                                     <label style={{ display: 'flex', alignItems: 'center' }}>
@@ -235,7 +241,7 @@ const ChonMon = (props) => {
                                 className="col"
                                 style={{ textAlign: 'center', borderRadius: '6px', boxShadow: '0 20px 27px 0 rgba(0,0,0,.05)', margin: '2px' }}
                                 onClick={() => {
-                                    handleListChange(item.IDSanPham,item.TenSanPham)
+                                    handleListChange(item.IDSanPham, item.TenSanPham, item.GiaBan)
                                 }}
                             >
 
@@ -273,13 +279,13 @@ const ChonMon = (props) => {
                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                     {/* phân trang */}
                     <button
-                        style={{float:'left'}}
+                        style={{ float: 'left' }}
                         class="nav-link"
                         onClick={handleToggleNavigation}
                     >
                         {showNavigation ? "<<" : ">>"}
                     </button>
-                    <div style={{ textAlign: 'right', margin: '5px', float:'right' }}>
+                    <div style={{ textAlign: 'right', margin: '5px', float: 'right' }}>
                         <Pagination
                             setdataUser={setdataUser}
                             dataUser={dataUser}

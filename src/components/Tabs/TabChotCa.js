@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faFilter, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetCloseShifts, urlDeleteCloseShifts } from "../url";
@@ -145,8 +145,8 @@ function TabChotCa() {
             searchBy: 'NgayLamViec'
         });
     };
-     //hàm lọc chưa chốt
-     const filterChuaChot = () => {
+    //hàm lọc chưa chốt
+    const filterChuaChot = () => {
         setdataUser({
             ...dataUser,
             sortBy: 'NgayLamViec',
@@ -241,7 +241,7 @@ function TabChotCa() {
                     sortOrder: data.sortOrder,
                     totalItems: data.totalItems,
                     totalPages: data.totalPages,
-                    DateCurrent:data.DateCurrent
+                    DateCurrent: data.DateCurrent
                 });
                 if (data.currentPage > data.totalPages && data.totalPages !== null) {
                     setdataUser({
@@ -263,9 +263,11 @@ function TabChotCa() {
 
             });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Chốt Ca</h2>
                     <NotificationContainer notifications={notifications} />
@@ -341,7 +343,8 @@ function TabChotCa() {
                                 setdataUser={setdataUser}
                             />
                             ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile?false:true}
+                                ref={inputRef} />
                             {
                                 dataUser.search !== '' &&
                                 <button
@@ -352,6 +355,7 @@ function TabChotCa() {
                                             ...dataUser,
                                             search: ''
                                         });
+                                        inputRef.current.focus();
                                     }}
                                 >
                                     X
@@ -390,24 +394,39 @@ function TabChotCa() {
                             setSelectedIds={setSelectedIds}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLamViec" ?
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                        {!isMobile &&
+                        <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLamViec" ?
                             (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray' , marginRight:'3px'}}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray' , marginRight:'3px'}}>mới nhất đến cũ nhất </label>)
+                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
                             : (
                                 dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray', marginRight:'3px' }}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray', marginRight:'3px' }}>giảm dần</label>)}
+                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
                             theo cột {dataRes.sortBy}   </label>
+                        }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && <div className="popup">
                     <Insert_updateChotCa

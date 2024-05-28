@@ -58,10 +58,10 @@
   width: 55%;
   margin: 0 auto;
   /*height: auto;*/
-  margin-top: 2%;
+  margin-top: 1%;
   background: #fff;
   border-radius: 8px;
-  padding: 20px;
+  padding: 1rem;
   border: 1px solid #999;
 
   /* max-height: 90vh; */
@@ -118,10 +118,10 @@
   width: 70%;
   margin: 0 auto;
   /*height: auto;*/
-  margin-top: 2%;
+  margin-top: 1%;
   background: #fff;
   border-radius: 8px;
-  padding: 20px;
+  padding: 1rem;
   border: 1px solid #999;
 
   /* max-height: 90vh; */
@@ -149,7 +149,7 @@
   height: 100%;
   background: #fff;
   border-radius: 8px;
-  padding: 20px;
+  padding: 1rem;
   border: 1px solid #999;
   overflow: auto;
 }

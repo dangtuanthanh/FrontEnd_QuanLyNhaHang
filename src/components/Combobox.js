@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle} from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faSearch, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 function Combobox(props) {
   const [selected, setSelected] = useState([]);
   useEffect(() => {
@@ -29,6 +29,7 @@ function Combobox(props) {
       <label
         style={{
           marginRight: '10px',
+          marginBottom:0,
           flexShrink: 0,
           ...props.labelStyle
         }}
@@ -56,8 +57,18 @@ function Combobox(props) {
         ))}
       </select>
       {
-        props.isAdd && <div  onClick={() => props.onClick()}>
+        props.isAdd && <div  onClick={() => props.add()}>
         < FontAwesomeIcon icon={faPlusCircle} />
+        </div>
+      }
+      {
+        props.isSearch && <div style={{marginLeft:'0.4rem'}}  onClick={() => props.search(true)}>
+        < FontAwesomeIcon icon={faSearch} />
+        </div>
+      }
+      {
+        props.isInfo && <div  style={{marginLeft:'0.4rem'}} onClick={props.info}>
+        < FontAwesomeIcon icon={faInfoCircle} />
         </div>
       }
       

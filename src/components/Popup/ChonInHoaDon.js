@@ -1,21 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
-import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
-
-import { getCookie } from "../Cookie";
-import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
-import { useSelector } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign, faIdCard, faBell, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck } from '@fortawesome/free-solid-svg-icons'
-import { faSquarePlus, faMinusSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { arialFont } from "../Font";
-
 import logo from '../../assets/img/logos/logo-removebg-preview.png';
-import TabChonBan from "./ChonBan";
-import TabChonMon from "./ChonMon";
 
 const ChonInHoaDon = (props) => {
     //Xuất file PDF

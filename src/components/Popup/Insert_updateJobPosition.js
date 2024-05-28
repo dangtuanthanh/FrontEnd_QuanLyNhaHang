@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { urlInsertJobPosition, urlGetJobPosition, urlUpdateJobPosition } from "../url"
 const Insert_updateJobPosition = (props) => {
@@ -14,6 +14,7 @@ const Insert_updateJobPosition = (props) => {
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true });
+        console.log('props.isInsert',props.isInsert);
         fetch(`${urlGetJobPosition}?id=${props.iDAction}`, {
             method: 'GET',
             headers: {
@@ -136,14 +137,20 @@ const Insert_updateJobPosition = (props) => {
             }
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Vị Trí Công Việc<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <div className="form-group">
                                     <label>Tên Vị Trí Công Việc {batBuocNhap}</label>
                                     <input

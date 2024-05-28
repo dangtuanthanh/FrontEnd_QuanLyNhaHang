@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 //import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 import { getCookie } from "../Cookie";
 import { urlGetCloseShifts } from "../url"
@@ -53,14 +53,21 @@ const Insert_updateChotCa = (props) => {
     // Config reading options
     //const config = new ReadingConfig()
     //config.unit = ['đồng']
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box"  style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông tin chốt ca<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form >
+                            <form 
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <div className="row">
                                     <div className="col-6">
                                         <div className="form-group">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getCookie, setCookie } from "../components/Cookie";
-import curvedImage from '../assets/img/curved-images/logo-removebg-preview.png';
+import curvedImage from '../assets/img/logos/logo2-removebg-preview.png';
 import unidecode from 'unidecode';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
@@ -132,7 +132,7 @@ function Login() {
                     <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
                         <div style={{ backgroundColor: 'white' }} class="card card-plain mt-8">
                             <div class="card-header pb-0 text-left bg-transparent">
-                                <h3 class="font-weight-bolder text-primary text-gradient">Đăng Nhập</h3>
+                                <h3 class="font-weight-bolder text-primary">Đăng Nhập</h3>
                                 <p class="mb-0">Truy Cập Vào Hệ Thống Của Bạn</p>
                             </div>
                             <div class="card-body">

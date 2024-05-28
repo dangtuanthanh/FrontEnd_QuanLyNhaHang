@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faTrash, faCheck, faBan } from '@fortawesome/free-solid-svg-icons'
 import { urlUpdateStatusProduct } from "../url";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 const TableBoiBan = (props) => {
     //xử lý redux

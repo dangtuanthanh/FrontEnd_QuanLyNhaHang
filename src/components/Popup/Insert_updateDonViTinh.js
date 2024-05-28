@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -217,14 +217,19 @@ const Insert_updateDonViTinh = (props) => {
             DanhSach
         });
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 >Thông Tin Đơn Vị Tính<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit} style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <div className="form-group">
                                     <label>Tên Đơn Vị Tính {batBuocNhap}</label>
                                     <input
@@ -255,12 +260,12 @@ const Insert_updateDonViTinh = (props) => {
                                 </div>
                                 {dataReq.DanhSach.length > 0 ? <div style={{ maxHeight: '400px', overflow: 'auto', overflowX: 'hidden' }}>
                                     {dataReq.DanhSach.map((item, index) => (
-                                        <div className="row card-body" style={{
+                                        <div className={`${isMobile ? 'flex-column card-body' : 'row card-body'}`}  style={{
                                             marginTop: '5px',
                                             paddingBottom: '0', boxShadow: '0 20px 27px 0 rgba(0,0,0,.05)', borderRadius: '30px'
                                         }}>
                                             <div style={{ display: 'flex', alignItems: 'center' }}
-                                                className="col-5"
+                                            className={`${isMobile ? 'col-12' : 'col-5 '}`}
                                             >
                                                 <label>Chuyển Đổi Sang: </label>
                                                 <select className="form-select"
@@ -279,7 +284,7 @@ const Insert_updateDonViTinh = (props) => {
                                                 </select>
                                             </div>
 
-                                            <div className="col-5" style={{ display: 'flex', alignItems: 'center' }}>
+                                            <div className={`${isMobile ? 'col-12' : 'col-5 '}`} style={{ display: 'flex', alignItems: 'center' }}>
                                                 <label>Hệ Số Chuyển Đổi: </label>
                                                 <input
                                                     style={{ width: '50%', marginLeft: '2%' }}
@@ -289,7 +294,7 @@ const Insert_updateDonViTinh = (props) => {
                                                     onChange={(event) => handleDetailChange(item.IDDonViTinh, event.target.value, 'HeSoChuyenDoi')}
                                                 />
                                             </div>
-                                            <div className="col-2" style={{ display: 'flex', alignItems: 'center' }}>
+                                            <div className={`${isMobile ? 'col-12' : 'col-2 '}`} style={{ display: 'flex', alignItems: 'center' }}>
                                                 <div
                                                     onClick={() => {
                                                         const DanhSach = dataReq.DanhSach;

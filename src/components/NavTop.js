@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faCog, faBell, faSignOut } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie, deleteCookie } from "../components/Cookie";
 import { urlLogout } from "./url";
 import '../App.css';
@@ -68,7 +68,7 @@ const NavTop = (props) => {
                     </div>
                     <ul class="navbar-nav  justify-content-end">
                         <li class="nav-item d-flex align-items-center">
-                            <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-soft-ui-dashboard">Online Builder</a>
+                            <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-soft-ui-dashboard" rel="noreferrer">Online Builder</a>
                         </li>
                         <li class="nav-item d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">

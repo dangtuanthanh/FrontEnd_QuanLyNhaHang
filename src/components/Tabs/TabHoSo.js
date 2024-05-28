@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
@@ -63,7 +63,7 @@ function TabHoSo(props) {
     }
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card"  style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hồ Sơ</h2>
@@ -74,7 +74,7 @@ function TabHoSo(props) {
                                 height: '200px',
                                 objectFit: 'cover',
                                 borderRadius: '50%',
-                                border: '5px solid #cb0c9f'
+                                border: '5px solid #ff8c00'
                                 , boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px'
                             }}
                             src={props.thongTinDangNhap.NhanVien.HinhAnh}

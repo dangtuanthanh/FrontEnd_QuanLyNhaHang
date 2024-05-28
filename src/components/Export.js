@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileExcel, faFilePdf } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { urlGetAccount } from "./url";
 import { getCookie } from "./Cookie";
 import * as ExcelJS from 'exceljs';

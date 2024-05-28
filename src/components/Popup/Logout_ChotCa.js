@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 import { useNavigate } from 'react-router-dom';
 import Combobox from "../Combobox";
@@ -191,18 +191,23 @@ const Logout_ChotCa = (props) => {
     // Config reading options
     const config = new ReadingConfig()
     config.unit = ['đồng']
+    const isMobile = useSelector(state => state.isMobile.isMobile)
 
     return (
         <div className="popup">
             <div className="popup-box">
-                <div className="box">
+                <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                     <div className="conten-modal">
                         <div>
                             <div className="bg-light px-4 py-3">
                                 <h4 id='tieudepop'>Xác Nhận Giao Ca<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                                <form>
-                                    <div className="row">
-                                        <div className="col-6">
+                                <form style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
+                                    <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                             <div className="form-group">
                                                 <label>Tên Nhân Viên</label>
                                                 <input
@@ -262,7 +267,7 @@ const Logout_ChotCa = (props) => {
                                                     />
                                             }
                                         </div>
-                                        <div className="col-6">
+                                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                             <div className="form-group">
                                                 <label>Tiền Đầu Ca</label>
                                                 <input
@@ -280,7 +285,7 @@ const Logout_ChotCa = (props) => {
                                                 {
                                                     words.length > 0 ? <label>{words}</label> : null
                                                 }
-                                                
+
                                             </div>
                                             <div className="form-group">
                                                 <label>Tiền Chốt Ca</label>

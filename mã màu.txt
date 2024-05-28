@@ -1,0 +1,17 @@
+mã màu mặc định:
+nút chính: #cb0c9f
+chuyển màu: 
+	dưới phải: #7928ca
+	trên trái: #ff0080
+.form-control:focus: #e293d3
+box-shadow: 0 0 0 2px : #e9aede
+TabBangDieuKhien: backgroundColor: '#feefff'
+________________
+mã màu đã chuyển:
+nút chính: #ff8c00
+chuyển màu: 
+dưới phải: #ff0000
+trên trái: #ffff00
+.form-control:focus:#ffa500
+box-shadow: 0 0 0 2px : #ffcc33
+TabBangDieuKhien: backgroundColor: '#ffead1'

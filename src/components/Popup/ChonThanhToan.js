@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { urlGetPicturePayment, urlGetInvoice, urlUpdateInvoice, urlUpdateStatusTable, urlInsertInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -116,8 +116,9 @@ const ChonThanhToan = (props) => {
                             //nếu như có hoá đơn chưa thanh toán
                             //không cần cập nhật trạng thái bàn ăn
                             props.addNotification('Đã cập nhật hoá đơn', 'success', 3000)
-                            props.setDataUser({ ...props.dataUser })
+                            props.setdataUser({ ...props.dataUser })
                             props.setPopupChonThanhToan(false)
+                            props.setPopupInsertUpdate(false)
                             //ẩn loading
                             dispatch({ type: 'SET_LOADING', payload: false })
 
@@ -148,9 +149,9 @@ const ChonThanhToan = (props) => {
                             })
                                 .then(data => {
                                     props.addNotification('Đã cập nhật hoá đơn', 'success', 3000)
-                                    props.setLoadTrang({ ...props.loadTrang + 1 })
-
+                                    props.setdataUser({ ...props.dataUser })
                                     props.setPopupChonThanhToan(false)
+                                    props.setPopupInsertUpdate(false)
                                     //ẩn loading
                                     dispatch({ type: 'SET_LOADING', payload: false })
                                 })
@@ -167,6 +168,7 @@ const ChonThanhToan = (props) => {
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
+                        console.log('error', error);
                         if (error instanceof TypeError) {
                             props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                         } else {
@@ -270,6 +272,7 @@ const ChonThanhToan = (props) => {
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
+                        console.log('error', error);
                         if (error instanceof TypeError) {
                             props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                         } else {
@@ -282,32 +285,22 @@ const ChonThanhToan = (props) => {
         else props.openPopupAlert('Vui lòng chọn ít nhất một món ăn')
 
     }
-    var TongTien = 0
+    var TongTien = props.dataReq.DanhSach.reduce((total, item) => {
+        return total + item.SoLuong * item.GiaBan;
+    }, 0);
+    
     if (props.dataReq.GiamGia) {
-        TongTien = props.dataReq.DanhSach.reduce((total, item) => {
-            let tongTien = total + item.SoLuong * item.GiaBan;
-
-            if (props.dataReq.PhuongThucGiamGia === 'Phần Trăm') {
-                if (props.dataReq.SuDungDiemKhachHang) {
-                    tongTien = tongTien - (tongTien * props.dataReq.GiamGia / 100) - props.dataReq.DiemKhachHang;
-                } else tongTien = tongTien - (tongTien * props.dataReq.GiamGia / 100);
-            } else if (props.dataReq.PhuongThucGiamGia === 'Tiền Trực Tiếp') {
-                if (props.dataReq.SuDungDiemKhachHang) {
-                    tongTien = tongTien - props.dataReq.GiamGia - props.dataReq.DiemKhachHang;
-                } else
-                    tongTien = tongTien - props.dataReq.GiamGia
-            }
-            return tongTien;
-        }, 0)
-    } else {
-        TongTien = props.dataReq.DanhSach.reduce((total, item) => {
-            let tongTien = total + item.SoLuong * item.GiaBan;
-            if (props.dataReq.SuDungDiemKhachHang) {
-                tongTien = tongTien - props.dataReq.DiemKhachHang;
-            } else tongTien = tongTien
-            return tongTien;
-        }, 0)
+        if (props.dataReq.PhuongThucGiamGia === 'Phần Trăm') {
+            TongTien = TongTien - (TongTien * props.dataReq.GiamGia / 100);
+        } else if (props.dataReq.PhuongThucGiamGia === 'Tiền Trực Tiếp') {
+            TongTien = TongTien - props.dataReq.GiamGia;
+        }
     }
+    
+    if (props.dataReq.SuDungDiemKhachHang) {
+        TongTien = TongTien - props.dataReq.DiemKhachHang;
+    }
+    
     const [tienKhachTra, setTienKhachTra] = useState(0);//lưu trạng thái dữ liệu
 
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;

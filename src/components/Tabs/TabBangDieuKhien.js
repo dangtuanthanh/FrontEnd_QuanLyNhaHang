@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
@@ -26,7 +26,7 @@ function TabBangDieuKhien() {
             {
                 label: 'Tháng trước',
                 data: dataSetBefore,
-                borderColor: 'rgb(255, 99, 132)'
+                borderColor: '#ff8c00'
             }
         ]
     }
@@ -208,9 +208,10 @@ function TabBangDieuKhien() {
 
 
     }, []);
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0" >
                     <h2>Bảng Điều Khiển</h2>
                     <NotificationContainer notifications={notifications} />
@@ -222,11 +223,11 @@ function TabBangDieuKhien() {
                 </div>
                 <div class="card-body px-0 pt-0 pb-2 mt-2" >
                     <div className="" style={{ marginLeft: '10px', marginRight: '10px' }}>
-                        <div className="row">
-                            <div className="col-3" >
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
+                        <div className={`${isMobile ? 'flex-column' : 'row'}`} >
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} >
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#ffead1' }}>
                                     <Link class="row" to={`/BanVaKhuVuc`} >
-                                        
+
                                         <div class="col-8">
                                             <div class="numbers">
                                                 <p class="text-sm mb-0 text-capitalize font-weight-bold" >Bàn đang có khách</p>
@@ -246,8 +247,8 @@ function TabBangDieuKhien() {
 
 
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#ffead1' }}>
                                     <Link class="row" to={`/HoaDon`}>
                                         <div class="col-8">
                                             <div class="numbers">
@@ -265,8 +266,8 @@ function TabBangDieuKhien() {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#ffead1' }}>
                                     <Link class="row" to={`/HoaDon`}>
                                         <div class="col-8">
                                             <div class="numbers">
@@ -288,8 +289,8 @@ function TabBangDieuKhien() {
                                     </Link>
                                 </div>
                             </div>
-                            <div className="col-3">
-                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#feefff' }}>
+                            <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ marginTop: isMobile && '1rem' }}>
+                                <div class="card-body p-3" style={{ borderRadius: '15px', backgroundColor: '#ffead1' }}>
                                     <Link class="row" to={`/HoaDon`}>
                                         <div class="col-8">
                                             <div class="numbers">
@@ -316,11 +317,10 @@ function TabBangDieuKhien() {
                         <div style={{ marginTop: '1%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', borderRadius: '15px', boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px' }}>
                             <h4 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}> Doanh Thu Tháng
                             </h4>
-                            <div style={{ width: '80%', display: 'flex', justifyContent: 'center', margin: '0 2% 0 2%' }}>
+                            <div  style={{ width: isMobile ?'100%': '80%', display: 'flex', justifyContent: 'center', margin: '0 2% 0 2%' }}>
                                 <Line
                                     data={dataDoThi}
                                     options={optionsDoThi}
-
                                 >
                                 </Line>
                             </div>

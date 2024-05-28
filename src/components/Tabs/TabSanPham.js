@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetProduct, urlDeleteProduct } from "../url";
@@ -16,7 +16,7 @@ function TabSanPham() {
     //Xử lý phân biệt sản phẩm thành phẩm và sản phẩm chế biến 
     const [sanPhamThanhPham, setSanPhamThanhPham] = useState(true);
     useEffect(() => {
-       console.log('sanPhamThanhPham',sanPhamThanhPham);
+        console.log('sanPhamThanhPham', sanPhamThanhPham);
     }, [sanPhamThanhPham]);
     //Xử lý hiển thị các nút chức năng
     const [showButtonFunction, setShowButtonFunction] = useState(true);
@@ -272,9 +272,11 @@ function TabSanPham() {
 
             });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Sản Phẩm {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
@@ -287,7 +289,7 @@ function TabSanPham() {
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={() => { TaiDuLieu(); }}
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faRotate} />
                                             ㅤLàm Mới
                                         </button>ㅤ
@@ -300,7 +302,7 @@ function TabSanPham() {
                                                 setIDAction()
                                             }}
 
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faAdd} />
                                             ㅤThêm SP Thành Phẩm
                                         </button>ㅤ
@@ -313,21 +315,21 @@ function TabSanPham() {
                                                 setIDAction()
                                             }}
 
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faAdd} />
                                             ㅤThêm SP Chế Biến
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterSanPhamThanhPham}
-                                            className="btn btn-light">
+                                            className="btn btn-light btn-sm">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤSP Thành Phẩm
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterSanPhamCheBien}
-                                            className="btn btn-light">
+                                            className="btn btn-light btn-sm">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤSP Chế Biến
                                         </button>ㅤ
@@ -349,7 +351,7 @@ function TabSanPham() {
                                                     () => { deleteData(selectedIds) }
                                                 )
                                             }}
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faTrash} />
                                             ㅤXoá ô đã chọn
                                         </button>ㅤ
@@ -365,7 +367,8 @@ function TabSanPham() {
                                     setdataUser={setdataUser}
                                 />
                                 ㅤ
-                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile ? false : true}
+                                    ref={inputRef} />
                                 {
                                     dataUser.search !== '' &&
                                     <button
@@ -376,6 +379,7 @@ function TabSanPham() {
                                                 ...dataUser,
                                                 search: ''
                                             });
+                                            inputRef.current.focus();
                                         }}
                                     >
                                         X
@@ -412,16 +416,31 @@ function TabSanPham() {
                             setSanPhamThanhPham={setSanPhamThanhPham}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                        {!isMobile &&
+                            <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                        }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && sanPhamThanhPham && (<div className="popup">
                     <Insert_updateSPThanhPham

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { getCookie } from "../Cookie";
@@ -115,6 +115,8 @@ const ChonKhachHang = (props) => {
         });
 
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box" style={{ zIndex: '9991' }}>
             <div className="box">
@@ -136,6 +138,8 @@ const ChonKhachHang = (props) => {
                     <div style={{ float: 'right' }}>
 
                         <input
+                            ref={inputRef}
+                            autoFocus={isMobile?false:true}
                             id="search"
                             value={dataUser.search}
                             onChange={handleSearch}
@@ -154,7 +158,9 @@ const ChonKhachHang = (props) => {
                                         ...dataUser,
                                         search: ''
                                     });
+                                    inputRef.current.focus();
                                 }}
+
                             >
                                 X
                             </button>
@@ -194,7 +200,7 @@ const ChonKhachHang = (props) => {
                                                 ...props.dataReq,
                                                 IDKhachHang: dulieu.IDKhachHang,
                                                 TenKhachHang: dulieu.TenKhachHang,
-                                                DiemKhachHang:dulieu.DiemTichLuy
+                                                DiemKhachHang: dulieu.DiemTichLuy
                                             })
                                             props.setPopupChonKhachHang(false)
                                         }} >
@@ -234,17 +240,17 @@ const ChonKhachHang = (props) => {
                         >Khách Tham Quan</button>
                     </div>
                     {
-                popupInsertUpdate && <div className="popup">
-                    <Insert_updateKhachHang
-                        isInsert={isInsert}
-                        setPopupInsertUpdate={setPopupInsertUpdate}
-                        dataUser={dataUser}
-                        setdataUser={setdataUser}
-                        addNotification={props.addNotification}
-                        openPopupAlert={props.openPopupAlert}
-                    />
-                </div>
-            }
+                        popupInsertUpdate && <div className="popup">
+                            <Insert_updateKhachHang
+                                isInsert={isInsert}
+                                setPopupInsertUpdate={setPopupInsertUpdate}
+                                dataUser={dataUser}
+                                setdataUser={setdataUser}
+                                addNotification={props.addNotification}
+                                openPopupAlert={props.openPopupAlert}
+                            />
+                        </div>
+                    }
                 </div>
             </div >
 

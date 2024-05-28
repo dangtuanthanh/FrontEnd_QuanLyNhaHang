@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDollarSign, faIdCard, faBell, faClone, faFile, faPencil, faTable } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
@@ -444,7 +444,7 @@ function TabGhepDon(props) {
                 <div className="col-6">
                     <div>
                         <h4 style={{ textAlign: 'center' }}>Danh Sách Hoá Đơn</h4>
-                        <div style={{ height: '550px', maxHeight: '60%', overflow: 'auto', overflowX: 'hidden' }}>
+                        <div style={{ height: '500px', maxHeight: '55%', overflow: 'auto', overflowX: 'hidden' }}>
                             {selectedRow0 ?
                                 <table class="table align-items-center m-2 ">
                                     <thead>
@@ -514,8 +514,8 @@ function TabGhepDon(props) {
                             handleSubmit()
                         }}
                         type="button"
-                        className="btn btn-primary mt-3"
-                        style={{ float: 'right' }}
+                        className="btn btn-primary"
+                        style={{ float: 'right',marginRight:'2%' }}
                     >Xác Nhận</button>
                 </div>
             </div>

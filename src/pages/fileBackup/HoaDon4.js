@@ -377,7 +377,7 @@ function HoaDon() {
                         </div>
                         <ul class="navbar-nav  justify-content-end">
                             <li class="nav-item d-flex align-items-center">
-                                <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-soft-ui-dashboard">Online Builder</a>
+                                <a class="btn btn-outline-primary btn-sm mb-0 me-3" target="_blank" href="https://www.creative-tim.com/builder?ref=navbar-soft-ui-dashboard" rel="noreferrer">Online Builder</a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
                                 <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">
@@ -460,7 +460,7 @@ function HoaDon() {
 
 
             </div>
-            <div class="card mb-4">
+            <div class="card"  style={{ minHeight: '92vh', position: 'relative' }}>
 
                 <div class="card-header pb-0">
                     {/* <h4>Bảng Hoá Đơn</h4> */}

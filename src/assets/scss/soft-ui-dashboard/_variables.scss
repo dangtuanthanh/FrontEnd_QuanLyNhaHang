@@ -53,7 +53,7 @@ $colors: (
 ) !default;
 // scss-docs-end colors-map
 
-$primary:       #cb0c9f !default;
+$primary:       #ff8c00 !default;
 $secondary:     #8392AB !default;
 $info:          #17c1e8 !default;
 $success:       #82d616 !default;
@@ -967,10 +967,10 @@ $input-border-radius-sm:                $border-radius-md !default;
 $input-border-radius-lg:                $border-radius-md !default;
 
 $input-focus-bg:                        $white !default;
-$input-focus-border-color:              #e293d3 !default;
+$input-focus-border-color:              #ffa500 !default;
 $input-focus-color:                     $input-color !default;
 $input-focus-width:                     2px !default;
-$input-focus-box-shadow:                0 0 0 $input-focus-width #e9aede !default;
+$input-focus-box-shadow:                0 0 0 $input-focus-width #ffcc33 !default;
 
 $input-placeholder-color:               $gray-500 !default;
 $input-plaintext-color:                 $dark !default;

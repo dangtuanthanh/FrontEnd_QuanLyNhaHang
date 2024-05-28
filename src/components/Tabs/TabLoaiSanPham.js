@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetTypeProduct, urlDeleteTypeProduct } from "../url";
@@ -239,9 +239,11 @@ function TabLoaiSanPham() {
 
             });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Loại Sản Phẩm</h2>
                     <NotificationContainer notifications={notifications} />
@@ -304,7 +306,8 @@ function TabLoaiSanPham() {
                                 setdataUser={setdataUser}
                             />
                             ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile ? false : true}
+                                ref={inputRef} />
                             {
                                 dataUser.search !== '' &&
                                 <button
@@ -315,6 +318,7 @@ function TabLoaiSanPham() {
                                             ...dataUser,
                                             search: ''
                                         });
+                                        inputRef.current.focus();
                                     }}
                                 >
                                     X
@@ -350,16 +354,31 @@ function TabLoaiSanPham() {
                             setSelectedIds={setSelectedIds}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                        {!isMobile &&
+                            <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                        }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && <div className="popup">
                     <Insert_updateLoaiSanPham

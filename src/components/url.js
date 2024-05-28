@@ -1,200 +1,207 @@
-//https://vres.onrender.com
+//http://118.69.126.49:1234
+//http://118.69.126.49:123
 /* Hệ thống
  */
 //kiểm tra phiên đăng nhập
-export const urlCheckLogin = 'https://vres.onrender.com/session';
+export const urlCheckLogin = 'http://118.69.126.49:1234/session';
 //đăng nhập
-export const urlLogin = 'https://vres.onrender.com/login';
+export const urlLogin = 'http://118.69.126.49:1234/login';
 //đăng xuất
-export const urlLogout = 'https://vres.onrender.com/logout';
+export const urlLogout = 'http://118.69.126.49:1234/logout';
 //đổi mật khẩu
-export const urlChangePassword = 'https://vres.onrender.com/changePassword';
+export const urlChangePassword = 'http://118.69.126.49:1234/changePassword';
 
 /* Quản lý nhân viên
  */
 //lấy danh sách nhân viên
-export const urlGetAccount = 'https://vres.onrender.com/getAccount';
+export const urlGetAccount = 'http://118.69.126.49:1234/getAccount';
 // thêm nhân viên
-export const urlInsertAccount = 'https://vres.onrender.com/insertAccount';
+export const urlInsertAccount = 'http://118.69.126.49:1234/insertAccount';
 // sửa nhân viên
-export const urlUpdateAccount = 'https://vres.onrender.com/updateAccount';
+export const urlUpdateAccount = 'http://118.69.126.49:1234/updateAccount';
 // xoá nhân viên
-export const urlDeleteAccount = 'https://vres.onrender.com/deleteAccount';
+export const urlDeleteAccount = 'http://118.69.126.49:1234/deleteAccount';
 // undo delete nhân viên
-export const urlUndoDeleteAccount = 'https://vres.onrender.com/undoDeleteAccount';
+export const urlUndoDeleteAccount = 'http://118.69.126.49:1234/undoDeleteAccount';
 // nhập nhân viên
-export const urlImportExcelAccount = 'https://vres.onrender.com/importExcelAccount';
+export const urlImportExcelAccount = 'http://118.69.126.49:1234/importExcelAccount';
 
 
 //lấy danh sách vai trò
-export const urlGetRole = 'https://vres.onrender.com/getRole';
+export const urlGetRole = 'http://118.69.126.49:1234/getRole';
 // thêm vai trò
-export const urlInsertRole = 'https://vres.onrender.com/insertRole';
+export const urlInsertRole = 'http://118.69.126.49:1234/insertRole';
 // sửa nhân viên
-export const urlUpdateRole = 'https://vres.onrender.com/updateRole';
+export const urlUpdateRole = 'http://118.69.126.49:1234/updateRole';
 // xoá vai trò
-export const urlDeleteRole = 'https://vres.onrender.com/deleteRole';
+export const urlDeleteRole = 'http://118.69.126.49:1234/deleteRole';
 //lấy danh sách quyền
-export const urlGetPermission = 'https://vres.onrender.com/getPermission';
+export const urlGetPermission = 'http://118.69.126.49:1234/getPermission';
 
 
 //lấy danh sách vị trí công việc
-export const urlGetJobPosition = 'https://vres.onrender.com/getJobPosition';
+export const urlGetJobPosition = 'http://118.69.126.49:1234/getJobPosition';
 // thêm vị trí công việc
-export const urlInsertJobPosition = 'https://vres.onrender.com/insertJobPosition';
+export const urlInsertJobPosition = 'http://118.69.126.49:1234/insertJobPosition';
 // sửa vị trí công việc
-export const urlUpdateJobPosition = 'https://vres.onrender.com/updateJobPosition';
+export const urlUpdateJobPosition = 'http://118.69.126.49:1234/updateJobPosition';
 //xoá vị trí công việc
-export const urlDeleteJobPosition = 'https://vres.onrender.com/deleteJobPosition';
+export const urlDeleteJobPosition = 'http://118.69.126.49:1234/deleteJobPosition';
 
 
 /* Quản lý bàn và khu vực
  */
 //lấy danh sách khu vực
-export const urlGetArea = 'https://vres.onrender.com/getArea';
+export const urlGetArea = 'http://118.69.126.49:1234/getArea';
 // thêm Khu vực
-export const urlInsertArea = 'https://vres.onrender.com/insertArea';
+export const urlInsertArea = 'http://118.69.126.49:1234/insertArea';
 // sửa khu vực
-export const urlUpdateArea = 'https://vres.onrender.com/updateArea';
+export const urlUpdateArea = 'http://118.69.126.49:1234/updateArea';
 //xoá vị trí khu vực
-export const urlDeleteArea = 'https://vres.onrender.com/deleteArea';
+export const urlDeleteArea = 'http://118.69.126.49:1234/deleteArea';
 
 //lấy danh sách bàn
-export const urlGetTable = 'https://vres.onrender.com/getTable';
+export const urlGetTable = 'http://118.69.126.49:1234/getTable';
 // thêm bàn
-export const urlInsertTable = 'https://vres.onrender.com/insertTable';
+export const urlInsertTable = 'http://118.69.126.49:1234/insertTable';
 // sửa bàn
-export const urlUpdateTable = 'https://vres.onrender.com/updateTable';
+export const urlUpdateTable = 'http://118.69.126.49:1234/updateTable';
 //xoá bàn
-export const urlDeleteTable = 'https://vres.onrender.com/deleteTable';
+export const urlDeleteTable = 'http://118.69.126.49:1234/deleteTable';
 
 /* Quản lý ca làm việc
  */
 //lấy danh sách ca làm việc
-export const urlGetShifts = 'https://vres.onrender.com/getShifts';
+export const urlGetShifts = 'http://118.69.126.49:1234/getShifts';
 // thêm ca làm việc
-export const urlInsertShifts = 'https://vres.onrender.com/insertShifts';
+export const urlInsertShifts = 'http://118.69.126.49:1234/insertShifts';
 // sửa ca làm việc
-export const urlUpdateShifts = 'https://vres.onrender.com/updateShifts';
+export const urlUpdateShifts = 'http://118.69.126.49:1234/updateShifts';
 //xoá ca làm việc
-export const urlDeleteShifts = 'https://vres.onrender.com/deleteShifts';
+export const urlDeleteShifts = 'http://118.69.126.49:1234/deleteShifts';
 
 //lấy danh sách chốt ca
-export const urlGetCloseShifts = 'https://vres.onrender.com/getCloseShifts';
+export const urlGetCloseShifts = 'http://118.69.126.49:1234/getCloseShifts';
 //tải danh sách ca phù hợp với giờ hiện tại
-export const urlGetMatchShifts = 'https://vres.onrender.com/GetMatchShifts';
+export const urlGetMatchShifts = 'http://118.69.126.49:1234/GetMatchShifts';
 // thêm chốt ca mới
-export const urlInsertCloseShifts = 'https://vres.onrender.com/insertCloseShifts';
+export const urlInsertCloseShifts = 'http://118.69.126.49:1234/insertCloseShifts';
 // cập nhật chốt ca
-export const urlUpdateCloseShifts = 'https://vres.onrender.com/updateCloseShifts';
+export const urlUpdateCloseShifts = 'http://118.69.126.49:1234/updateCloseShifts';
 // xoá chốt ca
-export const urlDeleteCloseShifts = 'https://vres.onrender.com/deleteCloseShifts';
+export const urlDeleteCloseShifts = 'http://118.69.126.49:1234/deleteCloseShifts';
 
 
 /* Quản lý Khách Hàng
  */
 //lấy danh sách khách hàng
-export const urlGetCustomer = 'https://vres.onrender.com/getCustomer';
+export const urlGetCustomer = 'http://118.69.126.49:1234/getCustomer';
 // thêm khách hàng
-export const urlInsertCustomer = 'https://vres.onrender.com/insertCustomer';
+export const urlInsertCustomer = 'http://118.69.126.49:1234/insertCustomer';
 // sửa khách hàng
-export const urlUpdateCustomer = 'https://vres.onrender.com/updateCustomer';
+export const urlUpdateCustomer = 'http://118.69.126.49:1234/updateCustomer';
 //xoá khách hàng
-export const urlDeleteCustomer = 'https://vres.onrender.com/deleteCustomer';
+export const urlDeleteCustomer = 'http://118.69.126.49:1234/deleteCustomer';
 
 
 /* Quản lý Kho
  */
 //lấy danh sách đơn vị tính
-export const urlGetUnit = 'https://vres.onrender.com/getUnit';
+export const urlGetUnit = 'http://118.69.126.49:1234/getUnit';
 //lấy danh sách chuyển đổi đơn vị tính
-export const urlGetListUnitConversions = 'https://vres.onrender.com/getListUnitConversions';
+export const urlGetListUnitConversions = 'http://118.69.126.49:1234/getListUnitConversions';
 //lấy danh sách chuyển đổi đơn vị tính theo ID
-export const urlGetListUnitConversionsByIDUnit = 'https://vres.onrender.com/getListUnitConversionsByIDUnit';
+export const urlGetListUnitConversionsByIDUnit = 'http://118.69.126.49:1234/getListUnitConversionsByIDUnit';
 
 // thêm đơn vị tính
-export const urlInsertUnit = 'https://vres.onrender.com/insertUnit';
+export const urlInsertUnit = 'http://118.69.126.49:1234/insertUnit';
 // sửa đơn vị tính
-export const urlUpdateUnit = 'https://vres.onrender.com/updateUnit';
+export const urlUpdateUnit = 'http://118.69.126.49:1234/updateUnit';
 //xoá đơn vị tính
-export const urlDeleteUnit = 'https://vres.onrender.com/deleteUnit';
+export const urlDeleteUnit = 'http://118.69.126.49:1234/deleteUnit';
 
 //lấy danh sách phiếu nhập
-export const urlGetReceipt = 'https://vres.onrender.com/getReceipt';
+export const urlGetReceipt = 'http://118.69.126.49:1234/getReceipt';
 // thêm phiếu nhập
-export const urlInsertReceipt = 'https://vres.onrender.com/insertReceipt';
+export const urlInsertReceipt = 'http://118.69.126.49:1234/insertReceipt';
 // sửa phiếu nhập
-export const urlUpdateReceipt = 'https://vres.onrender.com/updateReceipt';
+export const urlUpdateReceipt = 'http://118.69.126.49:1234/updateReceipt';
 //xoá phiếu nhập
-export const urlDeleteReceipt = 'https://vres.onrender.com/deleteReceipt';
+export const urlDeleteReceipt = 'http://118.69.126.49:1234/deleteReceipt';
 
 //lấy danh sách nguyên liệu
-export const urlGetIngredient = 'https://vres.onrender.com/getIngredient';
+export const urlGetIngredient = 'http://118.69.126.49:1234/getIngredient';
 // thêm nguyên liệu
-export const urlInsertIngredient = 'https://vres.onrender.com/insertIngredient';
+export const urlInsertIngredient = 'http://118.69.126.49:1234/insertIngredient';
 // sửa nguyên liệu
-export const urlUpdateIngredient = 'https://vres.onrender.com/updateIngredient';
+export const urlUpdateIngredient = 'http://118.69.126.49:1234/updateIngredient';
 //xoá nguyên liệu
-export const urlDeleteIngredient = 'https://vres.onrender.com/deleteIngredient';
+export const urlDeleteIngredient = 'http://118.69.126.49:1234/deleteIngredient';
 
 
 /* Quản lý Thực đơn
  */
 //lấy danh sách toàn bộ sản phẩm 
-export const urlGetProduct = 'https://vres.onrender.com/getProduct';
+export const urlGetProduct = 'http://118.69.126.49:1234/getProduct';
 //xoá sản phẩm
-export const urlDeleteProduct = 'https://vres.onrender.com/deleteProduct';
+export const urlDeleteProduct = 'http://118.69.126.49:1234/deleteProduct';
 
 
 // thêm sản phẩm thành phẩm
-export const urlInsertFinishedProduct = 'https://vres.onrender.com/insertFinishedProduct';
+export const urlInsertFinishedProduct = 'http://118.69.126.49:1234/insertFinishedProduct';
 // sửa sản phẩm thành phẩm
-export const urlUpdateFinishedProduct = 'https://vres.onrender.com/updateFinishedProduct';
+export const urlUpdateFinishedProduct = 'http://118.69.126.49:1234/updateFinishedProduct';
 // thêm sản phẩm chế biến
-export const urlInsertProcessedProduct = 'https://vres.onrender.com/insertProcessedProduct';
+export const urlInsertProcessedProduct = 'http://118.69.126.49:1234/insertProcessedProduct';
 // sửa sản phẩm chế biến
-export const urlUpdateProcessedProduct = 'https://vres.onrender.com/updateProcessedProduct';
+export const urlUpdateProcessedProduct = 'http://118.69.126.49:1234/updateProcessedProduct';
 
 //lấy danh sách loại sản phẩm
-export const urlGetTypeProduct = 'https://vres.onrender.com/getTypeProduct';
+export const urlGetTypeProduct = 'http://118.69.126.49:1234/getTypeProduct';
 // thêm loại sản phẩm
-export const urlInsertTypeProduct = 'https://vres.onrender.com/insertTypeProduct';
+export const urlInsertTypeProduct = 'http://118.69.126.49:1234/insertTypeProduct';
 // sửa loại sản phẩm
-export const urlUpdateTypeProduct = 'https://vres.onrender.com/updateTypeProduct';
+export const urlUpdateTypeProduct = 'http://118.69.126.49:1234/updateTypeProduct';
 //xoá loại sản phẩm
-export const urlDeleteTypeProduct = 'https://vres.onrender.com/deleteTypeProduct';
+export const urlDeleteTypeProduct = 'http://118.69.126.49:1234/deleteTypeProduct';
 
 /* Quản lý Hoá Đơn
  */
 //lấy danh sách hoá đơn
-export const urlGetInvoice = 'https://vres.onrender.com/getInvoice';
+export const urlGetInvoice = 'http://118.69.126.49:1234/getInvoice';
 // thêm hoá đơn
-export const urlInsertInvoice = 'https://vres.onrender.com/insertInvoice';
+export const urlInsertInvoice = 'http://118.69.126.49:1234/insertInvoice';
 // sửa hoá đơn
-export const urlUpdateInvoice = 'https://vres.onrender.com/updateInvoice';
+export const urlUpdateInvoice = 'http://118.69.126.49:1234/updateInvoice';
 //xoá hoá đơn
-export const urlDeleteInvoice = 'https://vres.onrender.com/deleteInvoice';
+export const urlDeleteInvoice = 'http://118.69.126.49:1234/deleteInvoice';
 // cập nhật trạng thái bàn ăn
-export const urlUpdateStatusTable = 'https://vres.onrender.com/updateStatusTable';
+export const urlUpdateStatusTable = 'http://118.69.126.49:1234/updateStatusTable';
 // lấy ảnh thanh toán
-export const urlGetPicturePayment = 'https://vres.onrender.com/getPicturePayment';
+export const urlGetPicturePayment = 'http://118.69.126.49:1234/getPicturePayment';
+// cập nhật ảnh thanh toán
+export const urlUpdatePicturePayment = 'http://118.69.126.49:1234/updatePicturePayment';
+// lấy ảnh thanh toán
+export const urlGetPerPointCustomert = 'http://118.69.126.49:1234/getPerPointCustomert';
+// cập nhật ảnh thanh toán
+export const urlUpdatePerPointCustomert = 'http://118.69.126.49:1234/updatePerPointCustomert';
 
 /* Quản lý Bếp
  */
 //lấy danh sách order
-export const urlGetOrder = 'https://vres.onrender.com/getListProductsByStatus';
+export const urlGetOrder = 'http://118.69.126.49:1234/getListProductsByStatus';
 //cập nhật trạng thái món ăn
-export const urlUpdateStatusProduct = 'https://vres.onrender.com/updateStatusProduct';
+export const urlUpdateStatusProduct = 'http://118.69.126.49:1234/updateStatusProduct';
 
 /* Bảng điều khiển
  */
 //lấy số bàn đang có khách
-export const urlGetOccupiedTables = 'https://vres.onrender.com/getOccupiedTables';
+export const urlGetOccupiedTables = 'http://118.69.126.49:1234/getOccupiedTables';
 //lấy số hoá đơn trong ngày
-export const urlGetInvoiceToday = 'https://vres.onrender.com/getInvoiceToday';
+export const urlGetInvoiceToday = 'http://118.69.126.49:1234/getInvoiceToday';
 //lấy tổng tiền hoá đơn trong ngày
-export const urlGetRevenueToday = 'https://vres.onrender.com/getRevenueToday';
+export const urlGetRevenueToday = 'http://118.69.126.49:1234/getRevenueToday';
 //lấy tổng tiền hoá đơn trong tháng
-export const urlGetRevenueMonth = 'https://vres.onrender.com/getRevenueMonth';
+export const urlGetRevenueMonth = 'http://118.69.126.49:1234/getRevenueMonth';
 //lấy tổng tiền hoá đơn trong tuần
-export const urlGetListRevenueMonth = 'https://vres.onrender.com/getListRevenueMonth';
+export const urlGetListRevenueMonth = 'http://118.69.126.49:1234/getListRevenueMonth';

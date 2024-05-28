@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTable } from '@fortawesome/free-solid-svg-icons'
@@ -48,7 +48,7 @@ const ChonBan = (props) => {
         TaiDuLieu();
         console.log('dataUser: ', dataUser);
     }, [dataUser]);
-    
+
     const TaiDuLieu = () => {
         dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlGetTable}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
@@ -137,7 +137,7 @@ const ChonBan = (props) => {
     };
     //hàm hiển thị màu bàn
     function getBackgroundColor(item) {
-        if (item.TrangThai === 'Có khách') {
+        if (item.TrangThai == 'Có khách') {
             return '#ccecff';
         }
 
@@ -163,9 +163,11 @@ const ChonBan = (props) => {
                 search: selectedValue,
             });
     }
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div className="card mb-4">
+            <div className="card" style={{ height: '90vh' }}>
                 <div className="row">
                     <div style={{ marginTop: '5px', width: '100%', display: 'flex' }}>
                         <div style={{ width: '20%', marginLeft: '10px' }}>
@@ -212,14 +214,17 @@ const ChonBan = (props) => {
                             </label>
                         </div>
                         <div style={{ width: '40%', textAlign: 'end', marginRight: '15px' }}>
-                            <input 
-                            id="search" 
-                            value={dataUser.search} 
-                            onChange={handleSearch} 
-                            placeholder='Tìm Tên Bàn' 
-                            type="text" 
-                            className="form-control-sm" 
-                            style={{border: '0.8px grey solid'}}/>
+                            <input
+                                id="search"
+                                value={dataUser.search}
+                                onChange={handleSearch}
+                                placeholder='Tìm Tên Bàn'
+                                type="text"
+                                className="form-control-sm"
+                                style={{ border: '0.8px grey solid' }}
+                                autoFocus={isMobile?false:true}
+                                ref={inputRef}
+                            />
                             {
                                 (dataUser.search.length != 0) &&
                                 <button
@@ -230,6 +235,7 @@ const ChonBan = (props) => {
                                             ...dataUser,
                                             search: ''
                                         });
+                                        inputRef.current.focus();
                                     }}
                                 >
                                     X
@@ -243,15 +249,22 @@ const ChonBan = (props) => {
                             key={item.IDBan}
                             className="col"
                             onClick={() => {
-                                if (props.dataReq.IDBan !== item.IDBan) {
-                                    props.setDataReq({
-                                        ...props.dataReq,
-                                        IDBan: item.IDBan,
-                                        TenBan: item.TenBan,
-                                        TenKhuVuc: item.TenKhuVuc
-                                    });
-                                }
-
+                                if (item.IDHoaDon) {
+                                    props.setIsInsert(false)
+                                    props.setIDAction(item.IDHoaDon)
+                                    props.setDataUser(props.dataUser + 1)
+                                } else
+                                    if (props.dataReq.IDBan !== item.IDBan) {
+                                        props.setIDAction()
+                                        props.setIsInsert(true)
+                                        props.setDataReq({
+                                            DanhSach: [],
+                                            IDNhanVien: props.IDNhanVien,
+                                            IDBan: item.IDBan,
+                                            TenBan: item.TenBan,
+                                            TenKhuVuc: item.TenKhuVuc
+                                        });
+                                    }
                                 props.setActiveTab('TabChonMon')
 
                             }}
@@ -259,23 +272,42 @@ const ChonBan = (props) => {
 
                             <div
                                 className="card-body"
-                                style={{ textAlign: 'center', backgroundColor: getBackgroundColor(item) }}
+                                style={{ textAlign: 'center', backgroundColor: getBackgroundColor(item), paddingBottom: '0.7rem' }}
                             >
                                 <img src={anhBan} />
                                 <p>{item.TenBan}</p>
                             </div>
                         </div>
                     ))}
+                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                 </div>
-                {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                <div style={{ height: '6vh' }}></div>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 0,
+                    margin: '0.5rem'
+                }}>
+                    {/* phân trang */}
+                    <div style={{ marginLeft: '1rem' }}>
+                        <Pagination
+                            setdataUser={setdataUser}
+                            dataUser={dataUser}
+                            dataRes={dataRes}
+                        />
+                    </div>
+                </div>
                 {/* phân trang */}
-                <div style={{ textAlign: 'right', margin: '5px' }}>
+                {/* <div style={{ textAlign: 'right', margin: '5px' }}>
                     <Pagination
                         setdataUser={setdataUser}
                         dataUser={dataUser}
                         dataRes={dataRes}
                     />
-                </div>
+                </div> */}
             </div>
         </div>
 

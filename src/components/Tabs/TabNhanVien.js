@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { faTrash, faRotate, faAdd, faRotateLeft, faDownload, faUpload, faArrowLeft, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetAccount, urlDeleteAccount, urlUndoDeleteAccount } from "../url";
@@ -20,13 +20,16 @@ function TabNhanVien() {
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
         sortBy: 'IDNhanVien',
         sortOrder: 'asc',
-        searchBy: 'IDNhanVien',
+        searchBy: 'TenNhanVien',
         search: '',
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});//dữ liệu nhận được khi getAccount
-
-
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(true);
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
 
 
     //xử lý popup
@@ -118,11 +121,11 @@ function TabNhanVien() {
         setPopupNhap(false);
     };
 
-      //undo delete
+    //undo delete
     const [buttonUndo, setButtonUndo] = useState(false);//trạng thái hiển thị nút undo
-      const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
+    const [undoDelete, setUndoDelete] = useState([]);//mảng lưu id bị xoá
     const handleUndo = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlUndoDeleteAccount}`, {
             method: 'POST',
             headers: {
@@ -147,13 +150,13 @@ function TabNhanVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(false)
                 setUndoDelete([])
                 TaiDuLieu()
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -198,14 +201,14 @@ function TabNhanVien() {
 
     };
 
-   
+
 
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
     }, [dataUser]);
     const TaiDuLieu = () => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         fetch(`${urlGetAccount}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
             method: 'GET',
             headers: {
@@ -243,10 +246,10 @@ function TabNhanVien() {
                     });
                 }
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -257,7 +260,7 @@ function TabNhanVien() {
     };
     //Xoá dữ liệu
     const deleteData = (ID) => {
-        dispatch({type: 'SET_LOADING', payload: true})
+        dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
             console.log('là mảng');
@@ -286,7 +289,7 @@ function TabNhanVien() {
             .then(data => {
                 addNotification(data.message, 'success', 4000)
                 //ẩn loading
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 setButtonUndo(true)
                 setSelectedIds([])
                 setUndoDelete(IDs)
@@ -294,7 +297,7 @@ function TabNhanVien() {
 
             })
             .catch(error => {
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -303,191 +306,163 @@ function TabNhanVien() {
 
             });
     }
-   
+
     // sửa hàng loạt
     const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
 
-
-    //Xử lý sắp xếp
-
-    //sắp xếp cột có ngày tháng
-    // function formatDate(dateString) {
-    //     const parts = dateString.split('-');
-    //     return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    // }
-    // const [sortDirection2, setSortDirection2] = useState('asc'); // giá trị ban đầu là sắp xếp tăng dần
-    // //const sortArrow2 = sortDirection2 === 'asc' ? '▼' : '▲'; //hướng sắp xếp của ký tự mũi tên
-    // function handleSortedDate(columnName) {
-    //     const sorted = [...duLieuHienThi].sort((a, b) => {
-    //         const dateA = formatDate(a[columnName]);
-    //         const dateB = formatDate(b[columnName]);
-    //         if (dateA < dateB) {
-    //             return sortDirection2 === 'asc' ? -1 : 1; // đổi hướng sắp xếp nếu cần
-    //         }
-    //         if (dateA > dateB) {
-    //             return sortDirection2 === 'asc' ? 1 : -1;
-    //         }
-    //         return 0;
-    //     });
-
-    //     setDuLieuHienThi(sorted);
-    //     if (sortDirection2 === 'asc') {
-    //         // $(".ThanhCong").text("Sắp xếp cũ nhất ➨ mới nhất theo  " + columnName);
-    //         // $(".ThanhCong").delay(200).show("medium");
-    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-    //         setSapXep(columnName + ", cũ nhất ➨ mới nhất")
-    //         alert(`Sắp xếp cũ nhất ➨ mới nhất theo:   ${columnName}`)
-    //     } else {
-    //         // $(".ThanhCong").text("Sắp xếp mới nhất ➨ cũ nhất theo " + columnName);
-    //         // $(".ThanhCong").delay(200).show("medium");
-    //         // setTimeout(() => $(".ThanhCong").delay(200).hide("medium"), 3000);
-
-    //         setSapXep(columnName + ", mới nhất ➨ cũ nhất")
-    //         alert(`Sắp xếp mới nhất ➨ cũ nhất theo:   ${columnName}`)
-    //     }
-    //     setSortDirection2(sortDirection2 === 'asc' ? 'desc' : 'asc'); // đổi hướng sắp xếp sau mỗi lần nhấp
-    // }
-    //Hết xử lý sắp xếp
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Nhân Viên</h2>
+                    <h2> Quản Lý Nhân Viên {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
+                    {showButtonFunction &&
+                        <div>
+                            {
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopup1(true)
+                                                setIDAction()
+                                            }}
 
-                    <div>
-                        {
-                            selectedIds.length == 0
-                                ? <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => { TaiDuLieu(); }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faRotate} />
-                                        ㅤLàm Mới
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setIsInsert(true)
-                                            setPopup1(true)
-                                            setIDAction()
-                                        }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setPopupNhap(true)
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faUpload} />
+                                            ㅤNhập
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setpopupXuat(true)
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faDownload} />
+                                            ㅤXuất
+                                        </button>ㅤ
 
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faAdd} />
-                                        ㅤThêm
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setPopupNhap(true)
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faUpload} />
-                                        ㅤNhập
-                                    </button>ㅤ
-                                    <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            setpopupXuat(true)
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faDownload} />
-                                        ㅤXuất
-                                    </button>ㅤ
-
-                                    {buttonUndo && <button
-                                        style={{ 'display': "inline-block" }}
-                                        onClick={() => {
-                                            handleUndo()
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faRotateLeft} />
-                                        ㅤHoàn Tác
-                                    </button>}
-                                </div>
-                                : <div style={{ 'display': "inline-block", float: 'left' }}>
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        //onClick={setSelectedIds([])}
-                                        onClick={() => { setSelectedIds([]); }}
-                                        className="btn btn-danger">
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                        ㅤQuay Lại
-                                    </button>ㅤ
-                                    {/* <button
+                                        {buttonUndo && <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                handleUndo()
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faRotateLeft} />
+                                            ㅤHoàn Tác
+                                        </button>}
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger btn-sm">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        {/* <button
                                                     style={{ display: "inline-block" }}
                                                     //onClick={() => {togglePopup6();}}
-                                                    className="btn btn-primary">
+                                                    className="btn btn-primary btn-sm">
                                                     <FontAwesomeIcon icon={faPencil} />
                                                     ㅤSửa ô đã chọn
                                                 </button>ㅤ */}
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => {
-                                            openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
-                                                () => { deleteData(selectedIds) }
-                                            )
-                                        }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                        ㅤXoá ô đã chọn
-                                    </button>ㅤ
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
 
-                                    <button
-                                        style={{ display: "inline-block" }}
-                                        onClick={() => { setpopupXuat(true) }}
-                                        className="btn btn-primary">
-                                        <FontAwesomeIcon icon={faDownload} />
-                                        ㅤXuất ô đã chọn
-                                    </button>ㅤ
-                                </div>
-                        }
-
-                        <div style={{ 'display': "inline-block", float: 'right' }}>
-                            {/* số hàng trên trang */}
-                            <ItemsPerPage
-                                dataRes={dataRes}
-                                openPopupAlert={openPopupAlert}
-                                dataUser={dataUser}
-                                setdataUser={setdataUser}
-                            />
-                            ㅤ
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
-                            {
-                                dataUser.search !== '' &&
-                                <button
-                                    className="btn btn-close"
-                                    style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
-                                    onClick={() => {
-                                        setdataUser({
-                                            ...dataUser,
-                                            search: ''
-                                        });
-                                    }}
-                                >
-                                    X
-                                </button>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => { setpopupXuat(true) }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faDownload} />
+                                            ㅤXuất ô đã chọn
+                                        </button>ㅤ
+                                    </div>
                             }
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
-                                <option value="IDNhanVien">Tìm theo IDNhanVien</option>
-                                <option value="TenNhanVien">Tìm theo TenNhanVien</option>
-                                <option value="TaiKhoan">Tìm theo TaiKhoan</option>
-                                <option value="TenViTriCongViec">Tìm theo ViTriCongViec</option>
-                            </select>
-                            ㅤ
-                            <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
-                                <option value='false'>Chế độ tìm: Gần đúng</option>
-                                <option value="true">Chế độ tìm: Chính xác</option>
-                            </select>
 
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input
+                                    id="search"
+                                    value={dataUser.search}
+                                    onChange={handleSearch}
+                                    placeholder='Tìm Kiếm'
+                                    type="text"
+                                    className="form-control-sm"
+                                    autoFocus={isMobile?false:true}
+                                    ref={inputRef}
+                                />
+                                {
+
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            setdataUser({
+                                                ...dataUser,
+                                                search: ''
+                                            });
+                                            inputRef.current.focus();
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="IDNhanVien">Tìm theo ID Nhân Viên</option>
+                                    <option value="TenNhanVien">Tìm theo Tên Nhân Viên</option>
+                                    <option value="TaiKhoan">Tìm theo Tài Khoản</option>
+                                    <option value="TenViTriCongViec">Tìm theo Tên Vị Trí Công Việc</option>
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
+                                {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
@@ -505,16 +480,32 @@ function TabNhanVien() {
                             setSelectedIds={setSelectedIds}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                         {!isMobile &&
+                        <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label>
+                         }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
+
             {
                 popup1 && <div className="popup">
                     <Insert_updateAccount
@@ -538,29 +529,29 @@ function TabNhanVien() {
             }
             {
                 popupXuat && <div className="popup">
-                <ExportAccount
-                    duLieuHienThi={duLieuHienThi}
-                    totalItems={dataRes.totalItems}
-                    openPopupAlert={openPopupAlert}
-                    addNotification={addNotification}
-                    onClose={closePopupXuat}
-                    selectedIds={selectedIds}
-                />
+                    <ExportAccount
+                        duLieuHienThi={duLieuHienThi}
+                        totalItems={dataRes.totalItems}
+                        openPopupAlert={openPopupAlert}
+                        addNotification={addNotification}
+                        onClose={closePopupXuat}
+                        selectedIds={selectedIds}
+                    />
                 </div>
             }
 
             {
                 popupNhap && <div className="popup">
-                <ImportAccount
-                    openPopupAlert={openPopupAlert}
-                    addNotification={addNotification}
-                    onClose={closePopupNhap}
-                    dataUser={dataUser}
-                    setdataUser={setdataUser}
-                />
+                    <ImportAccount
+                        openPopupAlert={openPopupAlert}
+                        addNotification={addNotification}
+                        onClose={closePopupNhap}
+                        dataUser={dataUser}
+                        setdataUser={setdataUser}
+                    />
                 </div>
             }
-           
+
         </div>
     )
 

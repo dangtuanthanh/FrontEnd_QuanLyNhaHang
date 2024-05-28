@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
@@ -11,15 +11,41 @@ const Insert_updateSPCheBien = (props) => {
     const [dataReq, setDataReq] = useState({
         IDLoaiSanPham: [],
         DanhSach: [],
-        GiaBan:0
+        GiaBan: 0
     });
     const [ckbDinhMuc, setCkbDinhMuc] = useState([]);//danh sách định mức các nguyên liệu
+    //tìm kiếm nguyên liệu hoặc sản phẩm
+    const [searchTerm2, setSearchTerm2] = useState('');
+    const [ckbDinhMuc2, setCkbDinhMuc2] = useState([]);
+    //hàm tìm kiếm vài trò truy cập
+    const handleSearch2 = (event) => {
+        setSearchTerm2(event.target.value)
+        setCkbDinhMuc2(ckbDinhMuc.filter(combo => {
+            return combo.TenNguyenLieu.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCkbDinhMuc2(ckbDinhMuc)
+    }, [ckbDinhMuc]);
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
     const [combosDonViTinh, setCombosDonViTinh] = useState([]);//danh sách đơn vị tính
     const [combos2, setCombos2] = useState([]);//danh sách loại sản phẩm
     const [combos3, setCombos3] = useState([]);//danh sách giá bán của sản phẩm
+    //tìm kiếm nguyên liệu hoặc sản phẩm
+    const [searchTerm, setSearchTerm] = useState('');
+    const [combos22, setCombos22] = useState([]);
+    //hàm tìm kiếm vài trò truy cập
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        setCombos22(combos2.filter(combo => {
+            return combo.TenLoaiSanPham.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombos22(combos2)
+    }, [combos2]);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -62,7 +88,7 @@ const Insert_updateSPCheBien = (props) => {
                     const processedResponses = responses.map(response => {
                         if (response.status === 200) {
                             return response.json();
-                        } else if (response.status === 400 ||response.status === 401 || response.status === 500) {
+                        } else if (response.status === 400 || response.status === 401 || response.status === 500) {
                             return response.json().then(errorData => {
                                 throw new Error(errorData.message);
                             });
@@ -430,7 +456,7 @@ const Insert_updateSPCheBien = (props) => {
     config.unit = ['đồng']
     // thay đổi đọc chữ
     useEffect(() => {
-        setWords(doReadNumber(config,dataReq.GiaBan.toString()))
+        setWords(doReadNumber(config, dataReq.GiaBan.toString()))
     }, [dataReq.GiaBan]);
     //xử  lý thay đổi giá bằng combos:
     const handleComboboxChange = (event) => {
@@ -439,14 +465,22 @@ const Insert_updateSPCheBien = (props) => {
             GiaBan: Number(event.target.value)
         });
     };
-
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+    const inputRef2 = useRef();
     return (
         <div className="lg-popup-box">
-            <div className="lg-box">
+            <div className="lg-box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div>
                     <div className="bg-light px-4 py-3">
                         <h4>Thông Tin Sản Phẩm Chế Biến<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight: isMobile ? '74vh' : '530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}
+                        >
                             {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input
@@ -458,8 +492,8 @@ const Insert_updateSPCheBien = (props) => {
                                         value=''
                                     />
                                 </div> */}
-                            <div className="row">
-                                <div className='col-3'>
+                            <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                     <div className="form-group">
                                         <label>Tên Sản Phẩm {batBuocNhap}</label>
                                         <input
@@ -489,7 +523,7 @@ const Insert_updateSPCheBien = (props) => {
                                         />
                                     </div>
                                 </div>
-                                <div className='col-3'>
+                                <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                     <label>Giá Sản Phẩm: {batBuocNhap}ㅤ</label>
                                     <div className="form-group">
                                         <input
@@ -507,30 +541,56 @@ const Insert_updateSPCheBien = (props) => {
                                             words.length > 0 ? <label>{words}</label> : null
                                         }
                                         {!props.isInsert &&
-                                        <div>
-                                            <label>Giá Trước Đó:ㅤ</label>
-                                            <select
-                                                className="form-select-sm"
-                                                value={dataReq.GiaBan}
-                                                onChange={handleComboboxChange}
-                                            >
-                                                {combos3.map((combo) => (
-                                                    <option key={combos3.IDGia} value={combo.GiaBan}>
-                                                        {`${combo.GiaBan}đ Ngày Áp Dụng ${combo.NgayApDung}`}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    }
+                                            <div>
+                                                <label>Giá Trước Đó:ㅤ</label>
+                                                <select
+                                                    className="form-select-sm"
+                                                    value={dataReq.GiaBan}
+                                                    onChange={handleComboboxChange}
+                                                >
+                                                    {combos3.map((combo) => (
+                                                        <option key={combos3.IDGia} value={combo.GiaBan}>
+                                                            {`${combo.GiaBan}đ Ngày Áp Dụng ${combo.NgayApDung}`}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        }
                                     </div>
-                                    
+
                                 </div>
-                                <div className='col-2'>
+                                <div className={`${isMobile ? 'col-12' : 'col-2 '}`}>
                                     <label>Loại Sản Phẩm: ㅤ</label>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <input
+                                            ref={inputRef}
+                                            id="search"
+                                            value={searchTerm} onChange={handleSearch}
+                                            placeholder='Tìm Loại Sản Phẩm'
+                                            type="text"
+                                            className="form-control-sm"
+                                            style={{ height: '1.5rem', width: '100%' }}
+                                        />
+                                        {
+                                            searchTerm !== '' &&
+                                            <button
+                                                className="btn btn-close"
+                                                style={{ color: 'red', marginLeft: '4px', fontSize: '0.8em', marginBottom: '0px' }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setCombos22(combos2)
+                                                    setSearchTerm('')
+                                                    inputRef.current.focus();
+                                                }}
+                                            >
+                                                X
+                                            </button>
+                                        }
+                                    </div>
                                     <div className="form-group"
-                                        style={{ maxHeight: '130px', overflow: 'auto' }}
+                                        style={{ maxHeight: '90px', overflow: 'auto' }}
                                     >
-                                        {combos2.map(combo => (
+                                        {combos22.map(combo => (
                                             <div key={combo.IDLoaiSanPham} >
                                                 <label>
                                                     <input
@@ -546,14 +606,40 @@ const Insert_updateSPCheBien = (props) => {
                                         ))}
                                     </div>
                                 </div>
-                                <div className='col-4'>
+                                <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                     <ImageUpload />
                                 </div>
                             </div>
-                            <div style={{ borderBottom: '2px gray solid', marginBottom: '5px' }}></div>
-                            <div className="row">
-                                <div className="col-3" style={{ borderRight: '2px gray solid' }}>
+                            <div style={{ borderBottom: '2px gray solid', marginBottom: '5px', marginTop: isMobile ? '3rem' : '0' }}></div>
+                            <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ borderRight: '2px gray solid' }}>
                                     <h6 style={{ textAlign: 'center' }}><u>Danh Sách Nguyên Liệu</u>   {batBuocNhap}</h6>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
+                                        <input
+                                            ref={inputRef2}
+                                            id="search"
+                                            value={searchTerm2} onChange={handleSearch2}
+                                            placeholder='Tìm Nguyên Liệu'
+                                            type="text"
+                                            className="form-control-sm"
+                                            style={{ height: '1.5rem' }}
+                                        />
+                                        {
+                                            searchTerm2 !== '' &&
+                                            <button
+                                                className="btn btn-close"
+                                                style={{ color: 'red', marginLeft: '4px', fontSize: '0.8em', marginBottom: '0px' }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setCkbDinhMuc2(ckbDinhMuc)
+                                                    setSearchTerm2('')
+                                                    inputRef2.current.focus();
+                                                }}
+                                            >
+                                                X
+                                            </button>
+                                        }
+                                    </div>
                                     <div className="form-group"
                                         style={{
                                             maxHeight: '240px',
@@ -561,7 +647,7 @@ const Insert_updateSPCheBien = (props) => {
                                         }}
                                     >
                                         {/* <label>Danh Sa {batBuocNhap}: </label> */}
-                                        {ckbDinhMuc.map(combo => {
+                                        {ckbDinhMuc2.map(combo => {
                                             let checked = false;
                                             dataReq.DanhSach.forEach(item => {
                                                 if (item.IDNguyenLieu === combo.IDNguyenLieu)
@@ -586,12 +672,12 @@ const Insert_updateSPCheBien = (props) => {
                                         }
                                     </div>
                                 </div>
-                                <div className="col-9 " >
+                                <div className={`${isMobile ? 'col-12' : 'col-9 '}`} >
                                     {/* <div style={{background:'#fff',borderRadius:'8px'}} className="col-9 " > */}
                                     <div className="form-group">
                                         <h6 style={{ textAlign: 'center' }}><u>Chi Tiết Định Mức</u>        {batBuocNhap}</h6>
                                     </div>
-                                    <div className="row" >
+                                    {!isMobile && <div className={`row`} >
                                         <div className="col-4">
                                             <label>Tên Nguyên Liệu</label>
                                         </div>
@@ -605,18 +691,20 @@ const Insert_updateSPCheBien = (props) => {
                                             <label>Tỉ Lệ Sai</label>
                                         </div>
                                     </div>
+                                    }
                                     <div className="form-group" style={{
-                                        maxHeight: '220px',
-                                        overflow: 'auto',
-                                        overflowX: 'hidden'
+                                        maxHeight: !isMobile && '220px',
+                                        overflow: !isMobile && 'auto',
+                                        overflowX: !isMobile && 'hidden'
                                     }}>
                                         {dataReq.DanhSach.map(item => (
                                             <div key={item.IDNguyenLieu}
-                                                className="row">
-                                                <div className="col-4">
-                                                    <label>{item.TenNguyenLieu} </label>
+                                                className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                                <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
+                                                    <label>{isMobile && 'Tên Nguyên Liệu: '}{item.TenNguyenLieu} </label>
                                                 </div>
-                                                <div className="col-3">
+                                                <div className={`${isMobile ? 'col-12' : 'col-3'}`}>
+                                                    {isMobile && <label>Khối Lượng</label>}
                                                     <input
                                                         type="number"
                                                         className="form-control"
@@ -629,7 +717,8 @@ const Insert_updateSPCheBien = (props) => {
                                                         }
                                                     />
                                                 </div>
-                                                <div className="col-3">
+                                                <div className={`${isMobile ? 'col-12' : 'col-3'}`}>
+                                                    {isMobile && <label>Đơn Vị Tính</label>}
                                                     <select className="form-select"
                                                         value={item.IDDonViTinh}
                                                         onChange={(event) => handleDetailChange(item.IDNguyenLieu, event.target.value, 'IDDonViTinh')}
@@ -644,12 +733,9 @@ const Insert_updateSPCheBien = (props) => {
                                                         ))}
 
                                                     </select>
-                                                    {/* <input
-                                                            className="form-control"
-                                                            value={item.IDDonViTinh}>
-                                                        </input> */}
                                                 </div>
-                                                <div className="col-2">
+                                                <div className={`${isMobile ? 'col-12' : 'col-2'}`}>
+                                                    {isMobile && <label>Tỉ Lệ Sai</label>}
                                                     <input
                                                         type="number"
                                                         className="form-control"
@@ -664,16 +750,16 @@ const Insert_updateSPCheBien = (props) => {
 
                                 </div>
                             </div>
-                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
-                            <button
-                                onClick={handleSubmit}
-                                style={{ float: "right" }} type="button"
-                                className="btn btn-primary mt-3"
-                            >
-                                Xác Nhận
-                            </button>
-                        </form>
 
+                        </form>
+                        <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                        <button
+                            onClick={handleSubmit}
+                            style={{ float: "right" }} type="button"
+                            className="btn btn-primary mt-3"
+                        >
+                            Xác Nhận
+                        </button>
                     </div>
                 </div>
 

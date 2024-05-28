@@ -114,9 +114,11 @@ const TableHoaDon = (props) => {
                             id='trdata'
                             key={dulieu.IDHoaDon}
                             onClick={() => {
+                                dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false) 
                                 props.setIsInsert(false)
                                 props.setIDAction(dulieu.IDHoaDon)
                                 props.setPopupInsertUpdate(true)
+                               
                             }} >
                             {/* <td >
                                 <input
@@ -154,6 +156,7 @@ const TableHoaDon = (props) => {
                             <td>
                                 <a onClick={(e) => {
                                     e.stopPropagation();
+                                    dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false) 
                                     props.setIsInsert(false)
                                     props.setIDAction(dulieu.IDHoaDon)
                                     props.setPopupInsertUpdate(true)

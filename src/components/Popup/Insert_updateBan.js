@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import Combobox from "../Combobox";
+import SearchComBoBox from "../SearchCombobox";
+import Insert_updateKhuVuc from "./Insert_updateKhuVuc";
 import { urlInsertTable, urlGetTable, urlUpdateTable, urlGetArea } from "../url"
 const Insert_updateBan = (props) => {
     const dispatch = useDispatch()
@@ -9,6 +11,12 @@ const Insert_updateBan = (props) => {
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    // dùng cho popup khu vực
+    const [isInsert, setIsInsert] = useState(false);
+    const [iDAction, setIDAction] = useState();
+    const [popup1, setPopup1] = useState(false); // popup khu vực
+    const [dataUser, setdataUser] = useState({});
+    const [popupSearch, setPopupSearch] = useState(false);
     // combobox
     const [combosKhuVuc, setCombosKhuVuc] = useState([]);//danh sách vai trò
     //bắt buộc nhập
@@ -101,7 +109,7 @@ const Insert_updateBan = (props) => {
 
 
 
-    }, []);
+    }, [dataUser]);
 
     //combo combosKhuVuc
     function handleKhuVucChange(selectedValue) {
@@ -149,7 +157,7 @@ const Insert_updateBan = (props) => {
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
                         props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser,page:1, sortBy: 'IDBan', sortOrder: 'desc' })
+                        props.setdataUser({ ...props.dataUser, page: 1, sortBy: 'IDBan', sortOrder: 'desc' })
                     })
                     .catch(error => {
                         dispatch({ type: 'SET_LOADING', payload: false })
@@ -202,15 +210,20 @@ const Insert_updateBan = (props) => {
 
     }
 
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <h4 id='tieudepop'>Thông Tin Bàn Ăn<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <div className="form-group">
                                     <label>Tên Bàn {batBuocNhap}</label>
                                     <input
@@ -278,6 +291,21 @@ const Insert_updateBan = (props) => {
                                     batBuocNhap={batBuocNhap}
                                     value={dataReq.IDKhuVuc}
                                     onChange={handleKhuVucChange}
+                                    isAdd={true}
+                                    isSearch={true}
+                                    isInfo={true}
+                                    add={() => {
+                                        setIDAction();
+                                        setIsInsert(true);
+                                        setPopup1(true);
+                                    }}
+                                    search={setPopupSearch}
+                                    info={() => {
+                                        setIsInsert(false);
+                                        setIDAction(dataReq.IDKhuVuc);
+                                        setPopup1(true);
+                                    }}
+
                                 />
                                 <div className="form-group">
                                     <label>Ghi Chú</label>
@@ -308,6 +336,30 @@ const Insert_updateBan = (props) => {
                     </div>
                 </div>
             </div >
+            {
+                popup1 && <div className="popup">
+                    <Insert_updateKhuVuc
+                        isInsert={isInsert}
+                        iDAction={iDAction}
+                        setPopupInsertUpdate={setPopup1}
+                        dataUser={dataUser}
+                        setdataUser={setdataUser}
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                    />
+                </div>
+            }
+            {
+                popupSearch && <div className="popup">
+                    <SearchComBoBox
+                        setPopupSearch={setPopupSearch}
+                        combos={combosKhuVuc}
+                        IDColumn={'IDKhuVuc'}
+                        column={'TenKhuVuc'}
+                        handleChange={handleKhuVucChange}
+                    />
+                </div>
+            }
         </div >
     );
 };

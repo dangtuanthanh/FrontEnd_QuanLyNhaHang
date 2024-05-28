@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
@@ -164,6 +164,11 @@ const ChonMon = (props) => {
                 foundItem.SoLuong + 1,
                 'SoLuong'
             );
+            props.handleDetailChange(
+                foundItem.IDSanPham,
+                1,
+                'IDTrangThai'
+            );
         } else {
             newDanhSach.push({
                 IDSanPham: ID,
@@ -175,20 +180,25 @@ const ChonMon = (props) => {
         updatedDataReq.DanhSach = newDanhSach;
         props.setDataReq(updatedDataReq);
     }
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
-        <div>
+        <div className="card" style={{ height: '90vh' }}>
             <div className="row"  >
                 <div className={navigationColumnClass}>
                     {showNavigation && <div>
                         <div>
                             <input
-                                style={{ width: '83%',border: '0.8px grey solid',marginTop:'2%' }}
+                                style={{ width: '83%', border: '0.8px grey solid', marginTop: '2%' }}
                                 id="search"
                                 value={dataUser.search}
                                 onChange={handleSearch}
                                 placeholder='Tìm Tên Món'
                                 type="text"
-                                className="form-control-sm" />
+                                className="form-control-sm"
+                                autoFocus={isMobile?false:true}
+                                ref={inputRef}
+                            />
                             {
                                 (dataUser.search.length != 0) &&
                                 <button
@@ -200,6 +210,7 @@ const ChonMon = (props) => {
                                             search: '',
                                             searchBy: 'TenSanPham'
                                         });
+                                        inputRef.current.focus();
                                     }}
                                 >
                                     X
@@ -272,26 +283,55 @@ const ChonMon = (props) => {
                                 </div>
                             </div>
                         ))}
+                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                     </div>
                     <div>
 
                     </div>
-                    {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                    {/* phân trang */}
-                    <button
-                        style={{ float: 'left' }}
-                        class="nav-link"
-                        onClick={handleToggleNavigation}
-                    >
-                        {showNavigation ? "<<" : ">>"}
-                    </button>
-                    <div style={{ textAlign: 'right', margin: '5px', float: 'right' }}>
-                        <Pagination
-                            setdataUser={setdataUser}
-                            dataUser={dataUser}
-                            dataRes={dataRes}
-                        />
+
+                    <div style={{ height: '6vh' }}></div>
+                    <div className="row">
+                        <div className="col-6">
+                        <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                position: 'absolute',
+                                left: 0,
+                                bottom: 0,
+                                margin: '0.5rem'
+                            }}>
+                                <button
+                                    style={{ float: 'left' }}
+                                    class="nav-link"
+                                    onClick={handleToggleNavigation}
+                                >
+                                    {showNavigation ? "<<" : ">>"}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                position: 'absolute',
+                                right: 0,
+                                bottom: 0,
+                                margin: '0.5rem'
+                            }}>
+                                {/* phân trang */}
+                                <div style={{ marginLeft: '1rem' }}>
+                                    <Pagination
+                                        setdataUser={setdataUser}
+                                        dataUser={dataUser}
+                                        dataRes={dataRes}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { urlInsertArea, urlGetArea, urlUpdateArea } from "../url"
 const Insert_updateArea = (props) => {
@@ -135,14 +135,20 @@ const Insert_updateArea = (props) => {
             }
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <h4 id='tieudepop'>Thông Tin Khu Vực<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <div className="form-group">
                                     <label>Tên Khu Vực {batBuocNhap}</label>
                                     <input

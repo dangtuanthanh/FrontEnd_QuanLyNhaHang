@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
 import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
-import { useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDollarSign, faIdCard, faTrashAlt, faBell, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faPrint, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare } from '@fortawesome/free-regular-svg-icons'
@@ -270,7 +269,7 @@ const GoiMon = (props) => {
         else props.openPopupAlert('Vui lòng chọn ít nhất một món ăn')
 
     }
-    
+
     return (
         <div className="full-popup-box">
             <div className="full-box" style={{ overflowY: 'hidden' }}>
@@ -314,13 +313,18 @@ const GoiMon = (props) => {
                             setDataReq={setDataReq}
                             setActiveTab={setActiveTab}
                             handleDetailChange={handleDetailChange}
-
+                            setIsInsert={props.setIsInsert}
+                            setIDAction={props.setIDAction}
+                            dataUser={dataUser}
+                            setDataUser={setDataUser}
+                            IDNhanVien={props.thongTinDangNhap.IDNhanVien}
                         />
 
                     </div>
                     <div className="col-4 card">
                         {dataReq.IDBan ? <div>
-                            <h3 style={{ textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hoá Đơn  <span style={{ color: 'blue' }}>{props.iDAction}</span></h3>
+                            <h3 style={{ textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hoá Đơn
+                                <span style={{ color: 'blue' }}> {props.iDAction}</span></h3>
                             <div className="row" style={{ marginLeft: '2%' }}>
                                 <div className="col-6" style={{ padding: '0' }}>
                                     <button
@@ -330,7 +334,7 @@ const GoiMon = (props) => {
                                     ><FontAwesomeIcon icon={faTable} style={{
                                         marginRight: '4px'
                                     }} />{dataReq.TenBan} / {
-                                            dataReq.TenKhuVuc.length > 6
+                                            dataReq.TenKhuVuc && dataReq.TenKhuVuc.length > 6
                                                 ? dataReq.TenKhuVuc.slice(0, 6) + '...'
                                                 : dataReq.TenKhuVuc
                                         }</button>
@@ -360,12 +364,12 @@ const GoiMon = (props) => {
                                             </>
                                         )}
                                     </button>
-                                    
+
                                 </div>
                             </div>
 
-                            <div style={{ height: '550px', maxHeight: '60%', overflow: 'auto', overflowX: 'hidden' }}>
-                                {dataReq.DanhSach.length > 0 ? <div>
+                            <div style={{ height: dataReq.SuDungDiemKhachHang ? '450px' : '550px', maxHeight: '57%', overflow: 'auto', overflowX: 'hidden' }}>
+                                {dataReq.DanhSach && dataReq.DanhSach.length > 0 ? <div>
                                     {dataReq.DanhSach.map((item, index) => (
                                         <div key={item.IDSanPham}
                                             className="row card-body"
@@ -427,11 +431,20 @@ const GoiMon = (props) => {
                                                         style={{ fontSize: '20px' }}
                                                         onClick={() => {
                                                             if (item.SoLuong !== 1) {
-                                                                if (item.IDTrangThai != 1) {
-                                                                    props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được chế biến xong', 'warning', 5000)
+                                                                if (!props.isInsert) {
+                                                                    if (!item.SanPhamThanhPham) {
+                                                                        if (item.IDTrangThai == 2 || item.IDTrangThai == 3) {
+                                                                            props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được chế biến xong', 'warning', 5000)
+                                                                        } else {
+                                                                            handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
+                                                                        }
+                                                                    } else if (item.IDTrangThai == 3)
+                                                                        props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được giao', 'warning', 5000)
+                                                                    else handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
                                                                 } else {
                                                                     handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
                                                                 }
+
                                                             }
                                                         }}
                                                     />
@@ -446,11 +459,16 @@ const GoiMon = (props) => {
                                                         onClick={() => {
                                                             const SoLuong = prompt("Nhập Số Lượng:");
                                                             if (SoLuong) {
-                                                                handleDetailChange(item.IDSanPham,
-                                                                    SoLuong,
-                                                                    'SoLuong'
-                                                                )
-                                                            }
+                                                                if (SoLuong.toString().match(/^\d+$/)) {
+                                                                  handleDetailChange(item.IDSanPham, Number(SoLuong), 'SoLuong');
+                                                                } else {
+                                                                  props.addNotification('Số bạn nhập không hợp lệ', 'warning', 4000);
+                                                                  return;
+                                                                }
+                                                              } else {
+                                                                props.addNotification('Bạn không nhập gì', 'warning', 4000);
+                                                                return;  
+                                                              }
                                                         }}
                                                     >
                                                         {item.SoLuong}
@@ -461,6 +479,10 @@ const GoiMon = (props) => {
                                                         style={{ fontSize: '20px' }}
                                                         onClick={() => {
                                                             handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SoLuong')
+                                                            handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SanPhamThanhPham')
+                                                            handleDetailChange(
+                                                                item.IDSanPham, 1, 'IDTrangThai'
+                                                            );
                                                         }}
                                                     />
                                                 </div>
@@ -510,12 +532,12 @@ const GoiMon = (props) => {
                                                                         null
                                                     }
                                                     style={{ fontSize: '20px' }}
-                                                    onClick={() => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
-                                                        })
-                                                    }}
+                                                // onClick={() => {
+                                                //     setDataReq({
+                                                //         ...dataReq,
+                                                //         DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
+                                                //     })
+                                                // }}
                                                 />
                                                 <FontAwesomeIcon
                                                     icon={faTrashAlt}
@@ -559,6 +581,9 @@ const GoiMon = (props) => {
 
 
                             <div style={{ width: '100%' }}>
+                                {dataReq.SuDungDiemKhachHang &&
+                                    <label style={{ color: 'grey' }}>Hoá đơn này đang sử dụng điểm khách hàng với số điểm: {dataReq.DiemKhachHang}</label>
+                                }
                                 <div style={{ width: '100%', float: 'right' }}>
 
                                     <p style={{ float: 'left', marginLeft: '2%', marginBottom: '0px' }}>
@@ -591,8 +616,8 @@ const GoiMon = (props) => {
                                                     (dataReq.PhuongThucGiamGia === 'Phần Trăm'
                                                         ? tongTien * (dataReq.GiamGia / 100)
                                                         : dataReq.GiamGia)
-                                                        - (dataReq.SuDungDiemKhachHang == true ? dataReq.DiemKhachHang :0)
-                                                        )}
+                                                    - (dataReq.SuDungDiemKhachHang == true ? dataReq.DiemKhachHang : 0)
+                                                )}
                                             </strong>
 
                                         </p>
@@ -735,7 +760,7 @@ const GoiMon = (props) => {
                                         className="btn btn-light btn-sm"
                                         onClick={() => {
                                             setPopupTachGhep(
-                                                dataReq.DanhSach.length > 1
+                                                dataReq.DanhSach && dataReq.DanhSach.length > 1
                                                     ? true
                                                     : dataReq.DanhSach[0]?.SoLuong > 1
                                                         ? true

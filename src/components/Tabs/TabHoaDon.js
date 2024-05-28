@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetInvoice, urlDeleteInvoice, urlUpdateStatusTable } from "../url";
@@ -9,22 +9,24 @@ import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableHoaDon from "../Table/TableHoaDon";
 import GoiMon from "../Popup/GoiMon";
+import GoiMonThanhToan from "../Popup/GoiMonThanhToan";
 function TabHoaDon(props) {
     //xử lý redux
     const dispatch = useDispatch();
     //Xử lý hiển thị các nút chức năng
     const [showButtonFunction, setShowButtonFunction] = useState(true);
+    const [trangThaiThanhToan, setTrangThaiThanhToan] = useState(false);
     const handleToggleButtonFunction = () => {
         setShowButtonFunction(!showButtonFunction);
     };
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
-        sortBy: 'IDHoaDon',
-        sortOrder: 'desc',
+        sortBy: 'TrangThaiThanhToan',
+        sortOrder: 'asc',
         searchBy: 'TenBan',
         search: '',
-        searchExact: 'false'
+        searchExact: 'false',
     });//
     const [dataRes, setDataRes] = useState({});
 
@@ -104,7 +106,7 @@ function TabHoaDon(props) {
     // popup in hoá đơn
     const [popupChonInHoaDon, setPopupChonInHoaDon] = useState(false);//trạng thái popupInsertUpdate
     useEffect(() => {
-        console.log('popupChonInHoaDon',popupChonInHoaDon);
+        console.log('popupChonInHoaDon', popupChonInHoaDon);
     }, [popupChonInHoaDon]);
     useEffect(() => {
         if (!popupInsertUpdate)
@@ -238,7 +240,7 @@ function TabHoaDon(props) {
             });
     }
     //Xoá dữ liệu
-    const deleteData =(ID, IDBan) => {
+    const deleteData = (ID, IDBan) => {
         dispatch({ type: 'SET_LOADING', payload: true })
         let IDs = [ID]
         if (Array.isArray(ID)) {
@@ -263,9 +265,9 @@ function TabHoaDon(props) {
                     return;
                 }
             })
-            .then(async() => {
+            .then(async () => {
                 //kiểm tra xem bàn ăn có hoá đơn nào chưa thanh toán không
-                
+
                 const KTBanAn = await TaiDanhSachHoaDon(IDBan)
                 if (KTBanAn) {
                     //nếu như có hoá đơn chưa thanh toán
@@ -309,7 +311,7 @@ function TabHoaDon(props) {
                         })
                         .catch(error => {
                             dispatch({ type: 'SET_LOADING', payload: false })
-                            console.log('error',error);
+                            console.log('error', error);
                             if (error instanceof TypeError) {
                                 openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                             } else {
@@ -320,7 +322,7 @@ function TabHoaDon(props) {
             })
             .catch(error => {
                 dispatch({ type: 'SET_LOADING', payload: false })
-                console.log('error',error);
+                console.log('error', error);
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
@@ -388,9 +390,11 @@ function TabHoaDon(props) {
 
             });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2> Quản Lý Hoá Đơn {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
                     <NotificationContainer notifications={notifications} />
@@ -403,7 +407,7 @@ function TabHoaDon(props) {
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={() => { TaiDuLieu(); }}
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faRotate} />
                                             ㅤLàm Mới
                                         </button>ㅤ
@@ -413,9 +417,10 @@ function TabHoaDon(props) {
                                                 setIsInsert(true)
                                                 setPopupInsertUpdate(true)
                                                 setIDAction()
+                                                setTrangThaiThanhToan(false)
                                             }}
 
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faAdd} />
                                             ㅤGọi Món
                                         </button>ㅤ
@@ -427,28 +432,28 @@ function TabHoaDon(props) {
                                                 setIDAction()
                                             }}
 
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faAdd} />
                                             ㅤThêm SP Chế Biến
                                         </button>ㅤ */}
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterHomNay}
-                                            className="btn btn-light">
+                                            className="btn btn-light btn-sm">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤHôm Nay
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterHomQua}
-                                            className="btn btn-light">
+                                            className="btn btn-light btn-sm">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤHôm Qua
                                         </button>ㅤ
                                         <button
                                             style={{ 'display': "inline-block" }}
                                             onClick={filterChuaThanhToan}
-                                            className="btn btn-light">
+                                            className="btn btn-light btn-sm">
                                             <FontAwesomeIcon icon={faFilter} />
                                             ㅤChưa Thanh Toán
                                         </button>ㅤ
@@ -470,7 +475,7 @@ function TabHoaDon(props) {
                                                     () => { deleteData(selectedIds) }
                                                 )
                                             }}
-                                            className="btn btn-primary">
+                                            className="btn btn-primary btn-sm">
                                             <FontAwesomeIcon icon={faTrash} />
                                             ㅤXoá ô đã chọn
                                         </button>ㅤ
@@ -486,7 +491,8 @@ function TabHoaDon(props) {
                                     setdataUser={setdataUser}
                                 />
                                 ㅤ
-                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile ? false : true}
+                                    ref={inputRef} />
                                 {
                                     dataUser.search !== '' &&
                                     <button
@@ -497,6 +503,7 @@ function TabHoaDon(props) {
                                                 ...dataUser,
                                                 search: ''
                                             });
+                                            inputRef.current.focus();
                                         }}
                                     >
                                         X
@@ -539,38 +546,70 @@ function TabHoaDon(props) {
                             popupChonInHoaDon={popupChonInHoaDon}
                             setPopupChonInHoaDon={setPopupChonInHoaDon}
                             thongTinDangNhap={props.thongTinDangNhap}
+                            setTrangThaiThanhToan={setTrangThaiThanhToan}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLapHoaDon" ?
-                            (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
-                            : (
-                                dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
-                            theo cột {dataRes.sortBy}   </label>
+
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                        {!isMobile &&
+                            <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLapHoaDon" ?
+                                (dataRes.sortOrder === 'asc'
+                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
+                                : (
+                                    dataRes.sortOrder === 'asc'
+                                        ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                        : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
+                                theo cột {dataRes.sortBy}   </label>
+                        }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-            {/* phân trang */}
-            <Pagination
-                setdataUser={setdataUser}
-                dataUser={dataUser}
-                dataRes={dataRes}
-            />
             {
                 popupInsertUpdate && (<div className="popup">
-                    <GoiMon
-                        isInsert={isInsert}
-                        setPopupInsertUpdate={setPopupInsertUpdate}
-                        dataUser={dataUser}
-                        setdataUser={setdataUser}
-                        addNotification={addNotification}
-                        openPopupAlert={openPopupAlert}
-                        iDAction={iDAction}
-                        thongTinDangNhap={props.thongTinDangNhap}
-                    />
+                    {trangThaiThanhToan ?
+                        <GoiMonThanhToan
+                            isInsert={isInsert}
+                            setPopupInsertUpdate={setPopupInsertUpdate}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={addNotification}
+                            openPopupAlert={openPopupAlert}
+                            iDAction={iDAction}
+                            thongTinDangNhap={props.thongTinDangNhap}
+                        />
+                        :
+                        <GoiMon
+                            isInsert={isInsert}
+                            setPopupInsertUpdate={setPopupInsertUpdate}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={addNotification}
+                            openPopupAlert={openPopupAlert}
+                            iDAction={iDAction}
+                            thongTinDangNhap={props.thongTinDangNhap}
+                            setIsInsert={setIsInsert}
+                            setIDAction={setIDAction}
+                        />
+                    }
                 </div>)
             }
             {

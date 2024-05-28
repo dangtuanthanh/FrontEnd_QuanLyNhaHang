@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileExcel, faFilePdf } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { urlGetAccount } from "../url";
 import { getCookie } from "../Cookie";
 import * as ExcelJS from 'exceljs';
@@ -222,13 +222,18 @@ const ExportAccount = (props) => {
         // Tải xuống file PDF
         doc.save('DanhSachNhanVien.pdf');
     };
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
-                    <div style={{ width: '80%' }} className="bg-light px-4 py-3">
+                    <div className="bg-light px-4 py-3">
                         <h4 id='tieudepop'>Xuất Dữ Liệu</h4>
-                        <form>
+                        <form style={{
+                                maxHeight: isMobile ? '74vh' : '530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
 
                             <div className="form-group">
                                 <label>Chọn định dạng xuất:ㅤ </label>

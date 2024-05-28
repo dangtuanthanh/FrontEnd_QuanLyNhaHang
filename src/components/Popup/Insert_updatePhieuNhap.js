@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import {
     urlInsertReceipt, urlGetReceipt, urlUpdateReceipt,
@@ -22,6 +22,24 @@ const Insert_updatePhieuNhap = (props) => {
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+
+    //tìm kiếm nguyên liệu hoặc sản phẩm
+    const [searchTerm, setSearchTerm] = useState('');
+    const [combosSPNL2, setCombosSPNL2] = useState([]);//danh sách sản phẩm, nguyên liệu
+    //hàm tìm kiếm vài trò truy cập
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        if (props.nhapNguyenLieu) {
+            setCombosSPNL2(combosSPNL.filter(combo => {
+                return combo.TenNguyenLieu.toLowerCase().includes(event.target.value.toLowerCase());
+            }))
+        } else setCombosSPNL2(combosSPNL.filter(combo => {
+            return combo.TenSanPham.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombosSPNL2(combosSPNL)
+    }, [combosSPNL]);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -179,7 +197,7 @@ const Insert_updatePhieuNhap = (props) => {
         })
     }
     //checkbox danh sách
-    const handleListChange = (ID, Ten, IDDonViTinh,TenDonViTinh) => {
+    const handleListChange = (ID, Ten, IDDonViTinh, TenDonViTinh) => {
         let updatedDataReq = { ...dataReq };
         let newDanhSach = updatedDataReq.DanhSach;
         if (props.nhapNguyenLieu) {
@@ -394,17 +412,23 @@ const Insert_updatePhieuNhap = (props) => {
 
     }
 
-
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="lg-popup-box">
-            <div className="lg-box">
+            <div className="lg-box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4> Thông Tin Phiếu Nhập<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
-                                <div className="row">
-                                    <div className="col-4">
+                            <form onSubmit={handleSubmit}
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <div className="form-group">
                                             <label>Tên Nhân Viên {batBuocNhap}</label>
                                             <input
@@ -417,7 +441,7 @@ const Insert_updatePhieuNhap = (props) => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <div className="form-group">
                                             <label>Ngày Nhập {batBuocNhap}</label>
                                             <input
@@ -430,7 +454,7 @@ const Insert_updatePhieuNhap = (props) => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-4">
+                                    <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
                                         <div className="form-group">
                                             <label>Ghi Chú</label>
                                             <input
@@ -449,9 +473,35 @@ const Insert_updatePhieuNhap = (props) => {
                                 </div>
                                 <div style={{ borderBottom: '2px gray solid', marginBottom: '5px' }}></div>
 
-                                <div className="row">
-                                    <div className="col-3" style={{ borderRight: '2px gray solid' }}>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-3 '}`} style={{ borderRight: '2px gray solid' }}>
                                         <h6 style={{ textAlign: 'center' }}><u>Danh Sách</u></h6>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
+                                            <input
+                                                ref={inputRef}
+                                                id="search"
+                                                value={searchTerm} onChange={handleSearch}
+                                                placeholder={props.nhapNguyenLieu ? 'Tìm Nguyên Liệu' : 'Tìm Sản Phẩm'}
+                                                type="text"
+                                                className="form-control-sm"
+                                                style={{ height: '1.5rem' }}
+                                            />
+                                            {
+                                                searchTerm !== '' &&
+                                                <button
+                                                    className="btn btn-close"
+                                                    style={{ color: 'red', marginLeft: '4px', fontSize: '0.8em', marginBottom: '0px' }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setCombosSPNL2(combosSPNL)
+                                                        setSearchTerm('')
+                                                        inputRef.current.focus();
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
+                                            }
+                                        </div>
                                         <div className="form-group"
                                             style={{
                                                 maxHeight: '380px',
@@ -459,7 +509,7 @@ const Insert_updatePhieuNhap = (props) => {
                                             }}
                                         >
                                             {/* <label>Danh Sa {batBuocNhap}: </label> */}
-                                            {combosSPNL.map(combo => {
+                                            {combosSPNL2.map(combo => {
                                                 let checked = false;
                                                 dataReq.DanhSach.forEach(item => {
                                                     if (props.nhapNguyenLieu) {
@@ -480,7 +530,7 @@ const Insert_updatePhieuNhap = (props) => {
                                                                         style={{ marginRight: '4px' }}
                                                                         type="checkbox"
                                                                         checked={checked}
-                                                                        onChange={() => handleListChange(combo.IDNguyenLieu, combo.TenNguyenLieu, combo.IDDonViTinh,combo.TenDonViTinh)}
+                                                                        onChange={() => handleListChange(combo.IDNguyenLieu, combo.TenNguyenLieu, combo.IDDonViTinh, combo.TenDonViTinh)}
                                                                     />
                                                                     {`${combo["IDNguyenLieu"]} - ${combo["TenNguyenLieu"]}`}
                                                                 </label>
@@ -492,7 +542,7 @@ const Insert_updatePhieuNhap = (props) => {
                                                                         style={{ marginRight: '4px' }}
                                                                         type="checkbox"
                                                                         checked={checked}
-                                                                        onChange={() => handleListChange(combo.IDSanPham, combo.TenSanPham, combo.IDDonViTinh,combo.TenDonViTinh)}
+                                                                        onChange={() => handleListChange(combo.IDSanPham, combo.TenSanPham, combo.IDDonViTinh, combo.TenDonViTinh)}
                                                                     />
                                                                     {`${combo["IDSanPham"]} - ${combo["TenSanPham"]}`}
                                                                 </label>
@@ -504,12 +554,12 @@ const Insert_updatePhieuNhap = (props) => {
                                             }
                                         </div>
                                     </div>
-                                    <div className="col-9 " >
+                                    <div className={`${isMobile ? 'col-12' : 'col-9 '}`}>
                                         {/* <div style={{background:'#fff',borderRadius:'8px'}} className="col-9 " > */}
                                         <div className="form-group">
                                             <h6 style={{ textAlign: 'center' }}><u>Chi Tiết</u></h6>
                                         </div>
-                                        <div className="row" >
+                                        {!isMobile && <div className={`row`} >
                                             <div className="col-4">
                                                 <label>Tên</label>
                                             </div>
@@ -529,22 +579,25 @@ const Insert_updatePhieuNhap = (props) => {
                                                 <label>Ghi Chú</label>
                                             </div>
                                         </div>
+                                        }
                                         <div className="form-group" style={{
-                                            maxHeight: '370px',
-                                            overflow: 'auto',
-                                            overflowX: 'hidden'
+                                            maxHeight: !isMobile && '370px',
+                                            overflow: !isMobile && 'auto',
+                                            overflowX: !isMobile && 'hidden'
                                         }}>
                                             {dataReq.DanhSach.map(item => (
                                                 <div key={props.nhapNguyenLieu
                                                     ? item.IDNguyenLieu
                                                     : item.IDSanPham}
-                                                    className="row">
-                                                    <div className="col-4">
-                                                        <label>{props.nhapNguyenLieu
+                                                    className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                                        <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
+                                                        <label>{isMobile && props.nhapNguyenLieu ? 'Nguyên Liệu: ':'Sản Phẩm: '}{props.nhapNguyenLieu
                                                             ? item.TenNguyenLieu
                                                             : item.TenSanPham} </label>
                                                     </div>
-                                                    <div className="col-2">
+                                                    
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2 '}`}>
+                                                    {isMobile && <label>Số Lượng Nhập:</label>}
                                                         <input
                                                             type="number"
                                                             className="form-control"
@@ -558,24 +611,26 @@ const Insert_updatePhieuNhap = (props) => {
                                                             }
                                                         />
                                                     </div>
-                                                    <div className="col-2">
-                                                            <select className="form-select"
-                                                                value={item.IDDonViTinh}
-                                                                onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'IDDonViTinh')}
-                                                            >
-                                                                {item.DanhSachCombo.map(item2 => (
-                                                                    <option
-                                                                        key={item2.IDDonViMoi}
-                                                                        value={item2.IDDonViMoi}
-                                                                    >
-                                                                        {item2.TenDonViTinh}
-                                                                    </option>
-                                                                ))}
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2 '}`}>
+                                                    {isMobile && <label>Đơn Vị Tính:</label>}
+                                                        <select className="form-select"
+                                                            value={item.IDDonViTinh}
+                                                            onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'IDDonViTinh')}
+                                                        >
+                                                            {item.DanhSachCombo.map(item2 => (
+                                                                <option
+                                                                    key={item2.IDDonViMoi}
+                                                                    value={item2.IDDonViMoi}
+                                                                >
+                                                                    {item2.TenDonViTinh}
+                                                                </option>
+                                                            ))}
 
-                                                            </select>
-                                                    
+                                                        </select>
+
                                                     </div>
-                                                    <div className="col-2">
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2 '}`}>
+                                                    {isMobile && <label>Đơn Giá Nhập:</label>}
                                                         <input
                                                             type="number"
                                                             className="form-control"
@@ -583,15 +638,8 @@ const Insert_updatePhieuNhap = (props) => {
                                                             onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'DonGiaNhap')}
                                                         />
                                                     </div>
-                                                    {/* <div className="col-2">
-                                                        <input
-                                                            type="number"
-                                                            className="form-control"
-                                                            value={item.SoLuongTon}
-                                                            onChange={(event) => handleDetailChange(props.nhapNguyenLieu ? item.IDNguyenLieu : item.IDSanPham, event.target.value, 'SoLuongTon')}
-                                                        />
-                                                    </div> */}
-                                                    <div className="col-2">
+                                                    <div className={`${isMobile ? 'col-12' : 'col-2 '}`}>
+                                                    {isMobile && <label>Ghi Chú:</label>}
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -606,26 +654,16 @@ const Insert_updatePhieuNhap = (props) => {
 
                                     </div>
                                 </div>
-
-
-
-
-
-
-
-
-
-
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
-                                <button
-                                    onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
-                                >
-                                    Xác Nhận
-                                </button>
                             </form>
-
+                            {/* <hr class="horizontal dark mt-0"></hr> */}
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mb-0" >Huỷ Bỏ</button>
+                            <button
+                                onClick={handleSubmit}
+                                style={{ float: "right" }} type="button"
+                                className="btn btn-primary mb-0"
+                            >
+                                Xác Nhận
+                            </button>
                         </div>
                     </div>
                 </div>

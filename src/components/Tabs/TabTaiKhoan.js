@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux'
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from 'react-redux'
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { Link, useLocation } from "react-router-dom"
 import { getCookie } from "../Cookie";
-import { urlChangePassword } from "../url";
+import { urlChangePassword, urlGetPicturePayment, urlUpdatePicturePayment } from "../url";
 function TabTaiKhoan(props) {
     //xử lý redux
     const dispatch = useDispatch()
@@ -81,17 +81,142 @@ function TabTaiKhoan(props) {
         onAction();
         closePopupAlert();
     }
-    const lines = JSON.stringify(props.thongTinDangNhap.NhanVien)
-        .replace(/{/g, '{\n')
-        .replace(/}/g, '\n}')
-        .replace(/,/g, ',\n')
-        .split('\n');
+
+    useEffect(() => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        fetch(`${urlGetPicturePayment}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                //cập nhật dữ liệu hiển thị
+                setDataReq({
+                    ...dataReq,
+                    HinhAnh: data[0].AnhThanhToan
+                })
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    props.addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    }, []);
+    // xử lý ảnh
+    //url xử lý hiển thị hình ảnh
+    const [urlAnh, setUrlAnh] = useState();
+    useEffect(() => {
+        if (dataReq.HinhAnh && dataReq.HinhAnh instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh(URL.createObjectURL(dataReq.HinhAnh));
+        } else setUrlAnh(dataReq.HinhAnh);
+    }, [dataReq.HinhAnh]);
+    function ImageUpload() {
+        const fileInputRef = useRef(null);
+
+        const handleImageChange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            } else {
+                setDataReq({
+                    ...dataReq,
+                    HinhAnh: undefined
+                });
+            }
+        };
+
+        const handleChooseFileClick = () => {
+            fileInputRef.current.click();
+        };
+
+        const handleDrop = (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            }
+        };
+
+        const handleDragOver = (event) => {
+            event.preventDefault();
+        };
+
+        return (
+            <div style={{ maxHeight: '112px' }} className="form-group">
+                <label>Hình Ảnh</label>
+                <div
+                    style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '1rem 0.8rem', fontSize: '0.9rem' }}
+                    onClick={handleChooseFileClick}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                >
+                    <span style={{ color: 'blue' }}>Chọn file</span> hoặc Kéo và thả ảnh vào đây
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*" // Chỉ chấp nhận các file hình ảnh
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                    {dataReq.HinhAnh && (
+                        <img
+                            src={urlAnh} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
+                            alt="Selected"
+                            style={{ maxHeight: '90px', marginTop: '5px' }}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+    //đổi mật khẩu
     const handleSubmit = () => {
         if (!dataReq.MatKhauCu || !dataReq.MatKhauMoi || !dataReq.NhapLaiMatKhauMoi)
             addNotification('Vui lòng nhập đầy đủ thông tin.', 'warning', 4000)
         else if (dataReq.MatKhauMoi != dataReq.NhapLaiMatKhauMoi) {
             addNotification('Mật khẩu và Nhập lại mật khẩu không khớp.', 'warning', 4000)
-        }else if (dataReq.MatKhauMoi === dataReq.MatKhauCu) {
+        } else if (dataReq.MatKhauMoi === dataReq.MatKhauCu) {
             addNotification('Mật khẩu cũ và Mật khẩu mới không được trùng nhau.', 'warning', 4000)
         }
         else {
@@ -133,10 +258,46 @@ function TabTaiKhoan(props) {
 
         }
     }
+    // đổi ảnh thanh toán
+    const handleSubmit2 = () => {
+        const formData = new FormData();
+        formData.append('HinhAnh', dataReq.HinhAnh);
+        fetch(urlUpdatePicturePayment, {
+            method: 'PUT',
+            headers: {
+                'ss': getCookie('ss'),
+            },
+            body: formData
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 3000)
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
 
+            });
+    }
     return (
         <div>
-            <div class="card mb-4" >
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Tài Khoản</h2>
@@ -147,7 +308,7 @@ function TabTaiKhoan(props) {
                                 height: '200px',
                                 objectFit: 'cover',
                                 borderRadius: '50%',
-                                border: '5px solid #cb0c9f'
+                                border: '5px solid #ff8c00'
                                 , boxShadow: 'rgba(0, 0, 0, 0.05) 0px 20px 27px 0px'
                             }}
                             src={props.thongTinDangNhap.NhanVien.HinhAnh}
@@ -157,7 +318,7 @@ function TabTaiKhoan(props) {
                         />
                     </div>
                     <div className="row" style={{ width: '80%' }}>
-                        <div className="col-6">
+                        <div className='col-6' >
                             <h4>ㅤ</h4>
                             <div className="form-group">
                                 <label >Tài Khoản</label>
@@ -220,7 +381,7 @@ function TabTaiKhoan(props) {
                                 />
                             </div>
                         </div>
-                        <div className="col-6">
+                        <div className='col-6' >
                             <h4 style={{ textAlign: 'center' }}>Đổi Mật Khẩu</h4>
                             <div className="form-group">
                                 <label>Nhập Mật Khẩu Cũ</label>
@@ -279,9 +440,10 @@ function TabTaiKhoan(props) {
                                     }}
                                 />
                             </div> */}
-                            <button style={{ float: 'right' }} className="btn btn-primary" onClick={() => {
-                                handleSubmit()
-                            }}>Xác Nhận Đổi Mật Khẩu</button>
+                                <button style={{ float: 'right' }} className="btn btn-primary" onClick={() => {
+                                    handleSubmit()
+                                }}>Xác Nhận Đổi Mật Khẩu
+                                </button>
                         </div>
                     </div>
                     {/* <pre
@@ -310,7 +472,7 @@ function TabTaiKhoan(props) {
                 />
             }
         </div>
-        
+
     )
 
 }

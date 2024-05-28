@@ -66,26 +66,26 @@ function Navigation({ menu }) {
   return (
     <div>
       <aside style={{ backgroundColor: '#FAFAFA' }} class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps ps--active-y" id="sidenav-main">
-        <div class="sidenav-header">
+        <div class="sidenav-header" style={{marginTop:'0.3rem'}}>
           <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
 
           <img style={{
-            maxWidth: '70%',
-            marginLeft: '15%'
+            maxWidth: '60%',
+            marginLeft: '20%'
           }} src={logo} class="navbar-brand-img h-200" alt="main_logo" />
           {/* <span class="ms-1 font-weight-bolder">VSell</span> */}
 
         </div>
-        <hr class="horizontal dark mt-0" />
+        <hr class="horizontal dark mt-1" />
 
         <ul class="navbar-nav">
           {menu.map((menuItem, index) => {
             // Chuyển đổi menuItem từ 'Hoá Đơn' thành 'HoaDon'
             //const menuPath = menuItem.replace(/\s+/g, '');
-            const menuPath = unidecode(menuItem)
-              .replace(/\s+/g, '') // Loại bỏ dấu cách
-            const nameNav = menuItem //Tên hiển thị
-              .replace('Và', '&');
+            const menuPath = menuItem ? unidecode(menuItem)
+              .replace(/\s+/g, '')  : null// Loại bỏ dấu cách
+            const nameNav = menuItem ? menuItem //Tên hiển thị
+              .replace('Và', '&'): null
             return (
               <li className="nav-item" key={index}>
                 <Link

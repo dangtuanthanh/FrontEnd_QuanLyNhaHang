@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 
 import Combobox from "../Combobox";
+import SearchComBoBox from "../SearchCombobox";
 import { getCookie } from "../Cookie";
 import Insert_updateJobPosition from "./Insert_updateJobPosition";
 import Insert_updateRole from "./Insert_updateRole";
@@ -14,17 +15,32 @@ const Insert_updateAccount = (props) => {
     const dispatch = useDispatch()
     //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
+
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
     const [dataUser, setdataUser] = useState({});//
     //xử lý hiển thị ô tài khoản, mật khẩu
     const [isChecked, setIsChecked] = useState(false);
-
+    const [popupSearch, setPopupSearch] = useState(false);
+    const [isInsert, setIsInsert] = useState(false);
+    const [iDAction, setIDAction] = useState();
     const [isDisabled, setIsDisabled] = useState(true);
     // combobox
     const [combosVaiTro, setCombosVaiTro] = useState([]);//danh sách vai trò
+    const [combosVaiTro2, setCombosVaiTro2] = useState([]);//danh sách vai trò 2
     const [combosViTriCongViec, setCombosViTriCongViec] = useState([]);//danh sách vị trí công việc
+    //hàm tìm kiếm vài trò truy cập
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        setCombosVaiTro2(combosVaiTro.filter(combo => {
+            return combo.TenVaiTro.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombosVaiTro2(combosVaiTro)
+    }, [combosVaiTro]);
     //hiển thị popup thêm vị trí công việc và vai trò truy cập
     const [themVTCV, setThemVTCV] = useState(false);
     const [themVTTC, setThemVTTC] = useState(false);
@@ -254,7 +270,7 @@ const Insert_updateAccount = (props) => {
             <div className="form-group">
                 <label>Hình Ảnh</label>
                 <div
-                    style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '20px' }}
+                    style={{ textAlign: 'center', border: '1px dashed #ccc', padding: '0.5rem' }}
                     onClick={handleChooseFileClick}
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
@@ -443,19 +459,21 @@ const Insert_updateAccount = (props) => {
             handleFetchAPISubmit();
         }
     };
-    const batPopupThemKhachHang = () => {
-        setThemVTCV(true)
-    }
-
-
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <h4 id='tieudepop'>Thông Tin Nhân Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input
@@ -467,8 +485,8 @@ const Insert_updateAccount = (props) => {
                                         value=''
                                     />
                                 </div> */}
-                                <div className="row">
-                                    <div className='col-6'>
+                                 <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group">
                                             <label>Tên Nhân Viên {batBuocNhap}</label>
                                             <input
@@ -492,8 +510,20 @@ const Insert_updateAccount = (props) => {
                                             //defaultValue=''
                                             value={dataReq.IDViTriCongViec}
                                             onChange={handleViTriCongViecChange}
-                                            onClick={batPopupThemKhachHang}
                                             isAdd={true}
+                                            isSearch={true}
+                                            isInfo={true}
+                                            add={() => {
+                                                setIDAction();
+                                                setIsInsert(true);
+                                                setThemVTCV(true);
+                                            }}
+                                            search={setPopupSearch}
+                                            info={() => {
+                                                setIsInsert(false);
+                                                setIDAction(dataReq.IDViTriCongViec);
+                                                setThemVTCV(true);
+                                            }}
                                         />
                                         <div className="form-group">
                                             <label>Ngày Sinh {batBuocNhap}</label>
@@ -604,6 +634,7 @@ const Insert_updateAccount = (props) => {
                                             <label>Ngày Vào {batBuocNhap}</label>
                                             <input
                                                 type="date"
+                                                style={{marginBottom:0}}
                                                 className="form-control"
                                                 onChange={(event) => {
                                                     setDataReq({
@@ -614,9 +645,9 @@ const Insert_updateAccount = (props) => {
                                                 value={dataReq.NgayVao} />
                                         </div>
                                     </div>
-                                    <div className='col-6'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <ImageUpload />
-                                        <div className="form-group">
+                                        <div className="form-group" style={{ marginBottom: '0px' }}>
                                             <label>
                                                 <input
                                                     type="checkbox"
@@ -632,25 +663,58 @@ const Insert_updateAccount = (props) => {
                                             alignItems: 'center'
                                         }}>
 
-                                            Vai Trò Truy Cập:
-
+                                            Vai Trò Truy Cập:{isChecked && <span style={{ color: 'red' }}>*</span>}
+                                            {/* tìm kiếm vai trò truy cập */}
+                                            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem' }}>
+                                                <input
+                                                    ref={inputRef}
+                                                    id="search"
+                                                    value={searchTerm} onChange={handleSearch}
+                                                    placeholder='Tìm Vai Trò'
+                                                    type="text"
+                                                    className="form-control-sm"
+                                                    style={{ width: '95%', height: '1.5rem' }}
+                                                    disabled={isDisabled}
+                                                />
+                                                {
+                                                    searchTerm !== '' &&
+                                                    <button
+                                                        className="btn btn-close"
+                                                        style={{ color: 'red', marginLeft: '4px', fontSize: '0.8em', marginBottom: '0px' }}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setCombosVaiTro2(combosVaiTro)
+                                                            setSearchTerm('')
+                                                            inputRef.current.focus();
+                                                        }}
+                                                    >
+                                                        X
+                                                    </button>
+                                                }
+                                            </div>
+                                            {/* thêm vai trò truy cập */}
                                             <div
                                                 style={{
                                                     marginLeft: '10px'
                                                 }}
-                                                onClick={() => setThemVTTC(true)}
+                                                onClick={() => {
+                                                    setIDAction()
+                                                    setIsInsert(true)
+                                                    setThemVTTC(true)
+                                                }
+                                                }
                                             >
                                                 <FontAwesomeIcon icon={faPlusCircle} />
                                             </div>
 
-                                            {isChecked && <span style={{ color: 'red' }}>*</span>}
+
 
                                         </label>
                                         <div className="form-group"
                                             style={{ maxHeight: '90px', overflow: 'auto' }}
                                         >
 
-                                            {combosVaiTro.map(combo => (
+                                            {combosVaiTro2.map(combo => (
                                                 <div key={combo.IDVaiTro} >
                                                     <label style={labelStyle}>
                                                         <input
@@ -769,19 +833,27 @@ const Insert_updateAccount = (props) => {
                                         )}
                                     </div>
                                 </div>
-                                <button onClick={() => { props.setPopup1(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
-                                <button
-                                    onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
-                                >
-                                    Xác Nhận
-                                </button>
                             </form>
+                            <button
+                                onClick={() => { props.setPopup1(false) }}
+                                type="button"
+                                style={{marginBottom:0}}
+                                className="btn btn-danger" >
+                                Huỷ Bỏ
+                            </button>
+                            <button
+                                onClick={handleSubmit}
+                                style={{ float: "right",marginBottom:0}} 
+                                type="button"
+                                className="btn btn-primary"
+                            >
+                                Xác Nhận
+                            </button>
                             {
                                 themVTCV && <div className="popup">
                                     <Insert_updateJobPosition
-                                        isInsert={true}
+                                        isInsert={isInsert}
+                                        iDAction={iDAction}
                                         setPopupInsertUpdate={setThemVTCV}
                                         dataUser={dataUser}
                                         setdataUser={setdataUser}
@@ -793,12 +865,24 @@ const Insert_updateAccount = (props) => {
                             {
                                 themVTTC && <div className="popup">
                                     <Insert_updateRole
-                                        isInsert={true}
+                                        isInsert={isInsert}
+                                        iDAction={iDAction}
                                         setPopupInsertUpdate={setThemVTTC}
                                         dataUser={dataUser}
                                         setdataUser={setdataUser}
                                         addNotification={props.addNotification}
                                         openPopupAlert={props.openPopupAlert}
+                                    />
+                                </div>
+                            }
+                            {
+                                popupSearch && <div className="popup">
+                                    <SearchComBoBox
+                                        setPopupSearch={setPopupSearch}
+                                        combos={combosViTriCongViec}
+                                        IDColumn={'IDViTriCongViec'}
+                                        column={'TenViTriCongViec'}
+                                        handleChange={handleViTriCongViecChange}
                                     />
                                 </div>
                             }

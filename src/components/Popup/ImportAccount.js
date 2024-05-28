@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFastBackward, faStepBackward, faStepForward, faFastForward } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
 import { urlImportExcelAccount } from "../url";
 const ImportAccount = (props) => {
@@ -86,7 +86,7 @@ const ImportAccount = (props) => {
         // Nếu hợp lệ
         if (isValid) {
             // submit
-            dispatch({type: 'SET_LOADING', payload: true})
+            dispatch({ type: 'SET_LOADING', payload: true })
             const formData = new FormData();
             formData.append('file', file);
             for (const key in dataReq) {
@@ -107,21 +107,21 @@ const ImportAccount = (props) => {
                     return response.json().then(errorData => { throw new Error(errorData.message); });
                 } else if (response.status === 500) {
                     return response.json().then(errorData => { throw new Error(errorData.message); });
-                }else if (response.status === 400) {
+                } else if (response.status === 400) {
                     return response.json().then(errorData => { throw new Error(errorData.message); });
                 }
-                 else {
+                else {
                     return;
                 }
             }).then(data => {
                 setSuccessImport(data.success);
                 //setErrorImport(data.error);
                 setListErrors(data.errorImport);
-                dispatch({type: 'SET_LOADING', payload: false})
+                dispatch({ type: 'SET_LOADING', payload: false })
                 props.setdataUser({ ...props.dataUser, sortBy: 'IDNhanVien', sortOrder: 'desc' })
             })
                 .catch(error => {
-                    dispatch({type: 'SET_LOADING', payload: false})
+                    dispatch({ type: 'SET_LOADING', payload: false })
                     if (error instanceof TypeError) {
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
@@ -130,17 +130,21 @@ const ImportAccount = (props) => {
                 });
         }
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div
-                            style={{ width: '80%', height: '550px', overflowY: 'auto' }}
                             className="bg-light px-4 py-3"
                         >
                             <h3 style={{ textAlign: 'center' }} id='tieudepop'>Nhập Dữ Liệu</h3>
-                            <form>
+                            <form style={{
+                                maxHeight: isMobile ? '74vh' : '530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 <br></br>
                                 <div style={{ textAlign: 'center' }}>
                                     <input
@@ -150,8 +154,8 @@ const ImportAccount = (props) => {
                                         onChange={handleFileChange} /><br></br>
                                 </div>
                                 <h5>Vị trí các cột dữ liệu trong file Excel:</h5>
-                                <div className="row">
-                                    <div className='col-3'>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                         <div className="form-group">
                                             <label>Tên Nhân Viên</label>
                                             {/* <label>Tên Nhân Viên {batBuocNhap}</label> */}
@@ -198,7 +202,7 @@ const ImportAccount = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className='col-3'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                         <div className="form-group">
                                             <label>ID Vị Trí Công Việc</label>
                                             {/* <label>Tên Nhân Viên {batBuocNhap}</label> */}
@@ -245,7 +249,7 @@ const ImportAccount = (props) => {
                                         </div>
 
                                     </div>
-                                    <div className='col-3'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                         <div className="form-group">
                                             <label>Ngày Sinh</label>
                                             {/* <label>Tên Nhân Viên {batBuocNhap}</label> */}
@@ -291,7 +295,7 @@ const ImportAccount = (props) => {
                                             />
                                         </div>
                                     </div>
-                                    <div className='col-3'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-3 '}`}>
                                         <div className="form-group">
                                             <label>Giới Tính</label>
                                             {/* <label>Tên Nhân Viên {batBuocNhap}</label> */}
@@ -359,7 +363,7 @@ const ImportAccount = (props) => {
                             </form>
                         </div>
                         <div
-                            style={{ width: '80%' }}
+                            style={{ width: '100%' }}
                             className="bg-light px-4 py-3"
                         >
                             <button

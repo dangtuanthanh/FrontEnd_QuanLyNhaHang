@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlGetPermission, urlInsertRole, urlGetRole,urlUpdateRole } from "../url"
+import { urlGetPermission, urlInsertRole, urlGetRole, urlUpdateRole } from "../url"
 const Insert_updateRole = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
@@ -12,8 +12,20 @@ const Insert_updateRole = (props) => {
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    const [searchTerm, setSearchTerm] = useState('');
     // combobox
     const [combosQuyen, setCombosQuyen] = useState([]);//danh sách quyền
+    const [combosQuyen2, setCombosQuyen2] = useState([]);
+    //hàm tìm kiếm quyền
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        setCombosQuyen2(combosQuyen.filter(combo => {
+            return combo.MoTa.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombosQuyen2(combosQuyen)
+    }, [combosQuyen]);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -55,7 +67,7 @@ const Insert_updateRole = (props) => {
                     const stringsIDQuyen = data[1].IDQuyen.map(num => num.toString());
                     getRoleByID = ({
                         ...getRoleByID,
-                        IDQuyen:stringsIDQuyen
+                        IDQuyen: stringsIDQuyen
                     });
                     setDataReq(getRoleByID)
                 }
@@ -95,7 +107,7 @@ const Insert_updateRole = (props) => {
             dispatch({ type: 'SET_LOADING', payload: true })
             const strIDQuyen = dataReq.IDQuyen.join(',');
             const data = {
-                IDVaiTro:dataReq.IDVaiTro,
+                IDVaiTro: dataReq.IDVaiTro,
                 TenVaiTro: dataReq.TenVaiTro,
                 IDQuyen: strIDQuyen
             };
@@ -160,7 +172,7 @@ const Insert_updateRole = (props) => {
                         props.addNotification(data.message, 'success', 3000)
                         //ẩn loading
                         dispatch({ type: 'SET_LOADING', payload: false })
-                        props.setPopupInsertUpdate(false) 
+                        props.setPopupInsertUpdate(false)
                         props.setdataUser({ ...props.dataUser })
                     })
                     .catch(error => {
@@ -175,15 +187,21 @@ const Insert_updateRole = (props) => {
             }
         }
     }
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Vai Trò Truy Cập<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-group">
+                            <form onSubmit={handleSubmit} style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
+                                <div className="form-group" >
                                     <label>Tên Vai Trò {batBuocNhap}</label>
                                     <input
                                         type="text"
@@ -197,36 +215,61 @@ const Insert_updateRole = (props) => {
                                         }}
                                     />
                                 </div>
-                                <div className="form-group"
-                                    style={{ maxHeight: '400px', overflow: 'auto' }}
-                                >
+                                <div className="form-group mb-0">
                                     <label>Quyền: {batBuocNhap}ㅤ</label>
-                                    {combosQuyen.map(combo => (
-                                        <div key={combo.IDQuyen} >
-                                            <label >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={
-                                                        (dataReq.IDQuyen?.includes(combo.IDQuyen.toString())) || false
-                                                    }
-                                                    onChange={() => handleQuyenChange(combo.IDQuyen.toString())}
-                                                />
-                                                {` ${combo["IDQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
-                                            </label>
-                                        </div>
-                                    ))}
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <input
+                                            ref={inputRef}
+                                            id="search"
+                                            value={searchTerm} onChange={handleSearch}
+                                            placeholder='Tìm Quyền'
+                                            type="text"
+                                            className="form-control-sm"
+                                            style={{ width: '95%' }}
+                                        />
+                                        {
+                                            searchTerm !== '' &&
+                                            <button
+                                                className="btn btn-close"
+                                                style={{ color: 'red', marginLeft: '4px', marginBottom: 0, fontSize: '0.6em' }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setCombosQuyen2(combosQuyen)
+                                                    setSearchTerm('')
+                                                    inputRef.current.focus();
+                                                }}
+                                            >
+                                                X
+                                            </button>
+                                        }
+                                    </div>
+                                    <div style={{ maxHeight: '370px', overflow: 'auto' }}>
+                                        {combosQuyen2.map(combo => (
+                                            <div key={combo.IDQuyen} >
+                                                <label >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            (dataReq.IDQuyen?.includes(combo.IDQuyen.toString())) || false
+                                                        }
+                                                        onChange={() => handleQuyenChange(combo.IDQuyen.toString())}
+                                                    />
+                                                    {` ${combo["IDQuyen"]} - ${combo["TenQuyen"]} - ${combo["MoTa"]}`}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                            </form>
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3  mb-0" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
-                                    style={{ float: "right" }} type="button"
-                                    className="btn btn-primary mt-3"
+                                    style={{ float: "right"}} 
+                                    type="button"
+                                    className="btn btn-primary mt-3 mb-0"
                                 >
                                     Xác Nhận
                                 </button>
-                            </form>
-
                         </div>
                     </div>
                 </div>

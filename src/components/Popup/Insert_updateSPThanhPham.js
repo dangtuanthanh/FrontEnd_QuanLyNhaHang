@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import Combobox from "../Combobox";
+import SearchComBoBox from "../SearchCombobox";
+import Insert_updateDonViTinh from "./Insert_updateDonViTinh";
 import { getCookie } from "../Cookie";
 import { urlGetUnit, urlGetTypeProduct, urlGetProduct, urlUpdateFinishedProduct, urlInsertFinishedProduct } from "../url"
 const Insert_updateSPThanhPham = (props) => {
@@ -11,15 +13,34 @@ const Insert_updateSPThanhPham = (props) => {
     //lưu trữ dữ liệu gửi đi
     const [dataReq, setDataReq] = useState({
         IDLoaiSanPham: [],
-        GiaBan:0
+        GiaBan: 0
     });
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
     // combobox
     const [combos1, setCombos1] = useState([]);//danh sách đơn vị tính
+    const [popupSearch, setPopupSearch] = useState(false);
+    const [isInsert, setIsInsert] = useState(false);
+    const [iDAction, setIDAction] = useState();
+    const [donViTinh, setDonViTinh] = useState(false);
+    const [dataUser, setdataUser] = useState({});//
+
     const [combos2, setCombos2] = useState([]);//danh sách loại sản phẩm
     const [combos3, setCombos3] = useState([]);//danh sách giá bán của sản phẩm
+    //tìm kiếm nguyên liệu hoặc sản phẩm
+    const [searchTerm, setSearchTerm] = useState('');
+    const [combos22, setCombos22] = useState([]);//danh sách sản phẩm, nguyên liệu
+    //hàm tìm kiếm vài trò truy cập
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value)
+        setCombos22(combos2.filter(combo => {
+            return combo.TenLoaiSanPham.toLowerCase().includes(event.target.value.toLowerCase());
+        }))
+    };
+    useEffect(() => {
+        setCombos22(combos2)
+    }, [combos2]);
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     useEffect(() => {
@@ -135,7 +156,7 @@ const Insert_updateSPThanhPham = (props) => {
 
 
 
-    }, []);
+    }, [dataUser]);
 
     //combo loại sản phẩm
     const handleLoaiSanPhamChange = (ID) => {
@@ -365,7 +386,7 @@ const Insert_updateSPThanhPham = (props) => {
     config.unit = ['đồng']
     // thay đổi đọc chữ
     useEffect(() => {
-        setWords(doReadNumber(config,dataReq.GiaBan.toString()))
+        setWords(doReadNumber(config, dataReq.GiaBan.toString()))
     }, [dataReq.GiaBan]);
 
     //xử  lý thay đổi giá bằng combos:
@@ -375,14 +396,21 @@ const Insert_updateSPThanhPham = (props) => {
             GiaBan: Number(event.target.value)
         });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4>Thông Tin Sản Phẩm Thành Phẩm<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit}
+                            style={{
+                                maxHeight:  isMobile ? '74vh':'530px',
+                                overflow: 'auto',
+                                overflowX: 'hidden'
+                            }}>
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input
@@ -394,8 +422,8 @@ const Insert_updateSPThanhPham = (props) => {
                                         value=''
                                     />
                                 </div> */}
-                                <div className="row">
-                                    <div className='col-6'>
+                                 <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group">
                                             <label>Tên Sản Phẩm {batBuocNhap}</label>
                                             <input
@@ -419,6 +447,20 @@ const Insert_updateSPThanhPham = (props) => {
                                             //defaultValue=''
                                             value={dataReq.IDDonViTinh}
                                             onChange={handleDonViTinhChange}
+                                            isAdd={true}
+                                            isSearch={true}
+                                            isInfo={true}
+                                            add={() => {
+                                                setIDAction();
+                                                setIsInsert(true);
+                                                setDonViTinh(true);
+                                            }}
+                                            search={setPopupSearch}
+                                            info={() => {
+                                                setIsInsert(false);
+                                                setIDAction(dataReq.IDDonViTinh);
+                                                setDonViTinh(true);
+                                            }}
                                         />
                                         <div className="form-group">
                                             <label>Mô Tả</label>
@@ -436,7 +478,7 @@ const Insert_updateSPThanhPham = (props) => {
                                         </div>
                                         <ImageUpload />
                                     </div>
-                                    <div className='col-6'>
+                                    <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <label>Giá Sản Phẩm: {batBuocNhap} ㅤ</label>
                                         <div className="form-group">
                                             <input
@@ -471,10 +513,36 @@ const Insert_updateSPThanhPham = (props) => {
                                             </div>
                                         }
                                         <label>Loại Sản Phẩm: ㅤ</label>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1rem', marginBottom: '0.5rem' }}>
+                                            <input
+                                                ref={inputRef}
+                                                id="search"
+                                                value={searchTerm} onChange={handleSearch}
+                                                placeholder='Tìm Loại Sản Phẩm'
+                                                type="text"
+                                                className="form-control-sm"
+                                                style={{ height: '1.5rem', width: '90%' }}
+                                            />
+                                            {
+                                                searchTerm !== '' &&
+                                                <button
+                                                    className="btn btn-close"
+                                                    style={{ color: 'red', marginLeft: '4px', fontSize: '0.8em', marginBottom: '0px' }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setCombos22(combos2)
+                                                        setSearchTerm('')
+                                                        inputRef.current.focus();
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
+                                            }
+                                        </div>
                                         <div className="form-group"
-                                            style={{ maxHeight: '190px', overflow: 'auto' }}
+                                            style={{ maxHeight: '260px', overflow: 'auto' }}
                                         >
-                                            {combos2.map(combo => (
+                                            {combos22.map(combo => (
                                                 <div key={combo.IDLoaiSanPham} >
                                                     <label>
                                                         <input
@@ -491,7 +559,9 @@ const Insert_updateSPThanhPham = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                                
+                            </form>
+                            <button onClick={() => { props.setPopupInsertUpdate(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
                                 <button
                                     onClick={handleSubmit}
                                     style={{ float: "right" }} type="button"
@@ -499,11 +569,33 @@ const Insert_updateSPThanhPham = (props) => {
                                 >
                                     Xác Nhận
                                 </button>
-                            </form>
-
                         </div>
                     </div>
                 </div>
+                {
+                    donViTinh && <div className="popup">
+                        <Insert_updateDonViTinh
+                            isInsert={isInsert}
+                            iDAction={iDAction}
+                            setPopupInsertUpdate={setDonViTinh}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={props.addNotification}
+                            openPopupAlert={props.openPopupAlert}
+                        />
+                    </div>
+                }
+                {
+                    popupSearch && <div className="popup">
+                        <SearchComBoBox
+                            setPopupSearch={setPopupSearch}
+                            combos={combos1}
+                            IDColumn={'IDDonViTinh'}
+                            column={'TenDonViTinh'}
+                            handleChange={handleDonViTinhChange}
+                        />
+                    </div>
+                }
             </div >
         </div >
     );

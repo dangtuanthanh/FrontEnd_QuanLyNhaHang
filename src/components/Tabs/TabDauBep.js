@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
 import { urlGetTypeProduct, urlDeleteTypeProduct, urlGetOrder } from "../url";
@@ -211,9 +211,11 @@ function TabDauBep() {
 
             });
     };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card mb-4">
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
                     <h2 style={{ textAlign: 'center' }}>Hàng Đợi Món Ăn</h2>
 
@@ -221,12 +223,9 @@ function TabDauBep() {
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
 
                     <div>
-
-
-                        <div style={{ 'display': "flex",alignItems:'center', float: 'right' }}>
-                            
-                            
-                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" />
+                        <div style={{'display': isMobile ? 'inline':'flex', alignItems: 'center', float: 'right' }}>
+                            <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile ? false : true}
+                                ref={inputRef} />
                             {
                                 dataUser.search !== '' &&
                                 <button
@@ -237,6 +236,7 @@ function TabDauBep() {
                                             ...dataUser,
                                             search: ''
                                         });
+                                        inputRef.current.focus();
                                     }}
                                 >
                                     X
@@ -248,38 +248,38 @@ function TabDauBep() {
                                 <option value="TenBan">Tìm theo Tên Bàn</option>
                             </select>
                             ㅤ
-                            <div style={{ 'display': "flex",alignItems:'center',border:'2px solid #e9ecef',borderRadius:'30px'}}>
-                            <label  style={{marginBottom:'0px',color:'#6d6d6d',fontWeight:"bold"}}>Tự động cập nhật:  </label>
-                            <label style={{marginBottom:'0px'}}> {countDown}</label>
-                            ㅤ
-                            <button
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    width: '50px',
-                                    height: '25px',
-                                    backgroundColor: isRunning ? '#cb0c9f' : 'gray',
-                                    borderRadius: '30px',
-                                    position: 'relative'
-                                }}
-                                onClick={toggle}
-                            >
-                                <div
+                            <div style={{ 'display':'flex', alignItems: 'center', border: '2px solid #e9ecef', borderRadius: '30px', marginTop:isMobile?'1rem':'auto',justifyContent:isMobile?'center':'auto' }}>
+                                <label style={{ marginBottom: '0px', color: '#6d6d6d', fontWeight: "bold" }}>Tự động cập nhật:  </label>
+                                <label style={{ marginBottom: '0px' }}> {countDown}</label>
+                                ㅤ
+                                <button
                                     style={{
-                                        width: '20px',
-                                        height: '20px',
-                                        backgroundColor: '#fff',
-                                        borderRadius: '50%',
-                                        position: 'absolute',
-                                        top: '2px',
-                                        left: isRunning ? '27px' : '2px',
-                                        transition: 'all 0.2s ease'
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        width: '50px',
+                                        height: '25px',
+                                        backgroundColor: isRunning ? '#ff8c00' : 'gray',
+                                        borderRadius: '30px',
+                                        position: 'relative'
                                     }}
-                                />
-                            </button>
+                                    onClick={toggle}
+                                >
+                                    <div
+                                        style={{
+                                            width: '20px',
+                                            height: '20px',
+                                            backgroundColor: '#fff',
+                                            borderRadius: '50%',
+                                            position: 'absolute',
+                                            top: '2px',
+                                            left: isRunning ? '27px' : '2px',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    />
+                                </button>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -293,15 +293,18 @@ function TabDauBep() {
                             openPopupAlert={openPopupAlert}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
-                        <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "ThoiGianDat" ?
-                            (dataRes.sortOrder === 'asc'
-                                ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
-                                : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
-                            : (
-                                dataRes.sortOrder === 'asc'
-                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
-                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
-                            theo cột {dataRes.sortBy}   </label>
+                        {!isMobile &&
+                            <label style={{ borderTop: '1px solid black', marginLeft: '60%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "ThoiGianDat" ?
+                                (dataRes.sortOrder === 'asc'
+                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
+                                : (
+                                    dataRes.sortOrder === 'asc'
+                                        ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                        : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
+                                theo cột {dataRes.sortBy}   </label>
+                        }
+
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 import { getCookie } from "../Cookie";
 import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign, faIdCard, faTrashAlt, faBell, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faPrint, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
+import { faDollarSign, faIdCard, faTrashAlt, faXmark, faBars, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faCartShopping, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare } from '@fortawesome/free-regular-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
@@ -125,69 +125,69 @@ const GoiMon = (props) => {
                 });
         }
     }, [dataUser]);
-    const InHoaDon = (data) => {
-        // Tạo đối tượng PDF
-        const doc = new jsPDF();
-        doc.addFileToVFS("Arial.ttf", arialFont);
-        doc.addFont("Arial.ttf", "Arial", "normal");
-        doc.setFont("Arial");
+    // const InHoaDon = (data) => {
+    //     // Tạo đối tượng PDF
+    //     const doc = new jsPDF();
+    //     doc.addFileToVFS("Arial.ttf", arialFont);
+    //     doc.addFont("Arial.ttf", "Arial", "normal");
+    //     doc.setFont("Arial");
 
-        var font = doc.getFont();
+    //     var font = doc.getFont();
 
 
-        // Thêm nội dung vào PDF
-        // Thêm hình 
-        doc.addImage(logo, 'PNG', (doc.internal.pageSize.width - 50) / 2, 10, 50, 20);
-        const y = 10
-        doc.setFontSize(10);
-        doc.text('Nhà Hàng VRes, 36 Huỳnh Văn Nghệ, KP9 P.Bửu Long,\nThành Phố Biên Hoà, Tỉnh Đồng Nai Việt Nam 1675467846', doc.internal.pageSize.getWidth() / 2, y + 25, { align: 'center', fontSize: 9 });
-        doc.setFontSize(20);
-        doc.text('HOÁ ĐƠN BÁN HÀNG', doc.internal.pageSize.getWidth() / 2, y + 45, { align: 'center' });
-        doc.setFontSize(13);
-        const date = new Date();
-        function format(n) {
-            return n < 10 ? '0' + n : n
-        }
-        const dateString = `${format(date.getDate())}/${format(date.getMonth() + 1)}/${format(date.getFullYear())} ${format(date.getHours())}:${format(date.getMinutes())}:${format(date.getSeconds())}`
+    //     // Thêm nội dung vào PDF
+    //     // Thêm hình 
+    //     doc.addImage(logo, 'PNG', (doc.internal.pageSize.width - 50) / 2, 10, 50, 20);
+    //     const y = 10
+    //     doc.setFontSize(10);
+    //     doc.text('Nhà Hàng VRes, 36 Huỳnh Văn Nghệ, KP9 P.Bửu Long,\nThành Phố Biên Hoà, Tỉnh Đồng Nai Việt Nam 1675467846', doc.internal.pageSize.getWidth() / 2, y + 25, { align: 'center', fontSize: 9 });
+    //     doc.setFontSize(20);
+    //     doc.text('HOÁ ĐƠN BÁN HÀNG', doc.internal.pageSize.getWidth() / 2, y + 45, { align: 'center' });
+    //     doc.setFontSize(13);
+    //     const date = new Date();
+    //     function format(n) {
+    //         return n < 10 ? '0' + n : n
+    //     }
+    //     const dateString = `${format(date.getDate())}/${format(date.getMonth() + 1)}/${format(date.getFullYear())} ${format(date.getHours())}:${format(date.getMinutes())}:${format(date.getSeconds())}`
 
-        doc.text(`Ngày Bán: ${dateString}`, 20, y + 55);
-        doc.text(`Hoá Đơn: ${dataReq.IDHoaDon}`, 20, y + 61);
-        doc.text(`Nhân Viên: ${dataReq.IDNhanVien}`, doc.internal.pageSize.getWidth() - 55, y + 55);
-        // doc.text('Nhân Viên:', doc.internal.pageSize.getWidth() - 55, y + 61);
-        // ...
-        doc.autoTable({
-            head: [['Mặt Hàng', 'Đơn Giá', 'Số Lượng', 'Thành Tiền']],
-            body: data.map(item => [item.TenSanPham, item.GiaBan, item.SoLuong, (item.GiaBan * item.SoLuong)]),
-            startY: y + 66,
-            theme: 'grid',
-            styles: {
-                fontSize: 12,
-                cellPadding: 5,
-                halign: 'center',
-                valign: 'middle',
-                font: 'Arial'
-            },
-            columnStyles: {
-                0: { cellWidth: 35 },
-                1: { cellWidth: 35 },
-                2: { cellWidth: 35 },
-                3: { cellWidth: 35 }
-            },
+    //     doc.text(`Ngày Bán: ${dateString}`, 20, y + 55);
+    //     doc.text(`Hoá Đơn: ${dataReq.IDHoaDon}`, 20, y + 61);
+    //     doc.text(`Nhân Viên: ${dataReq.IDNhanVien}`, doc.internal.pageSize.getWidth() - 55, y + 55);
+    //     // doc.text('Nhân Viên:', doc.internal.pageSize.getWidth() - 55, y + 61);
+    //     // ...
+    //     doc.autoTable({
+    //         head: [['Mặt Hàng', 'Đơn Giá', 'Số Lượng', 'Thành Tiền']],
+    //         body: data.map(item => [item.TenSanPham, item.GiaBan, item.SoLuong, (item.GiaBan * item.SoLuong)]),
+    //         startY: y + 66,
+    //         theme: 'grid',
+    //         styles: {
+    //             fontSize: 12,
+    //             cellPadding: 5,
+    //             halign: 'center',
+    //             valign: 'middle',
+    //             font: 'Arial'
+    //         },
+    //         columnStyles: {
+    //             0: { cellWidth: 45 },
+    //             1: { cellWidth: 35 },
+    //             2: { cellWidth: 35 },
+    //             3: { cellWidth: 35 }
+    //         },
 
-        });
+    //     });
 
-        // Thêm dòng chữ Ngày xuất file vào cuối trang
-        const lastPage = doc.internal.getNumberOfPages();
-        doc.setPage(lastPage);
-        doc.text(`Ngày xuất file: ${new Date().toLocaleString()}`, 10, doc.internal.pageSize.getHeight() - 10);
+    //     // Thêm dòng chữ Ngày xuất file vào cuối trang
+    //     const lastPage = doc.internal.getNumberOfPages();
+    //     doc.setPage(lastPage);
+    //     doc.text(`Ngày xuất file: ${new Date().toLocaleString()}`, 10, doc.internal.pageSize.getHeight() - 10);
 
-        // // Tải xuống file PDF
-        // doc.save('DanhSachNhanVien.pdf');
-        doc.autoPrint();
-        //This is a key for printing
-        doc.output('dataurlnewwindow');
+    //     // // Tải xuống file PDF
+    //     // doc.save('DanhSachNhanVien.pdf');
+    //     doc.autoPrint();
+    //     //This is a key for printing
+    //     doc.output('dataurlnewwindow');
 
-    };
+    // };
 
     //xử lý thông báo bếp
     const handleSubmit = (e) => {
@@ -269,13 +269,18 @@ const GoiMon = (props) => {
         else props.openPopupAlert('Vui lòng chọn ít nhất một món ăn')
 
     }
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+    const [showNavigation, setShowNavigation] = useState((false));
+    const handleToggleNavigation = () => {
+        setShowNavigation(!showNavigation);
+    };
     return (
         <div className="full-popup-box">
             <div className="full-box" style={{ overflowY: 'hidden' }}>
-                <div className="row">
-                    <div className="col-8 card">
-                        <ul class="nav nav-tabs col-6">
+                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                    <div className={`${isMobile ? 'col-12 card' : 'col-8 card'}`}
+                        style={{ display: showNavigation && 'none' }}>
+                        <ul class="nav nav-tabs">
                             <li class="nav-item">
                                 <button class="nav-link " onClick={() => {
                                     props.setPopupInsertUpdate(false)
@@ -321,239 +326,251 @@ const GoiMon = (props) => {
                         />
 
                     </div>
-                    <div className="col-4 card">
-                        {dataReq.IDBan ? <div>
-                            <h3 style={{ textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hoá Đơn
-                                <span style={{ color: 'blue' }}> {props.iDAction}</span></h3>
-                            <div className="row" style={{ marginLeft: '2%' }}>
-                                <div className="col-6" style={{ padding: '0' }}>
-                                    <button
-                                        style={{ width: '85%' }}
-                                        className="btn btn-light btn-sm"
-                                        onClick={() => handleTabClick(tabs.tab1)}
-                                    ><FontAwesomeIcon icon={faTable} style={{
-                                        marginRight: '4px'
-                                    }} />{dataReq.TenBan} / {
-                                            dataReq.TenKhuVuc && dataReq.TenKhuVuc.length > 6
-                                                ? dataReq.TenKhuVuc.slice(0, 6) + '...'
-                                                : dataReq.TenKhuVuc
-                                        }</button>
-                                </div>
-                                <div className="col-6" style={{ padding: '0' }}>
-                                    <button
-                                        style={{ width: '85%' }}
-                                        className="btn btn-light btn-sm"
-                                        onClick={() => { setPopupChonKhachHang(true) }}
-                                    >
-                                        {dataReq.TenKhachHang ? (
-                                            <>
-                                                <FontAwesomeIcon icon={faIdCard} style={{
-                                                    marginRight: '4px'
-                                                }} />
-                                                {
-                                                    dataReq.TenKhachHang.length > 12
-                                                        ? dataReq.TenKhachHang.slice(0, 12) + '...'
-                                                        : dataReq.TenKhachHang
+                    {(!isMobile || showNavigation) &&
+                        <div div className={`${isMobile ? 'col-12 card' : 'col-4 card'}`}>
+                            {dataReq.IDBan ? <div>
+                                <h3 style={{ textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hoá Đơn
+                                    <span style={{ color: 'blue' }}> {props.iDAction}</span></h3>
+                                <div className="row" style={{ marginLeft: '2%' }}>
+                                    <div className="col-6" style={{ padding: '0' }}>
+                                        <button
+                                            style={{ width: '85%' }}
+                                            className="btn btn-light btn-sm"
+                                            onClick={() => {
+                                                if (isMobile) {
+                                                    setShowNavigation(!showNavigation);
+                                                    handleTabClick(tabs.tab1)
                                                 }
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FontAwesomeIcon icon={faIdCard} style={{
-                                                    marginRight: '4px'
-                                                }} />Chọn Khách Hàng
-                                            </>
-                                        )}
-                                    </button>
+                                                handleTabClick(tabs.tab1)
 
-                                </div>
-                            </div>
-
-                            <div style={{ height: dataReq.SuDungDiemKhachHang ? '450px' : '550px', maxHeight: '57%', overflow: 'auto', overflowX: 'hidden' }}>
-                                {dataReq.DanhSach && dataReq.DanhSach.length > 0 ? <div>
-                                    {dataReq.DanhSach.map((item, index) => (
-                                        <div key={item.IDSanPham}
-                                            className="row card-body"
-                                            style={{ paddingBottom: '0', boxShadow: '0 20px 27px 0 rgba(0,0,0,.05)', borderRadius: '30px' }}
+                                            }}
+                                        ><FontAwesomeIcon icon={faTable} style={{
+                                            marginRight: '4px'
+                                        }} />  {dataReq.TenBan}
+                                            {!isMobile && (
+                                                <>
+                                                    {' / '}
+                                                    {dataReq.TenKhuVuc && dataReq.TenKhuVuc.length > 6
+                                                        ? dataReq.TenKhuVuc.slice(0, 6) + '...'
+                                                        : dataReq.TenKhuVuc}
+                                                </>
+                                            )}</button>
+                                    </div>
+                                    <div className="col-6" style={{ padding: '0' }}>
+                                        <button
+                                            style={{ width: '85%' }}
+                                            className="btn btn-light btn-sm"
+                                            onClick={() => { setPopupChonKhachHang(true) }}
                                         >
-                                            <div className="col-6">
-                                                <h6>{index + 1}. {item.TenSanPham} </h6>
-                                                <label
-                                                    onClick={() => {
-                                                        let GhiChuMonAn = null
-                                                        if (item.GhiChu) {
-                                                            GhiChuMonAn = prompt("Nhập Ghi Chú Cho Món Ăn:", item.GhiChu.toString());
-                                                        } else {
-                                                            GhiChuMonAn = prompt("Nhập Ghi Chú Cho Món Ăn:");
-                                                        }
-
-                                                        if (GhiChuMonAn) {
-                                                            handleDetailChange(item.IDSanPham,
-                                                                GhiChuMonAn,
-                                                                'GhiChu'
-                                                            )
-                                                        }
-                                                    }}
-                                                    style={{ color: '#9d9d9d' }}
-                                                >
-                                                    {item.GhiChu ? (
-                                                        <>
-                                                            <FontAwesomeIcon icon={faFile} style={{
-                                                                marginRight: '4px'
-                                                            }} />
-                                                            {
-                                                                item.GhiChu.length > 20
-                                                                    ? item.GhiChu.slice(0, 20) + '...'
-                                                                    : item.GhiChu
-                                                            }
-                                                        </>
-                                                    ) : <><FontAwesomeIcon icon={faFile} style={{
+                                            {dataReq.TenKhachHang ? (
+                                                <>
+                                                    <FontAwesomeIcon icon={faIdCard} style={{
                                                         marginRight: '4px'
                                                     }} />
-                                                        Nhập Ghi Chú / Món Thêm
-                                                    </>
+                                                    {
+                                                        dataReq.TenKhachHang.length > 12
+                                                            ? dataReq.TenKhachHang.slice(0, 12) + '...'
+                                                            : dataReq.TenKhachHang
                                                     }
-                                                </label>
-                                            </div>
-                                            <div className="col-2"
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        fontSize: '20px'
-                                                    }}
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faMinusSquare}
-                                                        style={{ fontSize: '20px' }}
-                                                        onClick={() => {
-                                                            if (item.SoLuong !== 1) {
-                                                                if (!props.isInsert) {
-                                                                    if (!item.SanPhamThanhPham) {
-                                                                        if (item.IDTrangThai == 2 || item.IDTrangThai == 3) {
-                                                                            props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được chế biến xong', 'warning', 5000)
-                                                                        } else {
-                                                                            handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
-                                                                        }
-                                                                    } else if (item.IDTrangThai == 3)
-                                                                        props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được giao', 'warning', 5000)
-                                                                    else handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
-                                                                } else {
-                                                                    handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
-                                                                }
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FontAwesomeIcon icon={faIdCard} style={{
+                                                        marginRight: '4px'
+                                                    }} /> {isMobile ? 'Chọn KH' : 'Chọn Khách Hàng'}
+                                                </>
+                                            )}
+                                        </button>
 
+                                    </div>
+                                </div>
+
+                                <div style={{ height: dataReq.SuDungDiemKhachHang ? '450px' : '550px', maxHeight: '57%', overflow: 'auto', overflowX: 'hidden' }}>
+                                    {dataReq.DanhSach && dataReq.DanhSach.length > 0 ? <div>
+                                        {dataReq.DanhSach.map((item, index) => (
+                                            <div key={item.IDSanPham}
+                                                className="row card-body"
+                                                style={{ paddingBottom: '0', boxShadow: '0 20px 27px 0 rgba(0,0,0,.05)', borderRadius: '30px' }}
+                                            >
+                                                <div className="col-6">
+                                                    <h6>{index + 1}. {item.TenSanPham} </h6>
+                                                    <label
+                                                        onClick={() => {
+                                                            let GhiChuMonAn = null
+                                                            if (item.GhiChu) {
+                                                                GhiChuMonAn = prompt("Nhập Ghi Chú Cho Món Ăn:", item.GhiChu.toString());
+                                                            } else {
+                                                                GhiChuMonAn = prompt("Nhập Ghi Chú Cho Món Ăn:");
+                                                            }
+
+                                                            if (GhiChuMonAn) {
+                                                                handleDetailChange(item.IDSanPham,
+                                                                    GhiChuMonAn,
+                                                                    'GhiChu'
+                                                                )
                                                             }
                                                         }}
-                                                    />
-
+                                                        style={{ color: '#9d9d9d' }}
+                                                    >
+                                                        {item.GhiChu ? (
+                                                            <>
+                                                                <FontAwesomeIcon icon={faFile} style={{
+                                                                    marginRight: '4px'
+                                                                }} />
+                                                                {
+                                                                    item.GhiChu.length > 20
+                                                                        ? item.GhiChu.slice(0, 20) + '...'
+                                                                        : item.GhiChu
+                                                                }
+                                                            </>
+                                                        ) : <><FontAwesomeIcon icon={faFile} style={{
+                                                            marginRight: '4px'
+                                                        }} />
+                                                            Nhập Ghi Chú / Món Thêm
+                                                        </>
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className="col-2"
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center'
+                                                    }}>
                                                     <div
                                                         style={{
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            fontSize: '20px',
-                                                            margin: '0 5px'
-                                                        }}
-                                                        onClick={() => {
-                                                            const SoLuong = prompt("Nhập Số Lượng:");
-                                                            if (SoLuong) {
-                                                                if (SoLuong.toString().match(/^\d+$/)) {
-                                                                  handleDetailChange(item.IDSanPham, Number(SoLuong), 'SoLuong');
-                                                                } else {
-                                                                  props.addNotification('Số bạn nhập không hợp lệ', 'warning', 4000);
-                                                                  return;
-                                                                }
-                                                              } else {
-                                                                props.addNotification('Bạn không nhập gì', 'warning', 4000);
-                                                                return;  
-                                                              }
+                                                            fontSize: '20px'
                                                         }}
                                                     >
-                                                        {item.SoLuong}
+                                                        <FontAwesomeIcon
+                                                            icon={faMinusSquare}
+                                                            style={{ fontSize: '20px' }}
+                                                            onClick={() => {
+                                                                if (item.SoLuong !== 1) {
+                                                                    if (!props.isInsert) {
+                                                                        if (!item.SanPhamThanhPham) {
+                                                                            if (item.IDTrangThai == 2 || item.IDTrangThai == 3) {
+                                                                                props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được chế biến xong', 'warning', 5000)
+                                                                            } else {
+                                                                                handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
+                                                                            }
+                                                                        } else if (item.IDTrangThai == 3)
+                                                                            props.addNotification('Bạn không thể giảm số lượng vì sản phẩm đã được giao', 'warning', 5000)
+                                                                        else handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
+                                                                    } else {
+                                                                        handleDetailChange(item.IDSanPham, item.SoLuong - 1, 'SoLuong')
+                                                                    }
+
+                                                                }
+                                                            }}
+                                                        />
+
+                                                        <div
+                                                            style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                fontSize: '20px',
+                                                                margin: '0 5px'
+                                                            }}
+                                                            onClick={() => {
+                                                                const SoLuong = prompt("Nhập Số Lượng:");
+                                                                if (SoLuong) {
+                                                                    if (SoLuong.toString().match(/^\d+$/)) {
+                                                                        handleDetailChange(item.IDSanPham, Number(SoLuong), 'SoLuong');
+                                                                    } else {
+                                                                        props.addNotification('Số bạn nhập không hợp lệ', 'warning', 4000);
+                                                                        return;
+                                                                    }
+                                                                } else {
+                                                                    props.addNotification('Bạn không nhập gì', 'warning', 4000);
+                                                                    return;
+                                                                }
+                                                            }}
+                                                        >
+                                                            {item.SoLuong}
+                                                        </div>
+
+                                                        <FontAwesomeIcon
+                                                            icon={faSquarePlus}
+                                                            style={{ fontSize: '20px' }}
+                                                            onClick={() => {
+                                                                handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SoLuong')
+                                                                handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SanPhamThanhPham')
+                                                                handleDetailChange(
+                                                                    item.IDSanPham, 1, 'IDTrangThai'
+                                                                );
+                                                            }}
+                                                        />
                                                     </div>
 
+
+                                                </div>
+                                                <div className="col-3">
+                                                    <strong
+                                                        style={{
+                                                            fontSize: '13px',
+                                                            margin: '0 5px',
+                                                            float: 'right'
+                                                        }}
+                                                    >
+                                                        {new Intl.NumberFormat('vi-VN', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        }).format(item.GiaBan)}
+                                                    </strong>
+                                                    <label
+                                                        style={{
+                                                            fontSize: '17px',
+                                                            margin: '0 5px',
+                                                            float: 'right'
+                                                        }}
+                                                    >
+                                                        {new Intl.NumberFormat('vi-VN', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                            // }).format(item.ThanhTien)}
+                                                        }).format(item.GiaBan * item.SoLuong)}
+                                                    </label>
+                                                </div>
+                                                <div className="col-1" style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    flexWrap: 'wrap',
+                                                    borderLeft: '2px #bebaba solid',
+                                                    justifyContent: 'center'
+                                                }}>
                                                     <FontAwesomeIcon
-                                                        icon={faSquarePlus}
+                                                        icon={
+                                                            item.IDTrangThai === 1 ? faSpinner :
+                                                                item.IDTrangThai === 2 ? faCheckToSlot :
+                                                                    item.IDTrangThai === 3 ? faCheck :
+                                                                        item.IDTrangThai === 4 ? faBan :
+                                                                            null
+                                                        }
+                                                        style={{ fontSize: '20px' }}
+                                                    // onClick={() => {
+                                                    //     setDataReq({
+                                                    //         ...dataReq,
+                                                    //         DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
+                                                    //     })
+                                                    // }}
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={faTrashAlt}
                                                         style={{ fontSize: '20px' }}
                                                         onClick={() => {
-                                                            handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SoLuong')
-                                                            handleDetailChange(item.IDSanPham, item.SoLuong + 1, 'SanPhamThanhPham')
-                                                            handleDetailChange(
-                                                                item.IDSanPham, 1, 'IDTrangThai'
-                                                            );
+                                                            setDataReq({
+                                                                ...dataReq,
+                                                                DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
+                                                            })
                                                         }}
                                                     />
                                                 </div>
-
-
+                                                <hr></hr>
                                             </div>
-                                            <div className="col-3">
-                                                <strong
-                                                    style={{
-                                                        fontSize: '13px',
-                                                        margin: '0 5px',
-                                                        float: 'right'
-                                                    }}
-                                                >
-                                                    {new Intl.NumberFormat('vi-VN', {
-                                                        style: 'currency',
-                                                        currency: 'VND'
-                                                    }).format(item.GiaBan)}
-                                                </strong>
-                                                <label
-                                                    style={{
-                                                        fontSize: '17px',
-                                                        margin: '0 5px',
-                                                        float: 'right'
-                                                    }}
-                                                >
-                                                    {new Intl.NumberFormat('vi-VN', {
-                                                        style: 'currency',
-                                                        currency: 'VND'
-                                                        // }).format(item.ThanhTien)}
-                                                    }).format(item.GiaBan * item.SoLuong)}
-                                                </label>
-                                            </div>
-                                            <div className="col-1" style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                flexWrap: 'wrap',
-                                                borderLeft: '2px #bebaba solid',
-                                                justifyContent: 'center'
-                                            }}>
-                                                <FontAwesomeIcon
-                                                    icon={
-                                                        item.IDTrangThai === 1 ? faSpinner :
-                                                            item.IDTrangThai === 2 ? faCheckToSlot :
-                                                                item.IDTrangThai === 3 ? faCheck :
-                                                                    item.IDTrangThai === 4 ? faBan :
-                                                                        null
-                                                    }
-                                                    style={{ fontSize: '20px' }}
-                                                // onClick={() => {
-                                                //     setDataReq({
-                                                //         ...dataReq,
-                                                //         DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
-                                                //     })
-                                                // }}
-                                                />
-                                                <FontAwesomeIcon
-                                                    icon={faTrashAlt}
-                                                    style={{ fontSize: '20px' }}
-                                                    onClick={() => {
-                                                        setDataReq({
-                                                            ...dataReq,
-                                                            DanhSach: dataReq.DanhSach.filter(newitem => newitem.IDSanPham !== item.IDSanPham)
-                                                        })
-                                                    }}
-                                                />
-                                            </div>
-                                            <hr></hr>
-                                        </div>
-                                    ))}
-                                    {/* <pre
+                                        ))}
+                                        {/* <pre
                                         style={{
                                             background: '#333',
                                             color: '#fff',
@@ -565,45 +582,65 @@ const GoiMon = (props) => {
                                     >
                                         Đã chọn: {lines.map(line => <div>{line}</div>)}
                                     </pre> */}
-                                </div>
-                                    : <div style={{
-                                        position: 'absolute',
-                                        top: '40%',
-                                        left: '15%'
-                                    }}>
-                                        <h3 style={{ color: 'gray' }} >Vui lòng chọn một món ăn</h3>
                                     </div>
-                                }
-                            </div>
-
-
-
-
-
-                            <div style={{ width: '100%' }}>
-                                {dataReq.SuDungDiemKhachHang &&
-                                    <label style={{ color: 'grey' }}>Hoá đơn này đang sử dụng điểm khách hàng với số điểm: {dataReq.DiemKhachHang}</label>
-                                }
-                                <div style={{ width: '100%', float: 'right' }}>
-
-                                    <p style={{ float: 'left', marginLeft: '2%', marginBottom: '0px' }}>
-                                        <strong style={{
-                                            fontSize: '20px',
-                                            color: 'black',
-                                            marginRight: '4px'
+                                        : <div style={{
+                                            position: 'absolute',
+                                            top: '40%',
+                                            left: '15%'
                                         }}>
-                                            {
-                                                dataReq.DanhSach.reduce((total, item) => {
-                                                    return total + item.SoLuong;
-                                                }, 0)
+                                            <h3 style={{ color: 'gray' }} >Vui lòng chọn một món ăn</h3>
+                                        </div>
+                                    }
+                                </div>
 
-                                            }
-                                        </strong>
-                                        {dataReq.GiamGia ? 'SP' : 'Sản Phẩm'}
-                                    </p>
-                                    {(dataReq.GiamGia) &&
-                                        <p style={{ float: 'right', marginLeft: '2%', marginBottom: '0px' }}>
-                                            Tổng Tiền Sau Khi Giảm:  <strong style={{
+
+
+
+
+                                <div style={{ width: '100%' }}>
+                                    {dataReq.SuDungDiemKhachHang &&
+                                        <label style={{ color: 'grey' }}>Hoá đơn này đang sử dụng điểm khách hàng với số điểm: {dataReq.DiemKhachHang}</label>
+                                    }
+                                    <div style={{ width: '100%', float: 'right' }}>
+
+                                        <p style={{ float: 'left', marginLeft: '2%', marginBottom: '0px' }}>
+                                            <strong style={{
+                                                fontSize: '20px',
+                                                color: 'black',
+                                                marginRight: '4px'
+                                            }}>
+                                                {
+                                                    dataReq.DanhSach.reduce((total, item) => {
+                                                        return total + item.SoLuong;
+                                                    }, 0)
+
+                                                }
+                                            </strong>
+                                            {dataReq.GiamGia ? 'SP' : 'Sản Phẩm'}
+                                        </p>
+                                        {(dataReq.GiamGia) &&
+                                            <p style={{ float: 'right', marginLeft: '2%', marginBottom: '0px' }}>
+                                                Tổng Tiền Sau Khi Giảm:  <strong style={{
+                                                    fontSize: '20px',
+                                                    color: 'black',
+                                                    marginRight: '5px'
+                                                }}>
+
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    }).format(tongTien -
+                                                        (dataReq.PhuongThucGiamGia === 'Phần Trăm'
+                                                            ? tongTien * (dataReq.GiamGia / 100)
+                                                            : dataReq.GiamGia)
+                                                        - (dataReq.SuDungDiemKhachHang == true ? dataReq.DiemKhachHang : 0)
+                                                    )}
+                                                </strong>
+
+                                            </p>
+                                        }
+                                        {!dataReq.GiamGia && <p style={{ float: 'right', marginBottom: '0px' }}>
+                                            Tổng Tiền:  <strong style={{
                                                 fontSize: '20px',
                                                 color: 'black',
                                                 marginRight: '5px'
@@ -612,90 +649,70 @@ const GoiMon = (props) => {
                                                 {new Intl.NumberFormat('vi-VN', {
                                                     style: 'currency',
                                                     currency: 'VND'
-                                                }).format(tongTien -
-                                                    (dataReq.PhuongThucGiamGia === 'Phần Trăm'
-                                                        ? tongTien * (dataReq.GiamGia / 100)
-                                                        : dataReq.GiamGia)
-                                                    - (dataReq.SuDungDiemKhachHang == true ? dataReq.DiemKhachHang : 0)
-                                                )}
+                                                }).format(tongTien)}
                                             </strong>
-
                                         </p>
-                                    }
-                                    {!dataReq.GiamGia && <p style={{ float: 'right', marginBottom: '0px' }}>
-                                        Tổng Tiền:  <strong style={{
-                                            fontSize: '20px',
-                                            color: 'black',
-                                            marginRight: '5px'
-                                        }}>
-
-                                            {new Intl.NumberFormat('vi-VN', {
-                                                style: 'currency',
-                                                currency: 'VND'
-                                            }).format(tongTien)}
-                                        </strong>
-                                    </p>
-                                    }
+                                        }
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="row" style={{ marginLeft: '2%' }}>
+                                <div className="row" style={{ marginLeft: '2%' }}>
 
-                                <div className="col-6" style={{
-                                    padding: '0'
-                                }}>
-                                    {/* Ghi chú bàn ăn */}
-                                    <button
-                                        className="btn btn-light btn-sm"
-                                        onClick={() => {
-                                            let GhiChu = null
-                                            if (dataReq.GhiChu) {
-                                                GhiChu = prompt("Nhập Ghi Chú Cho Bàn Ăn:", dataReq.GhiChu.toString());
-                                            } else {
-                                                GhiChu = prompt("Nhập Ghi Chú Cho Bàn Ăn:");
-                                            }
-
-                                            if (GhiChu) {
-                                                setDataReq({
-                                                    ...dataReq,
-                                                    GhiChu: GhiChu
-                                                })
-                                            }
-                                        }}
-                                        style={{
-                                            width: props.isInsert ? '85%' : '85%',
-                                            ...(props.isInsert
-                                                ? {}
-                                                : {
-                                                    height: '25px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    marginBottom: '6px'
-                                                })
-                                        }}
-                                    >
-                                        {dataReq.GhiChu ? (
-                                            <>
-                                                <FontAwesomeIcon icon={faPencil} style={{
-                                                    marginRight: '4px'
-                                                }} />
-                                                {
-                                                    dataReq.GhiChu.length > 10
-                                                        ? dataReq.GhiChu.slice(0, 10) + '...'
-                                                        : dataReq.GhiChu
+                                    <div className="col-6" style={{
+                                        padding: '0'
+                                    }}>
+                                        {/* Ghi chú bàn ăn */}
+                                        <button
+                                            className="btn btn-light btn-sm"
+                                            onClick={() => {
+                                                let GhiChu = null
+                                                if (dataReq.GhiChu) {
+                                                    GhiChu = prompt("Nhập Ghi Chú Cho Bàn Ăn:", dataReq.GhiChu.toString());
+                                                } else {
+                                                    GhiChu = prompt("Nhập Ghi Chú Cho Bàn Ăn:");
                                                 }
 
+                                                if (GhiChu) {
+                                                    setDataReq({
+                                                        ...dataReq,
+                                                        GhiChu: GhiChu
+                                                    })
+                                                }
+                                            }}
+                                            style={{
+                                                width: props.isInsert ? '85%' : '85%',
+                                                ...(props.isInsert
+                                                    ? {}
+                                                    : {
+                                                        height: '25px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginBottom: '6px'
+                                                    })
+                                            }}
+                                        >
+                                            {dataReq.GhiChu ? (
+                                                <>
+                                                    <FontAwesomeIcon icon={faPencil} style={{
+                                                        marginRight: '4px'
+                                                    }} />
+                                                    {
+                                                        dataReq.GhiChu.length > 10
+                                                            ? dataReq.GhiChu.slice(0, 10) + '...'
+                                                            : dataReq.GhiChu
+                                                    }
+
+                                                </>
+                                            ) : <><FontAwesomeIcon icon={faPencil} style={{
+                                                marginRight: '4px'
+                                            }} />
+                                                Ghi Chú
                                             </>
-                                        ) : <><FontAwesomeIcon icon={faPencil} style={{
-                                            marginRight: '4px'
-                                        }} />
-                                            Ghi Chú
-                                        </>
-                                        }
-                                    </button>
-                                    {/* In hoá đơn */}
-                                    {dataReq.TrangThaiThanhToan &&
+                                            }
+                                        </button>
+                                        {/* In hoá đơn */}
+                                        {/* {dataReq.TrangThaiThanhToan &&
                                         <button
                                             style={{ marginBottom: '10px', width: '85%', height: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                             className="btn btn-light btn-sm"
@@ -710,188 +727,226 @@ const GoiMon = (props) => {
                                                 In
                                             </>
 
-                                        </button>}
+                                        </button>} */}
 
-                                </div>
-                                <div className="col-6" style={{ padding: '0' }}>
-                                    {/* Giảm giá */}
-                                    <button
-                                        style={{
-                                            width: props.isInsert ? '85%' : '85%',
-                                            ...(props.isInsert
-                                                ? {}
-                                                : {
-                                                    height: '25px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    marginBottom: '6px'
-                                                })
-                                        }}
-                                        className="btn btn-light btn-sm"
-                                        onClick={() => {
-                                            setPopupChonGiamGia(true)
-                                        }}
-                                    >
-                                        {dataReq.GiamGia ? (
-                                            <>
-                                                <FontAwesomeIcon icon={faTag} style={{
-                                                    marginRight: '4px'
-                                                }} />
+                                    </div>
+                                    <div className="col-6" style={{ padding: '0' }}>
+                                        {/* Giảm giá */}
+                                        <button
+                                            style={{
+                                                width: props.isInsert ? '85%' : '85%',
+                                                ...(props.isInsert
+                                                    ? {}
+                                                    : {
+                                                        height: '25px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginBottom: '6px'
+                                                    })
+                                            }}
+                                            className="btn btn-light btn-sm"
+                                            onClick={() => {
+                                                setPopupChonGiamGia(true)
+                                            }}
+                                        >
+                                            {dataReq.GiamGia ? (
+                                                <>
+                                                    <FontAwesomeIcon icon={faTag} style={{
+                                                        marginRight: '4px'
+                                                    }} />
 
-                                                {dataReq.GiamGia.length > 6
-                                                    ? '- ' + dataReq.GiamGia.slice(0, 6) + '...'
-                                                    : '- ' + dataReq.GiamGia
-                                                }
+                                                    {dataReq.GiamGia.length > 6
+                                                        ? '- ' + dataReq.GiamGia.slice(0, 6) + '...'
+                                                        : '- ' + dataReq.GiamGia
+                                                    }
 
-                                                {dataReq.PhuongThucGiamGia === 'Phần Trăm' ? '%' : 'đ'}
+                                                    {dataReq.PhuongThucGiamGia === 'Phần Trăm' ? '%' : 'đ'}
 
+                                                </>
+                                            ) : <><FontAwesomeIcon icon={faTag} style={{
+                                                marginRight: '4px'
+                                            }} />
+                                                Giảm Giá
                                             </>
-                                        ) : <><FontAwesomeIcon icon={faTag} style={{
-                                            marginRight: '4px'
-                                        }} />
-                                            Giảm Giá
-                                        </>
-                                        }
-                                    </button>
-                                    {/* Tách Ghép */}
-                                    {!props.isInsert && <button
-                                        style={{ width: '85%', height: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}
-                                        className="btn btn-light btn-sm"
-                                        onClick={() => {
-                                            setPopupTachGhep(
-                                                dataReq.DanhSach && dataReq.DanhSach.length > 1
-                                                    ? true
-                                                    : dataReq.DanhSach[0]?.SoLuong > 1
+                                            }
+                                        </button>
+                                        {/* Tách Ghép */}
+                                        {!props.isInsert && <button
+                                            style={{ width: '85%', height: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}
+                                            className="btn btn-light btn-sm"
+                                            onClick={() => {
+                                                if(isMobile){
+                                                    props.openPopupAlert('Tính năng chỉ khả dụng trên thiết bị có màn hình chiều ngang lớn hơn 1250px.')
+                                                }else{
+                                                setPopupTachGhep(
+                                                    dataReq.DanhSach && dataReq.DanhSach.length > 1
                                                         ? true
-                                                        : props.openPopupAlert('Không đủ số lượng món ăn để tách ghép')
-                                            )
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faClone} style={{
-                                            marginRight: '4px'
-                                        }} /> Tách/Ghép
-                                    </button>
-                                    }
+                                                        : dataReq.DanhSach[0]?.SoLuong > 1
+                                                            ? true
+                                                            : props.openPopupAlert('Không đủ số lượng món ăn để tách ghép')
+                                                )}
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faClone} style={{
+                                                marginRight: '4px'
+                                            }} /> Tách/Ghép
+                                        </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="row" style={{ marginLeft: '2%' }}>
-                                {/* Thanh toán */}
-                                <div className="col-6" style={{ padding: '0' }}>
-                                    <button
-                                        style={{ width: '85%', backgroundColor: dataReq.TrangThaiThanhToan && 'grey' }}
-                                        className="btn btn-success"
-                                        onClick={() => {
-                                            if (!dataReq.TrangThaiThanhToan)
-                                                setPopupChonThanhToan(true)
-                                            else props.addNotification('Hoá đơn này đã được thanh toán', 'success', 3000)
-                                        }}
-                                    >
-                                        {dataReq.TrangThaiThanhToan ? (
-                                            <>
-                                                <FontAwesomeIcon icon={faCheck} style={{
-                                                    marginRight: '4px'
-                                                }} />
-                                                {dataReq.ThanhToanChuyenKhoan
-                                                    ? 'Đã TT Chuyển Khoản'
-                                                    : 'Đã TT Tiền Mặt'
-                                                }
+                                <div className="row" style={{ marginLeft: '2%' }}>
+                                    {/* Thanh toán */}
+                                    <div className="col-6" style={{ padding: '0' }}>
+                                        <button
+                                            style={{ width: '85%', backgroundColor: dataReq.TrangThaiThanhToan && 'grey' }}
+                                            className="btn btn-success"
+                                            onClick={() => {
+                                                if (!dataReq.TrangThaiThanhToan)
+                                                    setPopupChonThanhToan(true)
+                                                else props.addNotification('Hoá đơn này đã được thanh toán', 'success', 3000)
+                                            }}
+                                        >
+                                            {dataReq.TrangThaiThanhToan ? (
+                                                <>
+                                                    <FontAwesomeIcon icon={faCheck} style={{
+                                                        marginRight: '4px'
+                                                    }} />
+                                                    {dataReq.ThanhToanChuyenKhoan
+                                                        ? 'Đã TT Chuyển Khoản'
+                                                        : 'Đã TT Tiền Mặt'
+                                                    }
+                                                </>
+                                            ) : <><FontAwesomeIcon icon={faDollarSign} style={{
+                                                marginRight: '4px'
+                                            }} />
+                                                Thanh Toán
                                             </>
-                                        ) : <><FontAwesomeIcon icon={faDollarSign} style={{
-                                            marginRight: '4px'
-                                        }} />
-                                            Thanh Toán
-                                        </>
-                                        }</button>
-                                </div>
-                                <div className="col-6" style={{ padding: '0' }}>
-                                    <button
-                                        style={{ width: '85%' }}
-                                        className="btn btn-primary"
-                                        onClick={handleSubmit}
-                                    >
-                                        <FontAwesomeIcon icon={faCheckCircle} style={{
-                                            marginRight: '4px'
-                                        }} />Lưu và Báo Bếp
-                                    </button>
+                                            }</button>
+                                    </div>
+                                    <div className="col-6" style={{ padding: '0' }}>
+                                        <button
+                                            style={{ width: '85%' }}
+                                            className="btn btn-primary"
+                                            onClick={handleSubmit}
+                                        >
+                                            <FontAwesomeIcon icon={faCheckCircle} style={{
+                                                marginRight: '4px'
+                                            }} />Lưu và Báo Bếp
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                                : <div style={{
+                                    position: 'absolute',
+                                    top: '40%',
+                                    left: '15%'
+                                }}>
+                                    <h3 style={{ color: 'gray' }} >Vui lòng chọn một bàn ăn</h3>
+                                </div>
+                            }
                         </div>
-                            : <div style={{
-                                position: 'absolute',
-                                top: '40%',
-                                left: '15%'
-                            }}>
-                                <h3 style={{ color: 'gray' }} >Vui lòng chọn một bàn ăn</h3>
-                            </div>
-                        }
-                    </div>
+                    }
+
                 </div>
+                {
+                    isMobile && <button
+                        id="ButtonMenu"
+                        className="btn bg-gradient-primary"
+                        style={{
+                            position: 'fixed',
+                            top: '3rem',
+                            right: '1.5rem',
+                            padding: '8px 16px',
+                            width: '3rem'
+                        }}
+                        onClick={() => {
+                            setShowNavigation(!showNavigation)
+                        }}
+                    >
+                        {showNavigation ? (
+                            <FontAwesomeIcon icon={faXmark} />
+                        ) : (
+                            <FontAwesomeIcon icon={faCartShopping} />
+                        )}
+                    </button>
+                }
             </div>
-            {popupChonKhachHang && <div className="popup">
-                <ChonKhachHang
-                    addNotification={props.addNotification}
-                    openPopupAlert={props.openPopupAlert}
-                    dataReq={dataReq}
-                    setDataReq={setDataReq}
-                    setPopupChonKhachHang={setPopupChonKhachHang}
-                />
-            </div>}
-            {popupChonGiamGia && <div className="popup">
-                <ChonGiamGia
-                    addNotification={props.addNotification}
-                    openPopupAlert={props.openPopupAlert}
-                    dataReq={dataReq}
-                    setDataReq={setDataReq}
-                    setPopupChonGiamGia={setPopupChonGiamGia}
-                    dataUser={dataUser}
-                    setDataUser={setDataUser}
-                    isInsert={props.isInsert}
-                />
-            </div>}
-            {popupChonThanhToan && <div className="popup">
-                <ChonThanhToan
-                    addNotification={props.addNotification}
-                    openPopupAlert={props.openPopupAlert}
-                    dataReq={dataReq}
-                    setDataReq={setDataReq}
-                    setPopupChonThanhToan={setPopupChonThanhToan}
-                    dataUser={props.dataUser}
-                    setdataUser={props.setdataUser}
-                    isInsert={props.isInsert}
-                    loadTrang={dataUser}
-                    setLoadTrang={setDataUser}
-                    setPopupInsertUpdate={props.setPopupInsertUpdate}
-                />
-            </div>}
-            {popupTachGhep && <div className="popup">
-                <ChonTachGhep
-                    addNotification={props.addNotification}
-                    openPopupAlert={props.openPopupAlert}
-                    dataReq={dataReq}
-                    setDataReq={setDataReq}
-                    setPopupTachGhep={setPopupTachGhep}
-                    IDNhanVien={props.thongTinDangNhap.IDNhanVien}
-                    dataUser={dataUser}
-                    setDataUser={setDataUser}
-                    setPopupInsertUpdate={props.setPopupInsertUpdate}
-                />
-            </div>}
-            {popupChonInHoaDon && <div className="popup">
-                <ChonInHoaDon
-                    addNotification={props.addNotification}
-                    openPopupAlert={props.openPopupAlert}
-                    dataReq={dataReq}
-                    setDataReq={setDataReq}
-                    setPopupTachGhep={setPopupTachGhep}
-                    IDNhanVien={props.thongTinDangNhap.IDNhanVien}
-                    dataUser={dataUser}
-                    setDataUser={setDataUser}
-                    setPopupInsertUpdate={props.setPopupInsertUpdate}
-                />
-            </div>}
-        </div>
+
+            {
+                popupChonKhachHang && <div className="popup">
+                    <ChonKhachHang
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        dataReq={dataReq}
+                        setDataReq={setDataReq}
+                        setPopupChonKhachHang={setPopupChonKhachHang}
+                    />
+                </div>
+            }
+            {
+                popupChonGiamGia && <div className="popup">
+                    <ChonGiamGia
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        dataReq={dataReq}
+                        setDataReq={setDataReq}
+                        setPopupChonGiamGia={setPopupChonGiamGia}
+                        dataUser={dataUser}
+                        setDataUser={setDataUser}
+                        isInsert={props.isInsert}
+                    />
+                </div>
+            }
+            {
+                popupChonThanhToan && <div className="popup">
+                    <ChonThanhToan
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        dataReq={dataReq}
+                        setDataReq={setDataReq}
+                        setPopupChonThanhToan={setPopupChonThanhToan}
+                        dataUser={props.dataUser}
+                        setdataUser={props.setdataUser}
+                        isInsert={props.isInsert}
+                        loadTrang={dataUser}
+                        setLoadTrang={setDataUser}
+                        setPopupInsertUpdate={props.setPopupInsertUpdate}
+                    />
+                </div>
+            }
+            {
+                popupTachGhep && <div className="popup">
+                    <ChonTachGhep
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        dataReq={dataReq}
+                        setDataReq={setDataReq}
+                        setPopupTachGhep={setPopupTachGhep}
+                        IDNhanVien={props.thongTinDangNhap.IDNhanVien}
+                        dataUser={dataUser}
+                        setDataUser={setDataUser}
+                        setPopupInsertUpdate={props.setPopupInsertUpdate}
+                    />
+                </div>
+            }
+            {
+                popupChonInHoaDon && <div className="popup">
+                    <ChonInHoaDon
+                        addNotification={props.addNotification}
+                        openPopupAlert={props.openPopupAlert}
+                        dataReq={dataReq}
+                        setDataReq={setDataReq}
+                        setPopupTachGhep={setPopupTachGhep}
+                        IDNhanVien={props.thongTinDangNhap.IDNhanVien}
+                        dataUser={dataUser}
+                        setDataUser={setDataUser}
+                        setPopupInsertUpdate={props.setPopupInsertUpdate}
+                    />
+                </div>
+            }
+        </div >
 
     );
 };

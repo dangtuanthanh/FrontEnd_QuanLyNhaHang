@@ -65,7 +65,7 @@ function TabBangDieuKhien() {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>

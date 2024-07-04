@@ -168,18 +168,31 @@ const GoiMonThanhToan = (props) => {
                 font: 'Arial'
             },
             columnStyles: {
-                0: { cellWidth: 35 },
+                0: { cellWidth: 45 },
                 1: { cellWidth: 35 },
                 2: { cellWidth: 35 },
                 3: { cellWidth: 35 }
             },
-
+            didDrawPage: function (data) {
+                // Lấy vị trí Y của kết thúc bảng
+                const tableEndY = data.cursor.y;
+                
+                // Thêm dòng tổng tiền ngay sau bảng
+                doc.text(`Tổng tiền: ${dataReq.TongTien}`, 10, tableEndY + 10); // Thêm dòng tổng tiền cách bảng 10px
+            
+                // Thêm dòng chữ Ngày xuất file ngay sau dòng tổng tiền
+                doc.text(`Ngày xuất file: ${new Date().toLocaleString()}`, 10, tableEndY + 20); // Thêm dòng ngày xuất file cách dòng tổng tiền 10px
+              }
         });
+        // // Thêm dòng chữ Ngày xuất file vào cuối trang
+        // const lastPage = doc.internal.getNumberOfPages();
+        // doc.setPage(lastPage);
+        // const pageHeight = doc.internal.pageSize.getHeight();
+        // doc.text(`Tổng tiền: ${tongTien}`, 10, pageHeight - 20); // Thêm tổng tiền ở vị trí cách 20px từ đáy trang
 
-        // Thêm dòng chữ Ngày xuất file vào cuối trang
-        const lastPage = doc.internal.getNumberOfPages();
-        doc.setPage(lastPage);
-        doc.text(`Ngày xuất file: ${new Date().toLocaleString()}`, 10, doc.internal.pageSize.getHeight() - 10);
+        // // Thêm dòng chữ Ngày xuất file vào cuối trang
+        // doc.text(`Ngày xuất file: ${new Date().toLocaleString()}`, 10, pageHeight - 10); // Thêm ngày xuất file ở vị trí cách 10px từ đáy trang
+
 
         // // Tải xuống file PDF
         // doc.save('DanhSachNhanVien.pdf');
@@ -189,92 +202,12 @@ const GoiMonThanhToan = (props) => {
 
     };
 
-    //xử lý thông báo bếp
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (dataReq.IDNhanVien && dataReq.DanhSach.length > 0) {
-            dispatch({ type: 'SET_LOADING', payload: true })
-            if (props.isInsert === true) {
-                fetch(urlInsertInvoice, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ss': getCookie('ss'),
-                    },
-                    body: JSON.stringify(dataReq)
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        }
-                    })
-                    .then(data => {
-                        props.addNotification('Bếp đã nhận được thông báo', 'success', 3000)
-                        props.setdataUser({ ...props.dataUser, search: '', sortBy: 'IDHoaDon', sortOrder: 'desc' })
-                        props.setPopupInsertUpdate(false)
-                        //ẩn loading
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                    })
-                    .catch(error => {
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
-
-                    });
-            }
-            else {
-                fetch(urlUpdateInvoice, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ss': getCookie('ss'),
-                    },
-                    body: JSON.stringify(dataReq)
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else if (response.status === 401) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else if (response.status === 500) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else {
-                            return;
-                        }
-                    })
-                    .then(data => {
-                        props.addNotification('Bếp đã nhận được thông báo', 'success', 3000)
-                        props.setdataUser({ ...props.dataUser })
-                        setDataUser(dataUser + 1)
-                        //ẩn loading
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                    })
-                    .catch(error => {
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        console.log('error', error);
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
-
-                    });
-            }
-        }
-        else props.openPopupAlert('Vui lòng chọn ít nhất một món ăn')
-
-    }
-
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="full-popup-box">
             <div className="full-box" style={{ overflowY: 'hidden' }}>
                 <div className="row" style={{ display: 'flex', justifyContent: 'center' }}>
-                    <div className="col-6 card">
+                    <div className={`${isMobile ? 'col-12 card' : 'col-6 card'}`}>
                         {dataReq.IDBan ? <div>
                             <h3 style={{ textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hoá Đơn <span style={{ color: 'blue' }}>{props.iDAction}</span></h3>
                             <div className="row" style={{ marginLeft: '2%' }}>
@@ -286,7 +219,7 @@ const GoiMonThanhToan = (props) => {
                                     ><FontAwesomeIcon icon={faTable} style={{
                                         marginRight: '4px'
                                     }} />{dataReq.TenBan} / {
-                                            dataReq.TenKhuVuc.length > 10
+                                        (dataReq.TenKhuVuc && dataReq.TenKhuVuc.length > 10)
                                                 ? dataReq.TenKhuVuc.slice(0, 10) + '...'
                                                 : dataReq.TenKhuVuc
                                         }</button>
@@ -544,24 +477,25 @@ const GoiMonThanhToan = (props) => {
 
                                 <div className="col-6"
                                     style={{ padding: '0' }}>
-                                    <button 
-                                    class="btn btn-danger" 
-                                    onClick={() => {
-                                        props.setPopupInsertUpdate(false)
-                                    }}
-                                    style={{ 
-                                        marginBottom: '10px', 
-                                        width: '85%', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center' }}
+                                    <button
+                                        class="btn btn-danger"
+                                        onClick={() => {
+                                            props.setPopupInsertUpdate(false)
+                                        }}
+                                        style={{
+                                            marginBottom: '10px',
+                                            width: '85%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
                                     >
                                         <><FontAwesomeIcon icon={faArrowLeft} style={{
                                             marginRight: '4px'
                                         }} />
                                             Đóng
                                         </>
-                                        
+
                                     </button>
                                 </div>
                                 <div className="col-6" style={{ padding: '0' }}>

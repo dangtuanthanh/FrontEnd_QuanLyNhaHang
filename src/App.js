@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import Login from './login/Login';
 import Bep from "./pages/Bep"
 import TrangCaNhan from "./pages/TrangCaNhan"
+import GoiMonChoKhach from "./components/Popup/GoiMonChoKhach"
 function App() {
   return (
 
@@ -43,6 +44,8 @@ function App() {
           <Route path="/Bep" element={<Bep />} />
           <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
           <Route path="*" element={<NotFound />}/>
+          <Route path="/GoiMon" element={<GoiMonChoKhach/>} />
+          
         </Routes>
       </BrowserRouter>
     </Provider>

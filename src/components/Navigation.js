@@ -8,7 +8,9 @@ import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
 import logo from '../assets/img/logos/logo-removebg-preview.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGaugeHigh, faFileInvoice, faLock, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { faGaugeHigh, faFileInvoice, faAddressCard, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
+import { useSelector } from 'react-redux'
+
 
 function Navigation({ menu }) {
   const [activeComponent, setActiveComponent] = useState('');
@@ -33,7 +35,10 @@ function Navigation({ menu }) {
       setActiveComponent('BangDieuKhien');
     } else if (pathname === '/Bep') {
       setActiveComponent('Bep');
-    } else {
+    } else if (pathname === '/TrangCaNhan') {
+      setActiveComponent('TrangCaNhan');
+    }
+    else {
 
     }
   }, [location.pathname]);
@@ -62,11 +67,12 @@ function Navigation({ menu }) {
         return null;
     }
   }
+  const isMobile = useSelector(state => state.isMobile.isMobile)
 
   return (
     <div>
       <aside style={{ backgroundColor: '#FAFAFA' }} class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ps ps--active-y" id="sidenav-main">
-        <div class="sidenav-header" style={{marginTop:'0.3rem'}}>
+        <div class="sidenav-header" style={{ marginTop: '0.3rem' }}>
           <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
 
           <img style={{
@@ -83,9 +89,9 @@ function Navigation({ menu }) {
             // Chuyển đổi menuItem từ 'Hoá Đơn' thành 'HoaDon'
             //const menuPath = menuItem.replace(/\s+/g, '');
             const menuPath = menuItem ? unidecode(menuItem)
-              .replace(/\s+/g, '')  : null// Loại bỏ dấu cách
+              .replace(/\s+/g, '') : null// Loại bỏ dấu cách
             const nameNav = menuItem ? menuItem //Tên hiển thị
-              .replace('Và', '&'): null
+              .replace('Và', '&') : null
             return (
               <li className="nav-item" key={index}>
                 <Link
@@ -99,7 +105,17 @@ function Navigation({ menu }) {
               </li>
             );
           })}
-
+          {isMobile && <li className="nav-item">
+            <Link
+              id={'TrangCaNhan'}
+              className={`nav-link${activeComponent === 'TrangCaNhan' ? ' active' : ''}`}
+              to={`/TrangCaNhan`}//Chuyển trang
+            >
+              <FontAwesomeIcon icon={faAddressCard} />
+              <span class="nav-link-text ms-1"> Trang Cá Nhân</span>
+            </Link>
+          </li>
+          }
 
           {/* 
           <li class="nav-item mt-3">

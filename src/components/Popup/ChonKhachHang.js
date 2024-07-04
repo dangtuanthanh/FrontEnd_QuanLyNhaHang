@@ -119,7 +119,7 @@ const ChonKhachHang = (props) => {
     const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box" style={{ zIndex: '9991' }}>
-            <div className="box">
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <h4 style={{ textAlign: 'center' }}>Danh Sách Khách Hàng</h4>
 
@@ -139,7 +139,7 @@ const ChonKhachHang = (props) => {
 
                         <input
                             ref={inputRef}
-                            autoFocus={isMobile?false:true}
+                            autoFocus={isMobile ? false : true}
                             id="search"
                             value={dataUser.search}
                             onChange={handleSearch}
@@ -214,17 +214,18 @@ const ChonKhachHang = (props) => {
                                 )
                             }
                         </tbody>
+
                     </table>
                     {/* {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                     <label style={{ borderTop: '1px solid black', marginLeft: '45%', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortOrder === 'asc' ? <label style={{ color: 'darkgray' }}>tăng dần</label> : <label style={{ color: 'darkgray' }}>giảm dần</label>} theo cột {dataRes.sortBy}  </label> */}
                     {/* phân trang */}
-                    <Pagination
-                        setdataUser={setdataUser}
-                        dataUser={dataUser}
-                        dataRes={dataRes}
-                    />
-                    <div style={{ marginTop: '5%' }}>
-                        <button onClick={() => { props.setPopupChonKhachHang(false) }} type="button" className="btn btn-danger mt-3" >Huỷ Bỏ</button>
+                        <Pagination
+                            setdataUser={setdataUser}
+                            dataUser={dataUser}
+                            dataRes={dataRes}
+                        />
+                    <div style={{ marginTop: '6%', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                        <button onClick={() => { props.setPopupChonKhachHang(false) }} type="button" className="btn btn-danger">Huỷ Bỏ</button>
                         <button
                             onClick={() => {
                                 props.setDataReq({
@@ -235,10 +236,10 @@ const ChonKhachHang = (props) => {
                                 props.setPopupChonKhachHang(false)
                             }}
                             type="button"
-                            className="btn btn-primary mt-3"
-                            style={{ float: 'right' }}
+                            className="btn btn-primary"
                         >Khách Tham Quan</button>
                     </div>
+
                     {
                         popupInsertUpdate && <div className="popup">
                             <Insert_updateKhachHang

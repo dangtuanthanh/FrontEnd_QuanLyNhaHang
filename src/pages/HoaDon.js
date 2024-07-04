@@ -70,7 +70,7 @@ function HoaDon() {
     const [isMobile, setIsMobile] = useState(() => {
         return window.innerWidth < 1250;
     });
-    const [errHeight, setErrHeight] = useState(window.innerHeight < 700);
+    const [errHeight, setErrHeight] = useState(window.innerHeight < 600);
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 1250);
@@ -79,7 +79,7 @@ function HoaDon() {
                 type: 'SET_ISMOBILE',
                 payload: isMobileRedux
             });
-            if (window.innerHeight < 700) {
+            if (window.innerHeight < 600) {
                 setErrHeight(true)
             } else setErrHeight(false)
         }
@@ -135,7 +135,7 @@ function HoaDon() {
                     <div className="popup-box">
                         <div className="box">
                             <div className="conten-modal" >
-                                <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 700px.</h6>
+                                <h6>Bạn đang sử dụng thiết bị có chiều cao nhỏ hơn 600px.</h6>
                                 <p>Để đảm bảo ứng dụng được hiển thị đầy đủ hãy sử dụng thiết bị có chiều cao lớn hơn như máy tính, máy tính bảng.</p>
                                 <strong style={{ fontSize: '0.9rem', color: 'red' }}>Nếu bạn đang sử dụng điện thoại, hãy xoay dọc điện thoại của mình.</strong>
                             </div>

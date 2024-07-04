@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-import { Line } from 'react-chartjs-2';
-import Chart from 'chart.js/auto';
-import { Link, useLocation } from "react-router-dom"
-import { getCookie } from "../Cookie";
-import { urlGetOccupiedTables, urlGetInvoiceToday, urlGetRevenueToday, urlGetRevenueMonth, urlGetListRevenueMonth } from "../url";
 function TabHoSo(props) {
     //popup thông báo góc màn hình
     const [notifications, setNotifications] = useState([]);
@@ -61,9 +56,10 @@ function TabHoSo(props) {
         // 4. Trả về theo định dạng dd/mm/yyyy
         return `${day}/${month}/${year}`;
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
-            <div class="card"  style={{ minHeight: '92vh', position: 'relative' }}>
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thông Tin Hồ Sơ</h2>
@@ -83,8 +79,8 @@ function TabHoSo(props) {
                             }}
                         />
                     </div>
-                    <div className="row" style={{ width: '80%' }}>
-                        <div className="col-6">
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label >ID Nhân Viên</label>
                                 <input
@@ -98,6 +94,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -113,6 +110,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -128,6 +126,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -143,10 +142,11 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                         </div>
-                        <div className="col-6">
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <div className="form-group">
                                 <label>Ngày Sinh</label>
                                 <input
@@ -160,6 +160,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -175,6 +176,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -190,6 +192,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -205,6 +208,7 @@ function TabHoSo(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                         </div>

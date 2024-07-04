@@ -54,7 +54,7 @@ function TabTaiKhoan(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -295,6 +295,7 @@ function TabTaiKhoan(props) {
 
             });
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
@@ -317,8 +318,8 @@ function TabTaiKhoan(props) {
                             }}
                         />
                     </div>
-                    <div className="row" style={{ width: '80%' }}>
-                        <div className='col-6' >
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4>ㅤ</h4>
                             <div className="form-group">
                                 <label >Tài Khoản</label>
@@ -333,6 +334,7 @@ function TabTaiKhoan(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             {/* <div className="form-group">
@@ -363,6 +365,7 @@ function TabTaiKhoan(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                             <div className="form-group">
@@ -378,10 +381,15 @@ function TabTaiKhoan(props) {
                                         opacity: 0.9,
                                         cursor: 'not-allowed'
                                     }}
+                                    disabled
                                 />
                             </div>
                         </div>
-                        <div className='col-6' >
+                        {isMobile &&
+                            <div>
+                                <hr class="horizontal dark" />
+                            </div>}
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4 style={{ textAlign: 'center' }}>Đổi Mật Khẩu</h4>
                             <div className="form-group">
                                 <label>Nhập Mật Khẩu Cũ</label>

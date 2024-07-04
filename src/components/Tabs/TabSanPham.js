@@ -18,11 +18,6 @@ function TabSanPham() {
     useEffect(() => {
         console.log('sanPhamThanhPham', sanPhamThanhPham);
     }, [sanPhamThanhPham]);
-    //Xử lý hiển thị các nút chức năng
-    const [showButtonFunction, setShowButtonFunction] = useState(true);
-    const handleToggleButtonFunction = () => {
-        setShowButtonFunction(!showButtonFunction);
-    };
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     const [dataUser, setdataUser] = useState({//dữ liệu người dùng
@@ -42,7 +37,7 @@ function TabSanPham() {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -274,11 +269,16 @@ function TabSanPham() {
     };
     const inputRef = useRef();
     const isMobile = useSelector(state => state.isMobile.isMobile)
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!isMobile)
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Sản Phẩm {!showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0" style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={faArrowDown} /></button>}</h2>
+                    <h2 onClick={handleToggleButtonFunction}> Quản Lý Sản Phẩm  <button type="button" className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button></h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
                     {showButtonFunction &&
@@ -395,7 +395,6 @@ function TabSanPham() {
                                     <option value='false'>Chế độ tìm: Gần đúng</option>
                                     <option value="true">Chế độ tìm: Chính xác</option>
                                 </select>
-                                {showButtonFunction && <button type="button" onClick={handleToggleButtonFunction} className="btn btn-link btn-sm mb-0"><FontAwesomeIcon icon={faArrowUp} /></button>}
                             </div>
                         </div>}
                 </div>

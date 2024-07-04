@@ -591,7 +591,7 @@ const Insert_updatePhieuNhap = (props) => {
                                                     : item.IDSanPham}
                                                     className={`${isMobile ? 'flex-column' : 'row'}`}>
                                                         <div className={`${isMobile ? 'col-12' : 'col-4 '}`}>
-                                                        <label>{isMobile && props.nhapNguyenLieu ? 'Nguyên Liệu: ':'Sản Phẩm: '}{props.nhapNguyenLieu
+                                                        <label>{isMobile && (props.nhapNguyenLieu ? 'Nguyên Liệu: ' : 'Sản Phẩm: ')}{props.nhapNguyenLieu
                                                             ? item.TenNguyenLieu
                                                             : item.TenSanPham} </label>
                                                     </div>

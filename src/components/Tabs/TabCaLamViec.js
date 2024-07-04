@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useRef } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faRotate, faAdd, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faRotate, faAdd, faArrowLeft,faArrowDown,faArrowUp  } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
@@ -31,7 +31,7 @@ function TabKhuVuc() {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -241,14 +241,19 @@ function TabKhuVuc() {
     };
     const inputRef = useRef();
     const isMobile = useSelector(state => state.isMobile.isMobile)
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!isMobile)
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
     return (
         <div>
             <div class="card"  style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0">
-                    <h2> Quản Lý Ca Làm Việc</h2>
+                    <h2 onClick={handleToggleButtonFunction}> Quản Lý Ca Làm Việc <button type="button" className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button></h2>
                     <NotificationContainer notifications={notifications} />
                     {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
-
+                    {showButtonFunction &&
                     <div>
                         {
                             selectedIds.length == 0
@@ -339,6 +344,7 @@ function TabKhuVuc() {
 
                         </div>
                     </div>
+}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">

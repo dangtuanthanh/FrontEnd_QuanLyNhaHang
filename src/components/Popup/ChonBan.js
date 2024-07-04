@@ -12,6 +12,7 @@ import Combobox from "../Combobox";
 const ChonBan = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
     // combobox
@@ -24,7 +25,7 @@ const ChonBan = (props) => {
         searchBy: 'TrangThai',
         search: '',
         searchExact: 'false',
-        limit: 24
+        limit: isMobile ? 10000 : 24
     });//
 
     //hàm tìm kiếm
@@ -164,13 +165,13 @@ const ChonBan = (props) => {
             });
     }
     const inputRef = useRef();
-    const isMobile = useSelector(state => state.isMobile.isMobile)
+
     return (
         <div>
-            <div className="card" style={{ height: '90vh' }}>
+            <div className="card" style={{ height: '90vh',overflow: 'auto',overflowX: 'hidden' }}>
                 <div className="row">
-                    <div style={{ marginTop: '5px', width: '100%', display: 'flex' }}>
-                        <div style={{ width: '20%', marginLeft: '10px' }}>
+                    <div style={{ marginTop: '5px', width: '100%', display: isMobile? 'inline':'flex' }}>
+                        <div style={{ width: isMobile ?'100%' : '20%', marginLeft: '15px' }}>
                             <Combobox
                                 combos={combosKhuVuc}
                                 columnValue="TenKhuVuc"
@@ -180,7 +181,7 @@ const ChonBan = (props) => {
                                 onChange={handleKhuVucChange}
                             />
                         </div>
-                        <div className="form-group" style={{ width: '40%' }}>
+                        <div className="form-group" style={{ width: isMobile ?'100%' : '40%', marginLeft: isMobile ?'15px':'auto' }} >
                             <label>Trạng Thái: ㅤ</label>
                             <label>
                                 <input
@@ -213,7 +214,7 @@ const ChonBan = (props) => {
                                 Có khách
                             </label>
                         </div>
-                        <div style={{ width: '40%', textAlign: 'end', marginRight: '15px' }}>
+                        <div style={{ width: isMobile ?'100%' : '40%' , textAlign: isMobile ?'start':'end', marginRight: '15px', marginLeft: isMobile ?'15px':'auto'  }}>
                             <input
                                 id="search"
                                 value={dataUser.search}
@@ -280,9 +281,11 @@ const ChonBan = (props) => {
                         </div>
                     ))}
                     {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+                    
                 </div>
                 <div style={{ height: '6vh' }}></div>
-                <div style={{
+                {!isMobile && 
+                    <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
@@ -300,6 +303,7 @@ const ChonBan = (props) => {
                         />
                     </div>
                 </div>
+                }
                 {/* phân trang */}
                 {/* <div style={{ textAlign: 'right', margin: '5px' }}>
                     <Pagination

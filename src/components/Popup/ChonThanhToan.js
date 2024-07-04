@@ -326,6 +326,7 @@ const ChonThanhToan = (props) => {
             })
         }
     };
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="full-popup-box">
             <div className="full-box" style={{ overflowY: 'hidden' }}>
@@ -341,6 +342,7 @@ const ChonThanhToan = (props) => {
                             Sử dụng điểm khách hàng: {props.dataReq.DiemKhachHang}
                         </label>
                         }
+                        <div style={{display:isMobile?'flex':'inline',flexDirection:isMobile?'column':'row' }}>
                         <label style={{ fontSize: '1em' }}>Phương Thức Thanh Toán: {batBuocNhap} ㅤ</label>
                         <label style={{ fontSize: '1em' }}>
                             <input
@@ -372,7 +374,7 @@ const ChonThanhToan = (props) => {
                             Tiền Mặt
                         </label>
                     </div>
-
+</div>
                     {props.dataReq.ThanhToanChuyenKhoan === false ?
                         <div>
                             <div className="form-group">

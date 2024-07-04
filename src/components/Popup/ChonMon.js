@@ -5,10 +5,14 @@ import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 import { getCookie } from "../Cookie";
 import { urlGetUnit, urlGetIngredient, urlGetTypeProduct, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
 import Pagination from "../Pagination";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXmark, faSearch } from '@fortawesome/free-solid-svg-icons'
 const ChonMon = (props) => {
     //xử lý redux
     const dispatch = useDispatch()
     const [dataRes, setDataRes] = useState({});
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+
     // useEffect(() => {
     //     console.log('dữ liệu gửi đi: ', dataReq);
     // }, [dataReq]);
@@ -20,15 +24,13 @@ const ChonMon = (props) => {
         searchBy: 'TenSanPham',
         search: '',
         searchExact: 'false',
-        limit: 12
+        limit: isMobile ? 10000 : 12
     });//
     useEffect(() => {
         console.log('dataUser: ', dataUser);
     }, [dataUser]);
     //xử lý trang dữ liệu 
     const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
-    //bắt buộc nhập
-    const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     //hàm tải dữ liệu
     useEffect(() => {
         TaiDuLieu()
@@ -137,7 +139,9 @@ const ChonMon = (props) => {
         return 'transparent';
     }
     //Xử lý menu
-    const [showNavigation, setShowNavigation] = useState(true);
+    const [showNavigation, setShowNavigation] = useState(() => {
+        return isMobile ? false : true;
+    });
     const handleToggleNavigation = () => {
         if (showNavigation) {
             setdataUser({
@@ -150,8 +154,8 @@ const ChonMon = (props) => {
         })
         setShowNavigation(!showNavigation);
     };
-    const navigationColumnClass = showNavigation ? "col-2" : "col-0";
-    const contentColumnClass = showNavigation ? "col-10" : "col-12";
+    const navigationColumnClass = isMobile ? "col-12" : (showNavigation ? "col-2" : "col-0");
+    const contentColumnClass = isMobile ? "col-12" : (showNavigation ? "col-10" : "col-12");
 
     //thêm dữ liệu vào danh sách
     const handleListChange = async (ID, Ten, GiaBan) => {
@@ -181,22 +185,21 @@ const ChonMon = (props) => {
         props.setDataReq(updatedDataReq);
     }
     const inputRef = useRef();
-    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
-        <div className="card" style={{ height: '90vh' }}>
+        <div className="card" style={{ height: '90vh', overflow: 'auto', overflowX: 'hidden' }}>
             <div className="row"  >
-                <div className={navigationColumnClass}>
+                <div className={navigationColumnClass} style={{ marginLeft: isMobile ? '10px' : 'auto' }}>
                     {showNavigation && <div>
                         <div>
                             <input
-                                style={{ width: '83%', border: '0.8px grey solid', marginTop: '2%' }}
+                                style={{ width: isMobile ? '75%' : '83%', border: '0.8px grey solid', marginTop: '2%' }}
                                 id="search"
                                 value={dataUser.search}
                                 onChange={handleSearch}
                                 placeholder='Tìm Tên Món'
                                 type="text"
                                 className="form-control-sm"
-                                autoFocus={isMobile?false:true}
+                                autoFocus={isMobile ? false : true}
                                 ref={inputRef}
                             />
                             {
@@ -217,7 +220,7 @@ const ChonMon = (props) => {
                                 </button>
                             }
                         </div>
-                        <div style={{ marginTop: '5px', display: 'flex', width: '100%', overflowY: 'auto', height: '100%' }}>
+                        <div style={{ marginTop: '5px', display: 'flex', width: '100%', overflowY: 'auto', height: !isMobile ? '100%' : '100px' }}>
                             <div >
                                 {combosLoaiSanPham.map(item => (
                                     <label style={{ display: 'flex', alignItems: 'center' }}>
@@ -264,9 +267,26 @@ const ChonMon = (props) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
-                                        padding: '15px'
+                                        padding: '15px',
+                                        position: 'relative'
                                     }}
                                 >
+                                    {props.dataReq.DanhSach.some(newitem => newitem.IDSanPham === item.IDSanPham) && (
+                                        <label
+                                            style={{
+                                                position: 'absolute',
+                                                top: '10px',  // Adjust the top position as needed
+                                                right: '10px',  // Adjust the right position as needed
+                                                color: 'white',
+                                                padding: '5px',  // Optional: Add padding
+                                                borderRadius: '10px',  // Optional: Add border-radius for rounded corners\
+                                                fontSize: '0.7rem'
+                                            }}
+                                            className="bg-gradient-primary"
+                                        >
+                                            Đã chọn
+                                        </label>
+                                    )}
                                     <img
                                         src={item.HinhAnh}
                                         style={{
@@ -290,50 +310,75 @@ const ChonMon = (props) => {
                     </div>
 
                     <div style={{ height: '6vh' }}></div>
-                    <div className="row">
-                        <div className="col-6">
-                        <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'flex-end',
-                                position: 'absolute',
-                                left: 0,
-                                bottom: 0,
-                                margin: '0.5rem'
-                            }}>
-                                <button
-                                    style={{ float: 'left' }}
-                                    class="nav-link"
-                                    onClick={handleToggleNavigation}
-                                >
-                                    {showNavigation ? "<<" : ">>"}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="col-6">
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'flex-end',
-                                position: 'absolute',
-                                right: 0,
-                                bottom: 0,
-                                margin: '0.5rem'
-                            }}>
-                                {/* phân trang */}
-                                <div style={{ marginLeft: '1rem' }}>
-                                    <Pagination
-                                        setdataUser={setdataUser}
-                                        dataUser={dataUser}
-                                        dataRes={dataRes}
-                                    />
+                    {!isMobile &&
+                        <div className="row">
+                            <div className="col-6">
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-end',
+                                    position: 'absolute',
+                                    left: 0,
+                                    bottom: 0,
+                                    margin: '0.5rem'
+                                }}>
+                                    <button
+                                        style={{ float: 'left' }}
+                                        class="nav-link"
+                                        onClick={handleToggleNavigation}
+                                    >
+                                        {showNavigation ? "<<" : ">>"}
+                                    </button>
                                 </div>
                             </div>
+                            {!isMobile &&
+                                <div className="col-6">
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'flex-end',
+                                        position: 'absolute',
+                                        right: 0,
+                                        bottom: 0,
+                                        margin: '0.5rem'
+                                    }}>
+                                        {/* phân trang */}
+                                        <div style={{ marginLeft: '1rem' }}>
+                                            <Pagination
+                                                setdataUser={setdataUser}
+                                                dataUser={dataUser}
+                                                dataRes={dataRes}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
-                    </div>
-
+                    }
                 </div>
             </div>
+            {
+                isMobile && <button
+                    id="ButtonMenu"
+                    className="btn bg-gradient-primary"
+                    style={{
+                        position: 'fixed',
+                        top: '1rem',
+                        right: '1.5rem',
+                        padding: '8px 16px',
+                        width: '3rem'
+                    }}
+                    onClick={() => {
+                        setShowNavigation(!showNavigation)
+                    }}
+                >
+                    {showNavigation ? (
+                        <FontAwesomeIcon icon={faXmark} />
+                    ) : (
+                        <FontAwesomeIcon icon={faSearch} />
+                    )}
+                </button>
+            }
         </div >
 
     );

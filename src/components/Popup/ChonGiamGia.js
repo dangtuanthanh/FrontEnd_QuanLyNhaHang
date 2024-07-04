@@ -105,15 +105,15 @@ const ChonGiamGia = (props) => {
 
     }
    
-   
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box" style={{ zIndex: '9991' }}>
-            <div className="box">
+            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                 <div className="conten-modal card">
                     <h4 style={{ textAlign: 'center', textDecoration: 'underline' }}>Giảm Giá</h4>
 
-                    <div className="form-group" style={{ margin: '10px' }}>
-                        <label>Phương Thức Giảm Giá {batBuocNhap} ㅤ</label>
+                    <div className="form-group" style={{ margin: '10px',display:isMobile?'flex':'inline',flexDirection:isMobile?'column':'row' }}>
+                        <label>Phương Thức Giảm Giá:  {batBuocNhap} ㅤ</label>
                         <label>
                             <input
                                 type="radio"

@@ -53,7 +53,7 @@ function TabHeThong(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center' }}>
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -126,7 +126,7 @@ function TabHeThong(props) {
                 if (error instanceof TypeError) {
                     openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                 } else {
-                   addNotification(error.message, 'warning', 5000)
+                    addNotification(error.message, 'warning', 5000)
                 }
                 dispatch({ type: 'SET_LOADING', payload: false })
             });
@@ -228,7 +228,7 @@ function TabHeThong(props) {
         if (tiLe) {
             if (!isNaN(tiLe) && tiLe > 0 && Number.isInteger(Math.floor(tiLe))) {
                 dispatch({ type: 'SET_LOADING', payload: true })
-                const data = {TiLe:tiLe}
+                const data = { TiLe: tiLe }
                 fetch(urlUpdatePerPointCustomert, {
                     method: 'PUT',
                     headers: {
@@ -304,14 +304,15 @@ function TabHeThong(props) {
 
             });
     }
+    const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div>
             <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
                 <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                     <NotificationContainer notifications={notifications} />
                     <h2 style={{ width: '100%', textAlign: 'center', textDecoration: 'underline' }}>Thiết Lập Hệ Thống</h2>
-                    <div className="row" style={{ width: '80%',marginTop:'1rem' }}>
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%', marginTop: '1rem' }}>
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`} style={{ display: 'flex', flexDirection: 'column' }}>
                             <h4 style={{ textAlign: 'center' }}>Đổi Ảnh QR Thanh Toán</h4>
                             <ImageUpload />
                             <div style={{ width: '100%' }}>
@@ -324,13 +325,18 @@ function TabHeThong(props) {
                             </div>
 
                         </div>
-                        <div className="col-6">
+                        {isMobile &&
+                            <div>
+                                <br></br>
+                                <hr class="horizontal dark mt-1" />
+                            </div>}
+                        <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4 style={{ textAlign: 'center' }}>% Điểm Tích Luỹ Cho Khách</h4>
                             <label style={{ color: 'grey' }}>Dựa theo tổng tiền hoá đơn, Ví dụ: hoá đơn có tổng tiền là 100.000đ, % Điểm Tích Luỹ Cho Khách là 1 thì khách sẽ có 1000 điểm tích luỹ tương đương với 1000đ </label>
                             <input
                                 type="number"
                                 className="form-control"
-                                 value={tiLe}
+                                value={tiLe}
                                 onChange={(event) => {
                                     setTiLe(event.target.value)
                                 }}

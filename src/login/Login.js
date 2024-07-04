@@ -4,7 +4,7 @@ import curvedImage from '../assets/img/logos/logo2-removebg-preview.png';
 import unidecode from 'unidecode';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
-import { urlCheckLogin,urlLogin } from "../components/url";
+import { urlCheckLogin, urlLogin } from "../components/url";
 function Login() {
     //Kiểm tra đăng nhập trang login
     const navigate = useNavigate();
@@ -39,8 +39,8 @@ function Login() {
 
     //--
     //hàm xử lý  bắt lỗi
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('admin');
+    const [password, setPassword] = useState('admin');
     const [titleError, setTitleError] = useState('');
     const [error, setError] = useState(false);//hiển thị lỗi
     const [isSubmitting, setIsSubmitting] = useState(false);// trạng thái bấm nút đăng nhập
@@ -149,6 +149,7 @@ function Login() {
                                             aria-label="Tài Khoản" a
                                             ria-describedby="email-addon"
                                             onKeyDown={handleEnterKeyPress}
+                                            autoCapitalize="none"
                                         />
                                     </div>
                                     <label>Mật Khẩu</label>
@@ -162,6 +163,7 @@ function Login() {
                                             aria-label="Mật Khẩu"
                                             aria-describedby="password-addon"
                                             onKeyDown={handleEnterKeyPress}
+                                            autoCapitalize="none"
                                         />
                                     </div>
                                     {error && <div style={{ color: 'red' }}>{titleError}</div>}
@@ -170,6 +172,30 @@ function Login() {
                                             {isSubmitting ? 'Đang xử lý...' : 'Đăng Nhập'}
                                         </button>
                                     </div>
+                                    <p style={{ margin: '0',marginTop:'1rem', fontSize: '0.7em', textAlign: 'center', fontWeight: 'bolder' }}>Tài Khoản Trải Nghiệm</p>
+                                    <table class="table align-items-center mb-0" style={{ fontSize: '0.7em', textAlign: 'center' }}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10"></th>
+                                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tài Khoản</th>
+                                                <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mật Khẩu</th>
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Quản Trị Viên</td>
+                                                <td>admin</td>
+                                                <td>admin</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Nhân Viên</td>
+                                                <td>nhanvien</td>
+                                                <td>nhanvien</td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
                                 </form>
                             </div>
 

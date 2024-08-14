@@ -19,6 +19,7 @@ const Insert_updateArea = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
             },
         })
             .then(response => {

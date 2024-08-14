@@ -222,6 +222,7 @@ function TabSanPham() {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -339,7 +340,7 @@ function TabSanPham() {
                                             style={{ display: "inline-block" }}
                                             //onClick={setSelectedIds([])}
                                             onClick={() => { setSelectedIds([]); }}
-                                            className="btn btn-danger">
+                                            className="btn btn-danger btn-sm">
                                             <FontAwesomeIcon icon={faArrowLeft} />
                                             ㅤQuay Lại
                                         </button>ㅤ

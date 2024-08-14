@@ -206,6 +206,7 @@ function TabHoaDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -340,6 +341,7 @@ function TabHoaDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {

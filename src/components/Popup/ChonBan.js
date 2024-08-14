@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTable } from '@fortawesome/free-solid-svg-icons'
 
 import { getCookie } from "../Cookie";
-import { urlGetUnit, urlGetIngredient, urlGetTypeProduct, urlGetProduct, urlInsertProcessedProduct, urlGetTable, urlGetArea, urlUpdateProcessedProduct } from "../url"
+import { urlGetTable, urlGetArea} from "../url"
 import anhBan from '../../assets/img/ban.jpg';
 import Pagination from "../Pagination";
 import Combobox from "../Combobox";
@@ -57,6 +57,7 @@ const ChonBan = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
             },
         })
             .then(response => {
@@ -108,6 +109,7 @@ const ChonBan = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {

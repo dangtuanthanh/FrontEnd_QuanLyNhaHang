@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from "../Cookie";
-import { urlGetPicturePayment, urlGetInvoice, urlUpdateInvoice, urlUpdateStatusTable, urlInsertInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
+import { urlGetPicturePayment, urlGetInvoice, urlUpdateInvoice, urlUpdateStatusTable, urlInsertInvoice} from "../url"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
@@ -17,7 +17,8 @@ const ChonThanhToan = (props) => {
         fetch(`${urlGetPicturePayment}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -52,6 +53,7 @@ const ChonThanhToan = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -95,6 +97,7 @@ const ChonThanhToan = (props) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                     body: JSON.stringify(duLieuGuiDi)
                 })
@@ -195,6 +198,7 @@ const ChonThanhToan = (props) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                     body: JSON.stringify(dulieu)
                 })

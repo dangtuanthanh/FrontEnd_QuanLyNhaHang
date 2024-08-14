@@ -49,104 +49,107 @@ const Insert_updateKhachHang = (props) => {
 
             });
     }, []);
+    const phoneRegex = /^\+?[0-9\s\-().]*$/;
     const handleSubmit = (e) => {
         e.preventDefault();
         if (dataReq.TenKhachHang && dataReq.SoDienThoai) {
-            dispatch({ type: 'SET_LOADING', payload: true })
-            const data = {
-                IDKhachHang: dataReq.IDKhachHang,
-                TenKhachHang: dataReq.TenKhachHang,
-                SoDienThoai:dataReq.SoDienThoai
-            };
-            if (props.isInsert === true) {
-                fetch(urlInsertCustomer, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ss': getCookie('ss'),
-                    },
-                    body: JSON.stringify(data)
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else if (response.status === 401) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else if (response.status === 500) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else {
-                            return;
-                        }
+            if (phoneRegex.test(dataReq.SoDienThoai)) {
+                dispatch({ type: 'SET_LOADING', payload: true })
+                const data = {
+                    IDKhachHang: dataReq.IDKhachHang,
+                    TenKhachHang: dataReq.TenKhachHang,
+                    SoDienThoai: dataReq.SoDienThoai
+                };
+                if (props.isInsert === true) {
+                    fetch(urlInsertCustomer, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ss': getCookie('ss'),
+                        },
+                        body: JSON.stringify(data)
                     })
-                    .then(data => {
-                        props.addNotification(data.message, 'success', 3000)
-                        //ẩn loading
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser, sortBy: 'IDKhachHang', sortOrder: 'desc' })
-                    })
-                    .catch(error => {
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else if (response.status === 401) {
+                                return response.json().then(errorData => { throw new Error(errorData.message); });
+                            } else if (response.status === 500) {
+                                return response.json().then(errorData => { throw new Error(errorData.message); });
+                            } else {
+                                return;
+                            }
+                        })
+                        .then(data => {
+                            props.addNotification(data.message, 'success', 3000)
+                            //ẩn loading
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            props.setPopupInsertUpdate(false)
+                            props.setdataUser({ ...props.dataUser, sortBy: 'IDKhachHang', sortOrder: 'desc' })
+                        })
+                        .catch(error => {
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            if (error instanceof TypeError) {
+                                props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                            } else {
+                                props.addNotification(error.message, 'warning', 5000)
+                            }
 
-                    });
-            } else {
-                fetch(urlUpdateCustomer, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ss': getCookie('ss'),
-                    },
-                    body: JSON.stringify(data)
-                })
-                    .then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else if (response.status === 401) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else if (response.status === 500) {
-                            return response.json().then(errorData => { throw new Error(errorData.message); });
-                        } else {
-                            return;
-                        }
+                        });
+                } else {
+                    fetch(urlUpdateCustomer, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ss': getCookie('ss'),
+                        },
+                        body: JSON.stringify(data)
                     })
-                    .then(data => {
-                        props.addNotification(data.message, 'success', 3000)
-                        //ẩn loading
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        props.setPopupInsertUpdate(false)
-                        props.setdataUser({ ...props.dataUser })
-                    })
-                    .catch(error => {
-                        dispatch({ type: 'SET_LOADING', payload: false })
-                        if (error instanceof TypeError) {
-                            props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
-                        } else {
-                            props.addNotification(error.message, 'warning', 5000)
-                        }
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else if (response.status === 401) {
+                                return response.json().then(errorData => { throw new Error(errorData.message); });
+                            } else if (response.status === 500) {
+                                return response.json().then(errorData => { throw new Error(errorData.message); });
+                            } else {
+                                return;
+                            }
+                        })
+                        .then(data => {
+                            props.addNotification(data.message, 'success', 3000)
+                            //ẩn loading
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            props.setPopupInsertUpdate(false)
+                            props.setdataUser({ ...props.dataUser })
+                        })
+                        .catch(error => {
+                            dispatch({ type: 'SET_LOADING', payload: false })
+                            if (error instanceof TypeError) {
+                                props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                            } else {
+                                props.addNotification(error.message, 'warning', 5000)
+                            }
 
-                    });
-            }
-        }else props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
+                        });
+                }
+            } else props.openPopupAlert('Số điện thoại không đúng định dạng')
+        } else props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
     }
     const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 >Thông Tin Khách Hàng<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}
-                            style={{
-                                maxHeight:  isMobile ? '74vh':'530px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}
                             >
                                 <div className="form-group">
                                     <label>Tên Khách Hàng {batBuocNhap}</label>

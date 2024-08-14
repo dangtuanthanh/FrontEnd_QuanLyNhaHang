@@ -1,0 +1,638 @@
+import React, { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash, faRotate, faAdd, faArrowLeft, faFilter, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { getCookie } from "../Cookie";
+import { urlGetPartner, urlDeletePartner, urlResetDataByIDDoiTac } from "../url";
+import Pagination from "../Pagination";
+import ItemsPerPage from "../ItemsPerPage";
+import TableSuperAdmin from "../Table/TableSuperAdmin";
+import Insert_updateSuperAdmin from "../Popup/insert_updateSuperAdmin";
+import { useNavigate } from 'react-router-dom';
+function TabSuperAdmin(props) {
+    //xử lý redux
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    //xử lý trang dữ liệu 
+    const [duLieuHienThi, setDuLieuHienThi] = useState([]);//lưu trạng thái dữ liệu
+    const [dataUser, setdataUser] = useState({//dữ liệu người dùng
+        sortBy: 'TenDoanhNghiep',
+        sortOrder: 'asc',
+        searchBy: 'TenDoanhNghiep',
+        search: '',
+        searchExact: 'false',
+    });//
+    const [dataRes, setDataRes] = useState({});
+
+    // popup hộp thoại thông báo
+    const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
+    const [popupMessageAlert, setPopupMessageAlert] = useState('');
+    const [onAction, setOnAction] = useState(() => { });
+    const PopupAlert = (props) => {
+        return (
+            <div className="popup">
+                <div className="popup-box">
+                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+                        <h5>Thông Báo</h5>
+
+                        <p>{props.message}</p>
+                        {props.onAction ? <div>
+                            <button style={{ float: 'left' }} className="btn btn-danger" onClick={props.onClose}>Thoát</button>
+                            <button style={{ float: 'right' }} className="btn btn-success" onClick={handleConfirm}>Xác Nhận</button>
+                        </div> :
+                            <button className="btn btn-success" onClick={props.onClose}>Xác Nhận</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        );
+    };
+    const openPopupAlert = (message, actionHandler) => {
+        setPopupMessageAlert(message);
+        setPopupAlert(true);
+        setOnAction(() => actionHandler);
+    }
+    const closePopupAlert = () => {
+        setPopupAlert(false);
+    };
+    const handleConfirm = () => {
+        onAction();
+        closePopupAlert();
+    }
+
+    //popup thông báo góc màn hình
+    const [notifications, setNotifications] = useState([]);
+    const addNotification = (message, btn, duration = 3000) => {
+        const newNotification = {
+            id: Date.now(),
+            message,
+            btn,
+            duration,
+        };
+        setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+        setTimeout(() => {
+            removeNotification(newNotification.id);
+        }, duration);
+    };
+    const removeNotification = (id) => {
+        setNotifications(prevNotifications =>
+            prevNotifications.filter(notification => notification.id !== id)
+        );
+    };
+    const NotificationContainer = ({ notifications }) => {
+        return (
+            <div className="notification-container">
+                {notifications.map(notification => (
+                    <div
+                        key={notification.id}
+                        className={` btn btn-${notification.btn}`}
+                        onClick={() => removeNotification(notification.id)}
+                    >
+                        {notification.message}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    //popup thêm,sửa
+    const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
+    // popup in hoá đơn
+    const [popupChonInHoaDon, setPopupChonInHoaDon] = useState(false);//trạng thái popupInsertUpdate
+    useEffect(() => {
+        console.log('popupChonInHoaDon', popupChonInHoaDon);
+    }, [popupChonInHoaDon]);
+    useEffect(() => {
+        if (!popupInsertUpdate)
+            TaiDuLieu()
+    }, [popupInsertUpdate]);
+    const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
+    const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
+
+    //hàm tìm kiếm
+    const handleSearch = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
+            page: 1,
+            search: event.target.value
+        });
+
+    };
+
+    //hàm lọc tìm kiếm
+    const handleSearchBy = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
+            page: 1,
+            searchBy: event.target.value
+        });
+
+    };
+    //hàm chế độ tìm kiếm
+    const handleSearchExact = (event) => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
+            page: 1,
+            searchExact: event.target.value
+        });
+
+    };
+
+    //hàm lọc Hôm nay
+    const filterHomNay = () => {
+        // Parse ngày thành đối tượng Date
+        let dateParts = dataRes.DateCurrent.split('/');
+        let date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+
+        // Trừ 1 ngày
+        date.setDate(date.getDate() + 3);
+
+        // Định dạng ngày thành chuỗi 
+        let next3Day =
+            addLeadingZero(date.getDate()) + "/" +
+            addLeadingZero(date.getMonth() + 1) + "/" +
+            date.getFullYear();
+
+        // Hàm bổ sung thêm số 0
+        function addLeadingZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+        setdataUser({
+            ...dataUser,
+            sortBy: 'TenDoanhNghiep',
+            sortOrder: 'asc',
+            page: 1,
+            search: next3Day,
+            searchBy: 'NgayHetHan'
+        });
+    };
+    // Hàm lọc Hôm qua
+    const filterHomQua = () => {
+
+       // Parse ngày thành đối tượng Date
+       let dateParts = dataRes.DateCurrent.split('/');
+       let date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+
+       // Trừ 1 ngày
+       date.setDate(date.getDate() + 7);
+
+       // Định dạng ngày thành chuỗi 
+       let next3Day =
+           addLeadingZero(date.getDate()) + "/" +
+           addLeadingZero(date.getMonth() + 1) + "/" +
+           date.getFullYear();
+
+       // Hàm bổ sung thêm số 0
+       function addLeadingZero(num) {
+           return num.toString().padStart(2, '0');
+       }
+       setdataUser({
+           ...dataUser,
+           sortBy: 'TenDoanhNghiep',
+           sortOrder: 'asc',
+           page: 1,
+           search: next3Day,
+           searchBy: 'NgayHetHan'
+       });
+    }
+    //hàm lọc chưa thanh toán
+    const filterChuaThanhToan = () => {
+        setdataUser({
+            ...dataUser,
+            sortBy: 'TenBan',
+            sortOrder: 'asc',
+            page: 1,
+            search: false,
+            searchBy: 'TrangThaiThanhToan'
+        });
+    };
+
+
+    const TaiDanhSachHoaDon = (IDBan) => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        return fetch(`${urlGetPartner}?search=${IDBan}&searchBy=IDBan`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
+            },
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 400) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                dispatch({ type: 'SET_LOADING', payload: false });
+                return data.data.some(item => item.TrangThaiThanhToan === false);
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    }
+    //Xoá dữ liệu
+    const deleteData = (ID) => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            IDs = ID.map(item => item);
+        } else IDs = [ID];
+        fetch(`${urlDeletePartner}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('loginsuperadmin'),
+            },
+            body: JSON.stringify({ IDs })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(async () => {
+                    addNotification('Xoá dữ liệu thành công', 'success', 3000)
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                    setSelectedIds([])
+                    TaiDuLieu()
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+            });
+    }
+
+    //Xoá dữ liệu
+    const resetData = (ID) => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        let IDs = [ID]
+        if (Array.isArray(ID)) {
+            IDs = ID.map(item => item);
+        } else IDs = [ID];
+        fetch(`${urlResetDataByIDDoiTac}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('loginsuperadmin'),
+            },
+            body: JSON.stringify({ IDs })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(async () => {
+                    addNotification('Đặt lại dữ liệu thành công', 'success', 3000)
+                    //ẩn loading
+                    dispatch({ type: 'SET_LOADING', payload: false })
+                    setSelectedIds([])
+                    TaiDuLieu()
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+            });
+    }
+    // sửa hàng loạt
+    const [selectedIds, setSelectedIds] = useState([]);//mảng chọn
+
+    //hàm tải dữ liệu
+    useEffect(() => {
+        TaiDuLieu()
+    }, [dataUser]);
+    const TaiDuLieu = () => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        fetch(`${urlGetPartner}?page=${dataUser.page}&limit=${dataUser.limit}&sortBy=${dataUser.sortBy}&sortOrder=${dataUser.sortOrder}&search=${dataUser.search}&searchBy=${dataUser.searchBy}&searchExact=${dataUser.searchExact}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('loginsuperadmin'),
+            },
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                //cập nhật dữ liệu hiển thị
+                setDuLieuHienThi(data.data)
+                //cập nhật thông số trang
+                setDataRes({
+                    currentPage: data.currentPage,
+                    itemsPerPage: data.itemsPerPage,
+                    sortBy: data.sortBy,
+                    sortOrder: data.sortOrder,
+                    totalItems: data.totalItems,
+                    totalPages: data.totalPages,
+                    DateCurrent: data.DateCurrent
+                });
+                if (data.currentPage > data.totalPages && data.totalPages !== null) {
+                    setdataUser({
+                        ...dataUser,
+                        page: data.totalPages
+                    });
+
+                }
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+    };
+    const inputRef = useRef();
+    const isMobile = useSelector(state => state.isMobile.isMobile)
+    //Xử lý hiển thị các nút chức năng
+    const [showButtonFunction, setShowButtonFunction] = useState(!isMobile)
+    const handleToggleButtonFunction = () => {
+        setShowButtonFunction(!showButtonFunction);
+    };
+    return (
+        <div>
+            <div class="card" style={{ minHeight: '92vh', position: 'relative' }}>
+                <div class="card-header pb-0">
+                    <h2 onClick={handleToggleButtonFunction}> Quản Lý Đối Tác  <button type="button" className="btn btn-link btn-sm mb-0 " style={{ width: '100px', float: 'right' }}><FontAwesomeIcon icon={showButtonFunction ? faArrowUp : faArrowDown} /></button></h2>
+                    <NotificationContainer notifications={notifications} />
+                    {/* Thanh Chức Năng : Làm mới, thêm, sửa, xoá v..v */}
+                    {showButtonFunction &&
+                        <div>
+                            {
+                                selectedIds.length == 0
+                                    ? <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => { TaiDuLieu(); }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faRotate} />
+                                            ㅤLàm Mới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            // onClick={() => {
+                                            //     setIsInsert(true)
+                                            //     setPopupInsertUpdate(true)
+                                            //     setIDAction()
+                                            // }}
+                                            onClick={() => {
+                                                // window.location.href = 'http://localhost:3001#DangKyDungThu';
+                                                navigate('/#DangKyDungThu');
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm
+                                        </button>ㅤ
+                                        {/* <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                alert('abc')
+                                            }}
+
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faQrcode} />
+                                            ㅤGọi Món QR
+                                        </button>ㅤ */}
+                                        {/* <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={() => {
+                                                setIsInsert(true)
+                                                setPopupInsertUpdate(true)
+                                                setIDAction()
+                                            }}
+
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faAdd} />
+                                            ㅤThêm SP Chế Biến
+                                        </button>ㅤ */}
+                                        {/* <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterHomNay}
+                                            className="btn btn-light btn-sm">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤHết Hạn Trong 3 Ngày Tới
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterHomQua}
+                                            className="btn btn-light btn-sm">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤHôm Qua
+                                        </button>ㅤ
+                                        <button
+                                            style={{ 'display': "inline-block" }}
+                                            onClick={filterChuaThanhToan}
+                                            className="btn btn-light btn-sm">
+                                            <FontAwesomeIcon icon={faFilter} />
+                                            ㅤChưa Thanh Toán
+                                        </button>ㅤ */}
+                                    </div>
+                                    : <div style={{ 'display': "inline-block", float: 'left' }}>
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            //onClick={setSelectedIds([])}
+                                            onClick={() => { setSelectedIds([]); }}
+                                            className="btn btn-danger btn-sm">
+                                            <FontAwesomeIcon icon={faArrowLeft} />
+                                            ㅤQuay Lại
+                                        </button>ㅤ
+                                        <button
+                                            style={{ display: "inline-block" }}
+                                            onClick={() => {
+                                                openPopupAlert(
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    () => { deleteData(selectedIds) }
+                                                )
+                                            }}
+                                            className="btn btn-primary btn-sm">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                            ㅤXoá ô đã chọn
+                                        </button>ㅤ
+                                    </div>
+                            }
+
+                            <div style={{ 'display': "inline-block", float: 'right' }}>
+                                {/* số hàng trên trang */}
+                                <ItemsPerPage
+                                    dataRes={dataRes}
+                                    openPopupAlert={openPopupAlert}
+                                    dataUser={dataUser}
+                                    setdataUser={setdataUser}
+                                />
+                                ㅤ
+                                <input id="search" value={dataUser.search} onChange={handleSearch} placeholder='Tìm Kiếm' type="text" className="form-control-sm" autoFocus={isMobile ? false : true}
+                                    ref={inputRef} />
+                                {
+                                    dataUser.search !== '' &&
+                                    <button
+                                        className="btn btn-close"
+                                        style={{ color: 'red', marginLeft: '4px', marginTop: '10px' }}
+                                        onClick={() => {
+                                            setdataUser({
+                                                ...dataUser,
+                                                search: ''
+                                            });
+                                            inputRef.current.focus();
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                }
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchBy} onChange={handleSearchBy}>
+                                    <option value="IDDoiTac">Tìm theo IDDoiTac</option>
+                                    <option value="TenDoanhNghiep">Tìm theo Tên Doanh Nghiêp</option>
+                                    <option value="SoDienThoai">Tìm theo Số Điện Thoại</option>
+                                    <option value="Email">Tìm theo Email</option>
+                                    <option value="NgayDangKy">Tìm theo Ngày Đăng Ký</option>
+                                    <option value="NgayHetHan">Tìm theo Ngày Hết Hạn</option>
+                                </select>
+                                ㅤ
+                                <select class="form-select-sm" value={dataUser.searchExact} onChange={handleSearchExact}>
+                                    <option value='false'>Chế độ tìm: Gần đúng</option>
+                                    <option value="true">Chế độ tìm: Chính xác</option>
+                                </select>
+                            </div>
+                        </div>}
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <TableSuperAdmin
+                            duLieuHienThi={duLieuHienThi}
+                            setdataUser={setdataUser}
+                            dataUser={dataUser}
+                            addNotification={addNotification}
+                            setIsInsert={setIsInsert}
+                            setIDAction={setIDAction}
+                            iDAction={iDAction}
+                            setPopupInsertUpdate={setPopupInsertUpdate}
+                            openPopupAlert={openPopupAlert}
+                            deleteData={deleteData}
+                            selectedIds={selectedIds}
+                            setSelectedIds={setSelectedIds}
+                            popupChonInHoaDon={popupChonInHoaDon}
+                            setPopupChonInHoaDon={setPopupChonInHoaDon}
+                            thongTinDangNhap={props.thongTinDangNhap}
+                            resetData = {resetData}
+                        />
+                        {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
+
+                    </div>
+                    <div style={{ height: '6vh' }}></div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        margin: '0.5rem'
+                    }}>
+                        {!isMobile &&
+                            <label style={{ borderTop: '1px solid black', color: 'darkgray' }} >Đang hiển thị: {duLieuHienThi.length}/{dataRes.totalItems} | Sắp xếp{dataRes.sortBy === "NgayLapHoaDon" ?
+                                (dataRes.sortOrder === 'asc'
+                                    ? <label style={{ color: 'darkgray', marginRight: '3px' }}>cũ nhất đến mới nhất </label>
+                                    : <label style={{ color: 'darkgray', marginRight: '3px' }}>mới nhất đến cũ nhất </label>)
+                                : (
+                                    dataRes.sortOrder === 'asc'
+                                        ? <label style={{ color: 'darkgray', marginRight: '3px' }}>tăng dần </label>
+                                        : <label style={{ color: 'darkgray', marginRight: '3px' }}>giảm dần</label>)}
+                                theo cột {dataRes.sortBy}   </label>
+                        }
+                        {/* phân trang */}
+                        <div style={{ marginLeft: '1rem' }}>
+                            <Pagination
+                                setdataUser={setdataUser}
+                                dataUser={dataUser}
+                                dataRes={dataRes}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {
+                popupInsertUpdate && (<div className="popup">
+                    
+                        <Insert_updateSuperAdmin
+                            isInsert={isInsert}
+                            setPopupInsertUpdate={setPopupInsertUpdate}
+                            dataUser={dataUser}
+                            setdataUser={setdataUser}
+                            addNotification={addNotification}
+                            openPopupAlert={openPopupAlert}
+                            iDAction={iDAction}
+                            thongTinDangNhap={props.thongTinDangNhap}
+                            setIsInsert={setIsInsert}
+                            setIDAction={setIDAction}
+                        />
+                    
+                </div>)
+            }
+            {
+                popupAlert && <PopupAlert
+                    message={popupMessageAlert}
+                    onClose={closePopupAlert}
+                    onAction={onAction}
+                />
+            }
+        </div>
+    )
+
+}
+
+export default TabSuperAdmin

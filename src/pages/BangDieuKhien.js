@@ -41,8 +41,9 @@ function BangDieuKhien() {
                 .then(response => {
                     if (response.status === 200) {
                         deleteCookie('ss')
+                        deleteCookie('IDDoiTac')
                         dispatch({ type: 'SET_LOADING', payload: false })
-                        navigate(`/`);
+                        navigate(`/Login`);
                         //window.location.href = "/";//Chuyển trang
                     } else if (response.status === 401) {
                         return response.json().then(errorData => { throw new Error(errorData.message); });
@@ -135,7 +136,7 @@ function BangDieuKhien() {
                     :
                     <div className="row">
                         <div className={navigationColumnClass}>
-                            {showNavigation && <Navigation menu={thongTinDangNhap.menu} />}
+                            {showNavigation && <Navigation menu={thongTinDangNhap.menu} logo={thongTinDangNhap.Logo} />}
                         </div>
                         <div className={contentColumnClass} style={{
                             opacity: isMobile && showNavigation ? 0.3 : 1,

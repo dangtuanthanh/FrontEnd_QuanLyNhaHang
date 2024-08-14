@@ -3,16 +3,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
-import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
+import { urlGetInvoice} from "../url"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign, faIdCard, faArrowLeft, faBell, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faPrint, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
+import { faIdCard, faArrowLeft, faBell, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faPrint, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare } from '@fortawesome/free-regular-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import { arialFont } from "../Font";
-import logo from '../../assets/img/logos/logo-removebg-preview.png';
+import logo from '../../assets/img/logos/logo.png';
 import TabChonBan from "./ChonBan";
 import TabChonMon from "./ChonMon";
 import ChonKhachHang from "./ChonKhachHang";
@@ -102,6 +102,7 @@ const GoiMonThanhToan = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
                 .then(response => {

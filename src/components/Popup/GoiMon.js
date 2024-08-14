@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
-import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
+import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice} from "../url"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDollarSign, faIdCard, faTrashAlt, faXmark, faBars, faClone, faFile, faPencil, faTable, faTag, faCheckCircle, faCheck, faCartShopping, faSpinner, faCheckToSlot, faBan } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare } from '@fortawesome/free-regular-svg-icons'
@@ -12,7 +12,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import { arialFont } from "../Font";
-import logo from '../../assets/img/logos/logo-removebg-preview.png';
 import TabChonBan from "./ChonBan";
 import TabChonMon from "./ChonMon";
 import ChonKhachHang from "./ChonKhachHang";
@@ -102,6 +101,7 @@ const GoiMon = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
                 .then(response => {
@@ -200,6 +200,7 @@ const GoiMon = (props) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                     body: JSON.stringify(dataReq)
                 })
@@ -233,6 +234,7 @@ const GoiMon = (props) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                     body: JSON.stringify(dataReq)
                 })

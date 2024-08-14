@@ -39,25 +39,31 @@ function Login() {
 
     //--
     //hàm xử lý  bắt lỗi
-    const [username, setUsername] = useState('admin');
-    const [password, setPassword] = useState('admin');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [titleError, setTitleError] = useState('');
     const [error, setError] = useState(false);//hiển thị lỗi
     const [isSubmitting, setIsSubmitting] = useState(false);// trạng thái bấm nút đăng nhập
-    const handleUsernameChange = (event) => {
+    const handleEmailChange = (event) => {
         setError(false);
-        setUsername(event.target.value);
+        setEmail(event.target.value);
     };
     const handlePasswordChange = (event) => {
         setError(false);
         setPassword(event.target.value);
     };
+    const emailRegex = /^[^ @]+@[^ @]+\.[^ @]+$/;
 
     const handleSubmit = () => {
-        if (!username || !password) {
+        if (!email || !password) {
             setTitleError("Vui lòng nhập đầy đủ thông tin đăng nhập.");
             setError(true);
             setIsSubmitting(false); // Đặt isSubmitting thành false nếu có lỗi không nhập
+            return;
+        }else if (!emailRegex.test(email)) {
+            setTitleError("Email không đúng định dạng.");
+            setError(true);
+            setIsSubmitting(false);
             return;
         }
         if (isSubmitting) {
@@ -71,7 +77,7 @@ function Login() {
         // Thực hiện xử lý đăng nhập
         // Gọi API
         const data = {
-            TaiKhoan: username,
+            Email: email,
             MatKhau: password
         };
         fetch(urlLogin, {
@@ -96,6 +102,7 @@ function Login() {
             })
             .then(data => {
                 setCookie('ss', `${data.cookieValue}`, 3);
+                setCookie('IDDoiTac', `${data.IDDoiTac}`, 3);
                 window.location.reload();
             })
             .catch(error => {
@@ -137,16 +144,16 @@ function Login() {
                             </div>
                             <div class="card-body">
                                 <form role="form">
-                                    <label>Tài Khoản</label>
+                                    <label>Email</label>
                                     <div class="mb-3">
                                         <input
                                             autoFocus
-                                            value={username}
-                                            onChange={handleUsernameChange}
+                                            value={email}
+                                            onChange={handleEmailChange}
                                             type="text"
                                             class="form-control"
-                                            placeholder="Nhập Tài Khoản"
-                                            aria-label="Tài Khoản" a
+                                            placeholder="Nhập Email"
+                                            aria-label="Email" a
                                             ria-describedby="email-addon"
                                             onKeyDown={handleEnterKeyPress}
                                             autoCapitalize="none"
@@ -172,7 +179,7 @@ function Login() {
                                             {isSubmitting ? 'Đang xử lý...' : 'Đăng Nhập'}
                                         </button>
                                     </div>
-                                    <p style={{ margin: '0',marginTop:'1rem', fontSize: '0.7em', textAlign: 'center', fontWeight: 'bolder' }}>Tài Khoản Trải Nghiệm</p>
+                                    {/* <p style={{ margin: '0',marginTop:'1rem', fontSize: '0.7em', textAlign: 'center', fontWeight: 'bolder' }}>Tài Khoản Trải Nghiệm</p>
                                     <table class="table align-items-center mb-0" style={{ fontSize: '0.7em', textAlign: 'center' }}>
                                         <thead>
                                             <tr>
@@ -195,7 +202,7 @@ function Login() {
                                             </tr>
                                         </tbody>
 
-                                    </table>
+                                    </table> */}
                                 </form>
                             </div>
 

@@ -52,6 +52,7 @@ const Insert_updateSPThanhPham = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
             //lấy danh sách đơn vị tính
@@ -68,6 +69,7 @@ const Insert_updateSPThanhPham = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
             Promise.all([fetch1, fetch2, fetch3])
@@ -117,6 +119,7 @@ const Insert_updateSPThanhPham = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
             Promise.all([fetch2, fetch3])

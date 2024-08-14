@@ -57,6 +57,7 @@ const Insert_updateSPCheBien = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
             //lấy danh sách nguyên liệu
@@ -73,6 +74,7 @@ const Insert_updateSPCheBien = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
             // lấy danh sách đơn vị tính
@@ -131,6 +133,7 @@ const Insert_updateSPCheBien = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
             // lấy danh sách đơn vị tính

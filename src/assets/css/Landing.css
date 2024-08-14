@@ -1,0 +1,127 @@
+/* Landing.css */
+
+.landing-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f7f7f7; /* Màu nền cho banner */
+   
+        margin-top: 0; /* Đảm bảo nội dung nằm ngay dưới thanh điều hướng */
+        padding-top: 0; /* Bỏ khoảng cách để nội dung chạm sát vào thanh điều hướng */
+}
+
+.slide-content {
+    text-align: center;
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.858);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url('../img/landing/slide.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+/* chức năng chính*/
+.feature-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.feature-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.feature-image img {
+    max-width: 300px; /* Cài đặt kích thước mặc định cho ô hình ảnh */
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-content {
+    flex: 1;
+    margin-left: 30px;
+}
+
+.feature-row.reverse .feature-content {
+    margin-left: 0;
+    margin-right: 30px;
+}
+
+.feature-content h3 {
+    color: #ff8c00; /* Màu chủ đạo của ứng dụng */
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.feature-content p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.feature-content .btn-primary {
+    background-color: #ff8c00;
+    border-color: #ff8c00;
+}
+
+  /* Pricing Section */
+.pricing .card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.pricing .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.pricing .card .card-price {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.pricing .card .period {
+    font-size: 1rem;
+}
+
+.fa-ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.fa-li {
+    position: absolute;
+    left: -2em;
+}
+
+.fa-check {
+    color: #ff8c00; /* Màu chủ đạo của ứng dụng */
+}
+
+/* Button Styling */
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Highlighted Card */
+.border-primary {
+    border: 2px solid #ff8c00 !important;
+}
+

@@ -53,17 +53,28 @@ const Logout_ChotCa = (props) => {
                 })
                 .then(data => {
                     setCombosMatchShifts(data.MatchShifts)
-                    setDataReq({
-                        ...dataReq,
-                        NgayLamViec: data.DateCurrent,
-                        IDCaLamViec: data.MatchShifts[0].IDCaLamViec
-                    });
+                    if (data.MatchShifts.length > 0)
+                        setDataReq({
+                            ...dataReq,
+                            NgayLamViec: data.DateCurrent,
+                            IDCaLamViec: data.MatchShifts[0].IDCaLamViec
+                        });
+                    else {
+                        setDataReq({
+                            ...dataReq,
+                            NgayLamViec: undefined,
+                            IDCaLamViec:undefined
+                        });
+                        alert('Bạn đang truy cập với quyền là thu ngân và có chức năng chốt ca. Ứng dụng không tìm thấy Ca làm việc nào phù hợp với giờ hiện tại. Vui lòng thêm 1 Ca làm việc phù hợp để sử dụng chức năng chốt ca')
+                    }
+                    
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
                 .catch(error => {
                     dispatch({ type: 'SET_LOADING', payload: false })
                     if (error instanceof TypeError) {
+                        console.log('error',error);
                         alert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
                         alert(error.message, 'warning', 5000)
@@ -73,7 +84,7 @@ const Logout_ChotCa = (props) => {
         }
     }, []);
     const handleSubmit = (isCloseShifts) => {
-        if (dataReq.TienDauCa && dataReq.TienChotCa) {
+        if (dataReq.TienDauCa && dataReq.TienChotCa&&dataReq.NgayLamViec&&dataReq.IDCaLamViec)  {
             dispatch({ type: 'SET_LOADING', payload: true })
             var data;
             //xử lý lại ngày định dạng trước khi gửi lên server
@@ -125,8 +136,9 @@ const Logout_ChotCa = (props) => {
                         if (response.status === 200) {
                             // reload trang
                             deleteCookie('ss')
+                            deleteCookie('IDDoiTac')
                             dispatch({ type: 'SET_LOADING', payload: false })
-                            navigate(`/`);
+                            navigate(`/Login`);
                         } else if (response.status === 401) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
                         } else if (response.status === 400) {
@@ -159,8 +171,9 @@ const Logout_ChotCa = (props) => {
                         if (response.status === 200) {
                             // reload trang
                             deleteCookie('ss')
+                            deleteCookie('IDDoiTac')
                             dispatch({ type: 'SET_LOADING', payload: false })
-                            navigate(`/`);
+                            navigate(`/Login`);
                         } else if (response.status === 401) {
                             return response.json().then(errorData => { throw new Error(errorData.message); });
                         } else if (response.status === 400) {

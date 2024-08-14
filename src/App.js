@@ -21,6 +21,9 @@ import KhachHang from "./pages/KhachHang"
 import Kho from "./pages/Kho"
 import NotFound from "./pages/NotFound";
 import Login from './login/Login';
+import Landing from './login/Landing';
+import LoginSuperAdmin from './login/LoginSuperAdmin';
+import SuperAdmin from './login/SuperAdmin';
 import Bep from "./pages/Bep"
 import TrangCaNhan from "./pages/TrangCaNhan"
 import GoiMonChoKhach from "./components/Popup/GoiMonChoKhach"
@@ -32,7 +35,8 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login /> } />
+          <Route path="/Login" element={<Login /> } />
+          <Route path="/" element={<Landing/> } />
           <Route path="/BangDieuKhien" element={<BangDieuKhien />} />
           <Route path="/HoaDon" element={<HoaDon />} />
           <Route path="/ThucDon" element={<ThucDon />} />
@@ -45,7 +49,8 @@ function App() {
           <Route path="/TrangCaNhan" element={<TrangCaNhan />} />
           <Route path="*" element={<NotFound />}/>
           <Route path="/GoiMon" element={<GoiMonChoKhach/>} />
-          
+          <Route path="/Admin" element={<LoginSuperAdmin/>} />
+          <Route path="/SuperAdmin" element={<SuperAdmin/>} />
         </Routes>
       </BrowserRouter>
     </Provider>

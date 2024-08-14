@@ -68,6 +68,7 @@ const Insert_updatePhieuNhap = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
             // // lấy danh sách đơn vị tính
@@ -130,6 +131,7 @@ const Insert_updatePhieuNhap = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
             // // lấy danh sách đơn vị tính
@@ -209,7 +211,8 @@ const Insert_updatePhieuNhap = (props) => {
                 fetch(`${urlGetListUnitConversionsByIDUnit}?IDDonViTinh=${IDDonViTinh}&TenDonViTinh=${TenDonViTinh}`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                 })
                     .then(response => {
@@ -260,7 +263,8 @@ const Insert_updatePhieuNhap = (props) => {
                 fetch(`${urlGetListUnitConversionsByIDUnit}?IDDonViTinh=${IDDonViTinh}&TenDonViTinh=${TenDonViTinh}`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'iddoitac': getCookie('IDDoiTac'),
                     },
                 })
                     .then(response => {

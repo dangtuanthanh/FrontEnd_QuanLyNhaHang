@@ -6,13 +6,13 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import '../assets/css/nucleo-icons.css';
 import '../assets/css/nucleo-svg.css';
 import '../assets/css/soft-ui-dashboard.min.css';
-import logo from '../assets/img/logos/logo-removebg-preview.png';
+//import logo from '../assets/img/logos/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGaugeHigh, faFileInvoice, faAddressCard, faUtensils, faTable, faUser, faCalendarCheck, faIdCard, faWarehouse, faFireBurner } from '@fortawesome/free-solid-svg-icons'
 import { useSelector } from 'react-redux'
 
 
-function Navigation({ menu }) {
+function Navigation({ menu,logo }) {
   const [activeComponent, setActiveComponent] = useState('');
   const location = useLocation();
   useEffect(() => {

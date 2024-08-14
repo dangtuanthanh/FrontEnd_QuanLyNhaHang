@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { arialFont } from "../Font";
-import logo from '../../assets/img/logos/logo-removebg-preview.png';
+import logo from '../../assets/img/logos/logo.png';
 
 const ChonInHoaDon = (props) => {
     //Xuất file PDF

@@ -23,7 +23,7 @@ function CheckLogin({ children,thongTinDangNhap }) {
           thongTinDangNhap(result)
           setIsAuthorized(true);
         } else {
-          navigate(`/`);
+          navigate(`/Login`);
           //window.location.href = "/";//Chuyển trang
         }
       })

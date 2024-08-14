@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ReadingConfig, doReadNumber, } from 'read-vietnamese-number'
 
 import { getCookie } from "../Cookie";
-import { urlGetUnit, urlGetIngredient, urlGetTypeProduct, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
+import {  urlGetTypeProduct, urlGetProduct } from "../url"
 import Pagination from "../Pagination";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faSearch } from '@fortawesome/free-solid-svg-icons'
@@ -42,6 +42,7 @@ const ChonMon = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -91,6 +92,7 @@ const ChonMon = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
             },
         })
             .then(response => {

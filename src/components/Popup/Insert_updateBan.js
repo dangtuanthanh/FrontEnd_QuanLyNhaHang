@@ -29,6 +29,7 @@ const Insert_updateBan = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
 
@@ -37,6 +38,7 @@ const Insert_updateBan = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
             })
             Promise.all([fetchGetTable, fetchGetArea])
@@ -68,6 +70,7 @@ const Insert_updateBan = (props) => {
                 })
                 .catch(error => {
                     if (error instanceof TypeError) {
+                        console.log('error', error);
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
                         props.addNotification(error.message, 'warning', 5000)
@@ -80,6 +83,7 @@ const Insert_updateBan = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac')
                 },
             })
                 .then(response => {
@@ -90,15 +94,24 @@ const Insert_updateBan = (props) => {
                 })
                 .then(data => {
                     setCombosKhuVuc(data.data)
-                    setDataReq({
-                        ...dataReq,
-                        IDKhuVuc: data.data[0].IDKhuVuc
-                    });
+                    if (data.data.length > 0)
+                        setDataReq({
+                            ...dataReq,
+                            IDKhuVuc: data.data[0].IDKhuVuc
+                        });
+                    else {
+                        setDataReq({
+                            ...dataReq,
+                            IDKhuVuc: undefined
+                        });
+                        props.openPopupAlert('Chưa có dữ liệu Khu Vực. Vui lòng thêm ít nhất 1 Khu Vực để có thể thêm bàn ăn!')
+                    }
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
                 .catch(error => {
                     if (error instanceof TypeError) {
+                        console.log('error', error);
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
                         props.addNotification(error.message, 'warning', 5000)
@@ -213,17 +226,17 @@ const Insert_updateBan = (props) => {
     const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Bàn Ăn<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}
-                            style={{
-                                maxHeight:  isMobile ? '74vh':'530px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}>
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
                                 <div className="form-group">
                                     <label>Tên Bàn {batBuocNhap}</label>
                                     <input

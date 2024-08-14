@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDollarSign, faIdCard, faBell, faClone, faFile, faPencil, faTable } from '@fortawesome/free-solid-svg-icons'
-import { faSquarePlus, faMinusSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
-
-import { urlInsertInvoice, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
 import { urlGetTable, urlGetInvoice, urlUpdateInvoice, urlDeleteInvoice, urlUpdateStatusTable } from "../url"
 import { getCookie } from "../Cookie";
 import Pagination from "../Pagination";
@@ -41,6 +36,7 @@ function TabGhepDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
             },
         })
             .then(response => {
@@ -95,6 +91,7 @@ function TabGhepDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -137,6 +134,7 @@ function TabGhepDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -219,6 +217,7 @@ function TabGhepDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -306,6 +305,7 @@ function TabGhepDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac'),
             },
             body: JSON.stringify(dataReq)
         })

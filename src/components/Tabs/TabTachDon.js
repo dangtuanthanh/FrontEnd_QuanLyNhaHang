@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDollarSign, faIdCard, faBell, faClone, faFile, faPencil, faTable } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faMinusSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
-import { urlInsertInvoice, urlGetInvoice, urlUpdateInvoice, urlGetProduct, urlInsertProcessedProduct, urlUpdateProcessedProduct } from "../url"
+import { urlInsertInvoice, urlUpdateInvoice } from "../url"
 import { urlGetTable } from "../url"
 import { getCookie } from "../Cookie";
 import Pagination from "../Pagination";
@@ -71,6 +71,7 @@ function TabTachDon(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
             },
         })
             .then(response => {
@@ -197,6 +198,7 @@ function TabTachDon(props) {
                         headers: {
                             'Content-Type': 'application/json',
                             'ss': getCookie('ss'),
+                            'iddoitac': getCookie('IDDoiTac'),
                         },
                         body: JSON.stringify(filterDataReqMoi)
                     })
@@ -205,6 +207,7 @@ function TabTachDon(props) {
                         headers: {
                             'Content-Type': 'application/json',
                             'ss': getCookie('ss'),
+                            'iddoitac': getCookie('IDDoiTac'),
                         },
                         body: JSON.stringify(filterDataReqCu)
                     })

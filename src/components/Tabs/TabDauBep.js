@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { getCookie } from "../Cookie";
-import { urlGetTypeProduct, urlDeleteTypeProduct, urlGetOrder } from "../url";
+import { urlGetOrder } from "../url";
 import ItemsPerPage from "../ItemsPerPage";
 import TableDauBep from "../Table/TableDauBep";
 function TabDauBep() {

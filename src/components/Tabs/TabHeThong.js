@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation } from "react-router-dom"
 import { getCookie } from "../Cookie";
-import { urlGetPerPointCustomert, urlGetPicturePayment, urlUpdatePicturePayment, urlUpdatePerPointCustomert } from "../url";
+import { urlGetPerPointCustomert, urlGetPicturePayment, urlUpdatePicturePayment, urlUpdatePerPointCustomert,urlUpdateLogo } from "../url";
 function TabHeThong(props) {
     //xử lý redux
     const dispatch = useDispatch()
-    const [dataReq, setDataReq] = useState({});
+    const [dataReq, setDataReq] = useState({ HinhAnh2: props.thongTinDangNhap.Logo });
     const [tiLe, setTiLe] = useState();
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
@@ -53,7 +53,7 @@ function TabHeThong(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+                    <div className="box" style={{ textAlign: 'center', marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -87,7 +87,8 @@ function TabHeThong(props) {
         const fetch1 = fetch(`${urlGetPicturePayment}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
         //lấy danh sách đơn vị tính
@@ -132,7 +133,7 @@ function TabHeThong(props) {
             });
     }, []);
     // xử lý ảnh
-    //url xử lý hiển thị hình ảnh
+    //url xử lý hiển thị hình ảnh thanh toán
     const [urlAnh, setUrlAnh] = useState();
     useEffect(() => {
         if (dataReq.HinhAnh && dataReq.HinhAnh instanceof File) { // Kiểm tra kiểu dữ liệu
@@ -197,7 +198,7 @@ function TabHeThong(props) {
 
         return (
             <div style={{ maxHeight: '112px' }} className="form-group">
-                <label>Hình Ảnh</label>
+                <label>Hình Ảnh <span style={{ opacity: 0.4 }}>(Khuyễn khích sử dụng hình ảnh vuông)</span></label>
                 <div
                     style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', border: '1px dashed #ccc', padding: '1rem 0.8rem', fontSize: '0.9rem', alignItems: 'center' }}
                     onClick={handleChooseFileClick}
@@ -215,6 +216,98 @@ function TabHeThong(props) {
                     {dataReq.HinhAnh && (
                         <img
                             src={urlAnh} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
+                            alt="Selected"
+                            style={{ maxWidth: '7rem', marginTop: '5px' }}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+    // xử lý ảnh
+    //url xử lý hiển thị hình ảnh logo
+    const [urlAnh2, setUrlAnh2] = useState();
+    useEffect(() => {
+        if (dataReq.HinhAnh2 && dataReq.HinhAnh2 instanceof File) { // Kiểm tra kiểu dữ liệu
+            setUrlAnh2(URL.createObjectURL(dataReq.HinhAnh2));
+        } else setUrlAnh2(dataReq.HinhAnh2);
+    }, [dataReq.HinhAnh2]);
+    function ImageUpload2() {
+        const fileInputRef = useRef(null);
+
+        const handleImageChange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh2: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            } else {
+                setDataReq({
+                    ...dataReq,
+                    HinhAnh2: undefined
+                });
+            }
+        };
+
+        const handleChooseFileClick = () => {
+            fileInputRef.current.click();
+        };
+
+        const handleDrop = (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+
+            if (file) {
+                // Kiểm tra xem file có phải là hình ảnh hay không
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        setDataReq({
+                            ...dataReq,
+                            HinhAnh2: file // Lưu file hình ảnh vào dataReq
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    props.openPopupAlert('Bạn chỉ có thể chọn file hình ảnh.')
+                }
+            }
+        };
+
+        const handleDragOver = (event) => {
+            event.preventDefault();
+        };
+
+        return (
+            <div style={{ maxHeight: '112px' }} className="form-group">
+                <label>Hình Ảnh <span style={{ opacity: 0.4 }}>(Khuyễn khích sử dụng hình ảnh chữ nhật ngang)</span></label>
+                <div
+                    style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', border: '1px dashed #ccc', padding: '1rem 0.8rem', fontSize: '0.9rem', alignItems: 'center' }}
+                    onClick={handleChooseFileClick}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                >
+                    <span style={{ color: 'blue' }}>Chọn file</span> hoặc Kéo và thả ảnh vào đây
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*" // Chỉ chấp nhận các file hình ảnh
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                    {dataReq.HinhAnh2 && (
+                        <img
+                            src={urlAnh2} // Sử dụng URL.createObjectURL để hiển thị hình ảnh đã chọn
                             alt="Selected"
                             style={{ maxWidth: '7rem', marginTop: '5px' }}
                         />
@@ -268,10 +361,15 @@ function TabHeThong(props) {
             addNotification('Bạn không nhập gì', 'warning', 4000)
     }
     // đổi ảnh thanh toán
-    const handleSubmit2 = () => {
+    const handleSubmit2 = (isLogo) => {
         const formData = new FormData();
-        formData.append('HinhAnh', dataReq.HinhAnh);
-        fetch(urlUpdatePicturePayment, {
+        if (isLogo)
+            formData.append('HinhAnh', dataReq.HinhAnh2)
+        else formData.append('HinhAnh', dataReq.HinhAnh)
+        var url = urlUpdateLogo
+        if(!isLogo)
+            url = urlUpdatePicturePayment
+        fetch(url, {
             method: 'PUT',
             headers: {
                 'ss': getCookie('ss'),
@@ -291,6 +389,7 @@ function TabHeThong(props) {
             })
             .then(data => {
                 addNotification(data.message, 'success', 3000)
+                window.location.reload();
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
             })
@@ -319,7 +418,7 @@ function TabHeThong(props) {
                                 <button
                                     style={{ marginTop: '7rem', float: 'right' }}
                                     className="btn btn-primary"
-                                    onClick={() => { handleSubmit2() }}>
+                                    onClick={() => { handleSubmit2(false) }}>
                                     Xác Nhận Đổi Ảnh
                                 </button>
                             </div>
@@ -361,10 +460,36 @@ function TabHeThong(props) {
                     >
                         Đã chọn: {lines.map(line => <div>{line}</div>)}
                     </pre> */}
+
                 </div>
                 <div class="card-body px-0 pt-0 pb-2 mt-2" >
+                    <hr class="horizontal dark mt-1"></hr>
+                    <div class="card-header pb-0" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div className={`${isMobile ? 'flex-column' : 'row'}`} style={{ width: '80%', marginTop: '1rem' }}>
+                            <div className={`${isMobile ? 'col-12' : 'col-6 '}`} style={{ display: 'flex', flexDirection: 'column' }}>
+                                <h4 style={{ textAlign: 'center' }}>Đổi Logo</h4>
+                                <ImageUpload2 />
+                                <div style={{ width: '100%' }}>
+                                    <button
+                                        style={{ marginTop: '7rem', float: 'right' }}
+                                        className="btn btn-primary"
+                                        onClick={() => { handleSubmit2(true) }}>
+                                        Xác Nhận Đổi Logo
+                                    </button>
+                                </div>
 
+                            </div>
+                            {isMobile &&
+                                <div>
+                                    <br></br>
+                                    <hr class="horizontal dark mt-1" />
+                                </div>}
+                            <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
+                                <h4 style={{ textAlign: 'center', opacity: 0.2 }}>Tính năng mới đang được phát triển</h4>
 
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {

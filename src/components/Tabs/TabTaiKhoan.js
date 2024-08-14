@@ -54,7 +54,7 @@ function TabTaiKhoan(props) {
         return (
             <div className="popup">
                 <div className="popup-box">
-                    <div className="box" style={{ textAlign: 'center', marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+                    <div className="box" style={{ textAlign: 'center', marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                         <h5>Thông Báo</h5>
 
                         <p>{props.message}</p>
@@ -87,7 +87,8 @@ function TabTaiKhoan(props) {
         fetch(`${urlGetPicturePayment}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'iddoitac': getCookie('IDDoiTac'),
             },
         })
             .then(response => {
@@ -322,11 +323,11 @@ function TabTaiKhoan(props) {
                         <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                             <h4>ㅤ</h4>
                             <div className="form-group">
-                                <label >Tài Khoản</label>
+                                <label >Email</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={props.thongTinDangNhap.NhanVien.TaiKhoan}
+                                    value={props.thongTinDangNhap.NhanVien.Email}
                                     onClick={() => {
                                         addNotification('Bạn cần liên hệ với QTV để cập nhật những thông tin này', 'warning', 4000)
                                     }}
@@ -448,10 +449,10 @@ function TabTaiKhoan(props) {
                                     }}
                                 />
                             </div> */}
-                                <button style={{ float: 'right' }} className="btn btn-primary" onClick={() => {
-                                    handleSubmit()
-                                }}>Xác Nhận Đổi Mật Khẩu
-                                </button>
+                            <button style={{ float: 'right' }} className="btn btn-primary" onClick={() => {
+                                handleSubmit()
+                            }}>Xác Nhận Đổi Mật Khẩu
+                            </button>
                         </div>
                     </div>
                     {/* <pre

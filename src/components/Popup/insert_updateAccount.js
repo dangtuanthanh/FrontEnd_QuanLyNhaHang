@@ -9,6 +9,7 @@ import { getCookie } from "../Cookie";
 import Insert_updateJobPosition from "./Insert_updateJobPosition";
 import Insert_updateRole from "./Insert_updateRole";
 import { urlGetRole, urlInsertAccount, urlGetJobPosition, urlGetAccount, urlUpdateAccount } from "../url"
+import { data } from "jquery";
 
 const Insert_updateAccount = (props) => {
     //xử lý redux
@@ -105,7 +106,7 @@ const Insert_updateAccount = (props) => {
                             IDVaiTro: strings
                         });
                         setDataReq(getAccountByID)
-                        if (data[2].TaiKhoan) {
+                        if (data[2].Email) {
                             setResTaiKhoan(true)
                             setIsChecked(true);
                             setIsDisabled(false);
@@ -319,7 +320,7 @@ const Insert_updateAccount = (props) => {
             }
             const updatedDataReq = { ...dataReq };
             delete updatedDataReq.IDVaiTro;
-            delete updatedDataReq.TaiKhoan;
+            delete updatedDataReq.Email;
             delete updatedDataReq.MatKhau;
 
             setDataReq(updatedDataReq);
@@ -351,6 +352,8 @@ const Insert_updateAccount = (props) => {
                     if (response.status === 200) {
                         return response.json();
                     } else if (response.status === 401) {
+                        return response.json().then(errorData => { throw new Error(errorData.message); });
+                    } else if (response.status === 400) {
                         return response.json().then(errorData => { throw new Error(errorData.message); });
                     } else if (response.status === 500) {
                         return response.json().then(errorData => { throw new Error(errorData.message); });
@@ -412,13 +415,34 @@ const Insert_updateAccount = (props) => {
                 });
         }
     }
+    const emailRegex = /^[^ @]+@[^ @]+\.[^ @]+$/;
+    const phoneRegex = /^\+?[0-9\s\-().]*$/;
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isChecked === true) {
-            if (props.isInsert) {
-                //trường hợp check và thêm
-                if (!dataReq.TaiKhoan
-                    || !dataReq.MatKhau
+        if (phoneRegex.test(dataReq.SoDienThoai)) {
+            if (isChecked === true) {
+                if (!emailRegex.test(dataReq.Email)) {
+                    props.openPopupAlert('Email không đúng định dạng');
+                    return;
+                }
+                if (props.isInsert) {
+                    //trường hợp check và thêm
+                    if (!dataReq.Email
+                        || !dataReq.MatKhau
+                        || !dataReq.IDVaiTro
+                        || !dataReq.IDVaiTro.length
+                        || !dataReq.TenNhanVien
+                        || !dataReq.IDViTriCongViec
+                        || !dataReq.NgaySinh
+                        || !dataReq.GioiTinh
+                        || !dataReq.DiaChi
+                        || !dataReq.SoDienThoai
+                        || !dataReq.TinhTrang
+                        || !dataReq.NgayVao
+                    ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
+                    else handleFetchAPISubmit();
+                    //check và sửa
+                } else if (!dataReq.Email
                     || !dataReq.IDVaiTro
                     || !dataReq.IDVaiTro.length
                     || !dataReq.TenNhanVien
@@ -431,49 +455,36 @@ const Insert_updateAccount = (props) => {
                     || !dataReq.NgayVao
                 ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
                 else handleFetchAPISubmit();
-                //check và sửa
-            } else if (!dataReq.TaiKhoan
-                || !dataReq.IDVaiTro
-                || !dataReq.IDVaiTro.length
-                || !dataReq.TenNhanVien
+            } else if (!dataReq.TenNhanVien
                 || !dataReq.IDViTriCongViec
                 || !dataReq.NgaySinh
                 || !dataReq.GioiTinh
                 || !dataReq.DiaChi
                 || !dataReq.SoDienThoai
                 || !dataReq.TinhTrang
-                || !dataReq.NgayVao
-            ) props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-            else handleFetchAPISubmit();
-        } else if (!dataReq.TenNhanVien
-            || !dataReq.IDViTriCongViec
-            || !dataReq.NgaySinh
-            || !dataReq.GioiTinh
-            || !dataReq.DiaChi
-            || !dataReq.SoDienThoai
-            || !dataReq.TinhTrang
-            || !dataReq.NgayVao) {
-            props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
-        }
-        else {
-            handleFetchAPISubmit();
-        }
+                || !dataReq.NgayVao) {
+                props.openPopupAlert('Vui lòng nhập đầy đủ thông tin. Các trường có dấu * là bắt buộc nhập')
+            }
+            else {
+                handleFetchAPISubmit();
+            }
+        } else props.openPopupAlert('Số điện thoại không đúng định dạng')
     };
     const inputRef = useRef();
     const isMobile = useSelector(state => state.isMobile.isMobile)
     return (
         <div className="popup-box">
-            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
                             <h4 id='tieudepop'>Thông Tin Nhân Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
                             <form onSubmit={handleSubmit}
-                            style={{
-                                maxHeight:  isMobile ? '74vh':'530px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}>
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
                                 {/* <div className="form-group">
                                     <label>Mã Nhân Viên</label>
                                     <input
@@ -485,7 +496,7 @@ const Insert_updateAccount = (props) => {
                                         value=''
                                     />
                                 </div> */}
-                                 <div className={`${isMobile ? 'flex-column' : 'row'}`}>
+                                <div className={`${isMobile ? 'flex-column' : 'row'}`}>
                                     <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group">
                                             <label>Tên Nhân Viên {batBuocNhap}</label>
@@ -588,7 +599,7 @@ const Insert_updateAccount = (props) => {
                                         <div className="form-group">
                                             <label>Số Điện Thoại {batBuocNhap}</label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 className="form-control"
                                                 value={dataReq.SoDienThoai}
                                                 onChange={(event) => {
@@ -634,7 +645,7 @@ const Insert_updateAccount = (props) => {
                                             <label>Ngày Vào {batBuocNhap}</label>
                                             <input
                                                 type="date"
-                                                style={{marginBottom:0}}
+                                                style={{ marginBottom: 0 }}
                                                 className="form-control"
                                                 onChange={(event) => {
                                                     setDataReq({
@@ -769,7 +780,7 @@ const Insert_updateAccount = (props) => {
 
                                         <div className="form-group">
                                             <label style={labelStyle}>
-                                                Tài Khoản {isChecked && <span style={{ color: 'red' }}>*</span>}
+                                                Email {isChecked && <span style={{ color: 'red' }}>*</span>}
                                             </label>
                                             <input
                                                 id="accountInput"
@@ -778,10 +789,10 @@ const Insert_updateAccount = (props) => {
                                                 onChange={(event) => {
                                                     setDataReq({
                                                         ...dataReq,
-                                                        TaiKhoan: event.target.value
+                                                        Email: event.target.value
                                                     });
                                                 }}
-                                                value={dataReq.TaiKhoan}
+                                                value={dataReq.Email}
                                                 disabled={isDisabled}
                                             />
                                         </div>
@@ -837,13 +848,13 @@ const Insert_updateAccount = (props) => {
                             <button
                                 onClick={() => { props.setPopup1(false) }}
                                 type="button"
-                                style={{marginBottom:0}}
+                                style={{ marginBottom: 0 }}
                                 className="btn btn-danger" >
                                 Huỷ Bỏ
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                style={{ float: "right",marginBottom:0}} 
+                                style={{ float: "right", marginBottom: 0 }}
                                 type="button"
                                 className="btn btn-primary"
                             >

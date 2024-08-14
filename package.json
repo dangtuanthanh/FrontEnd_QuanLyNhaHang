@@ -14,6 +14,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "aos": "^2.3.4",
     "bootstrap": "^5.3.0",
     "chart.js": "^4.4.2",
     "exceljs": "^4.3.0",
@@ -33,6 +34,7 @@
     "react-table": "^7.8.0",
     "read-vietnamese-number": "^2.1.4",
     "redux": "^5.0.0",
+    "swiper": "^11.1.9",
     "unidecode": "^0.1.8",
     "web-vitals": "^2.1.4"
   },

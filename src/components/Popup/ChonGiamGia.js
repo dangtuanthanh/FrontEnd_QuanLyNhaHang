@@ -70,6 +70,7 @@ const ChonGiamGia = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     'ss': getCookie('ss'),
+                    'iddoitac': getCookie('IDDoiTac'),
                 },
                 body: JSON.stringify(duLieuGuiDi)
             })

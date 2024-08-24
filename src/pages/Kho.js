@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faTimes, faBars, faSignOut,faFileAlt,faFlask,faBalanceScale } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faTimes, faBars, faSignOut, faFileAlt, faFlask, faBalanceScale } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -125,7 +125,49 @@ function Kho() {
     if (activeTab === tabs.tab3) {
         TabComponent = TabDonViTinh;
     }
+    const [xemPhieuNhap, setXemPhieuNhap] = useState(false);
+    const [xemNguyenLieu, setXemNguyenLieu] = useState(false);
+    const [xemDonViTinh, setXemDonViTinh] = useState(false);
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+            if (thongTinDangNhap.NhanVien.Quyen) {
+                const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+                if (quyens.includes('Lấy danh sách đơn vị tính trong Kho')
+                    || quyens.includes('Thêm đơn vị tính mới trong Kho')
+                    || quyens.includes('Cập nhật đơn vị tính trong Kho')
+                    || quyens.includes('Loại bỏ đơn vị tính ra khỏi danh sách đơn vị tính')
+                ) {
+                    setActiveTab(tabs.tab3)
+                    setXemDonViTinh(true);
+                } else {
+                    setXemDonViTinh(false);
+                }
 
+                if (quyens.includes('Lấy danh sách nguyên liệu')
+                    || quyens.includes('Thêm nguyên liệu mới')
+                    || quyens.includes('Cập nhật thông tin nguyên liệu')
+                    || quyens.includes('Loại bỏ nguyên liệu ra khỏi danh sách nguyên liệu')
+                ) {
+                    setActiveTab(tabs.tab2)
+                    setXemNguyenLieu(true);
+                } else {
+                    setXemNguyenLieu(false);
+                }
+
+                if (quyens.includes('Lấy danh sách phiếu nhập hàng')
+                    || quyens.includes('Tạo phiếu nhập hàng mới')
+                    || quyens.includes('Cập nhật thông tin phiếu nhập hàng')
+                    || quyens.includes('Loại bỏ Phiếu nhập hàng ra khỏi danh sách phiếu nhập hàng')
+                ) {
+                    setActiveTab(tabs.tab1)
+                    setXemPhieuNhap(true);
+                } else {
+                    setXemPhieuNhap(false);
+                }
+
+            }
+        }
+    }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap}  >
             {loading && <div className="loading">
@@ -160,7 +202,7 @@ function Kho() {
                                                 {showNavigation ? "<<" : ">>"}
                                             </button>
                                         </li>
-                                        <li class="nav-item">
+                                        {xemPhieuNhap && <li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
                                                 className={activeTab === 'TabPhieuNhap' ? 'nav-link active' : 'nav-link'}
@@ -171,8 +213,8 @@ function Kho() {
                                                     'Phiếu Nhập'
                                                 )}
                                             </button>
-                                        </li>
-                                        <li class="nav-item">
+                                        </li>}
+                                        {xemNguyenLieu&&<li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
                                                 className={activeTab === 'TabNguyenLieu' ? 'nav-link active' : 'nav-link'}
@@ -183,72 +225,71 @@ function Kho() {
                                                     'Nguyên Liệu'
                                                 )}
                                             </button>
-                                            
-                                    </li>
-                                    <li class="nav-item">
-                                        <button
-                                            style={{ color: '#ff8c00' }}
-                                            className={activeTab === 'TabDonViTinh' ? 'nav-link active' : 'nav-link'}
-                                            onClick={() => handleTabClick(tabs.tab3)}>
-                                            
-                                            {isMobile ? (
+                                        </li>}
+                                        { xemDonViTinh&&<li class="nav-item">
+                                            <button
+                                                style={{ color: '#ff8c00' }}
+                                                className={activeTab === 'TabDonViTinh' ? 'nav-link active' : 'nav-link'}
+                                                onClick={() => handleTabClick(tabs.tab3)}>
+
+                                                {isMobile ? (
                                                     <FontAwesomeIcon icon={faBalanceScale} />
                                                 ) : (
                                                     'Đơn Vị Tính'
                                                 )}
-                                        </button>
-                                    </li>
-                                </ul>
-                                <div className="col-4 d-flex justify-content-end align-items-center">
-                                    <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
-                                        <div onClick={() => {
-                                            navigate(`/TrangCaNhan`);
-                                        }}>
-                                            <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
-                                        </div>
-                                    </span>
+                                            </button>
+                                        </li>}
+                                    </ul>
+                                    <div className="col-4 d-flex justify-content-end align-items-center">
+                                        <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">
+                                            <div onClick={() => {
+                                                navigate(`/TrangCaNhan`);
+                                            }}>
+                                                <FontAwesomeIcon icon={faUser} />  Chào! <span style={{ color: 'blue' }}>{thongTinDangNhap.NhanVien.TenNhanVien}</span>
+                                            </div>
+                                        </span>
 
-                                    <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn btn-primary btn-sm mb-0">
-                                        {isMobile ? (
-                                            <FontAwesomeIcon icon={faSignOut} />
-                                        ) : (
-                                            'Đăng Xuất'
-                                        )}
-                                    </button>
+                                        <button style={{ marginLeft: '20px' }} onClick={() => logout()} className="btn btn-primary btn-sm mb-0">
+                                            {isMobile ? (
+                                                <FontAwesomeIcon icon={faSignOut} />
+                                            ) : (
+                                                'Đăng Xuất'
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
+                                <TabComponent thongTinDangNhap={thongTinDangNhap.NhanVien} />
+                                {popupChotCa && <Logout_ChotCa
+                                    setPopupChotCa={setPopupChotCa}
+                                    thongTinDangNhap={thongTinDangNhap}
+                                />}
                             </div>
-                            <TabComponent thongTinDangNhap={thongTinDangNhap.NhanVien} />
-                            {popupChotCa && <Logout_ChotCa
-                                setPopupChotCa={setPopupChotCa}
-                                thongTinDangNhap={thongTinDangNhap}
-                            />}
                         </div>
+                        {
+                            isMobile && <button
+                                id="ButtonMenu"
+                                className="btn bg-gradient-primary"
+                                style={{
+                                    position: 'fixed',
+                                    top: '3rem',
+                                    right: '1.5rem',
+                                    padding: '8px 16px',
+                                    width: '3rem'
+                                }}
+                                onClick={() => {
+                                    setShowNavigation(!showNavigation)
+                                }}
+                            >
+                                {showNavigation ? (
+                                    <FontAwesomeIcon icon={faTimes} />
+                                ) : (
+                                    <FontAwesomeIcon icon={faBars} />
+                                )}
+                            </button>
+                        }
                     </div>
-                {
-                isMobile && <button
-                    id="ButtonMenu"
-                    className="btn bg-gradient-primary"
-                    style={{
-                        position: 'fixed',
-                        top: '3rem',
-                        right: '1.5rem',
-                        padding: '8px 16px',
-                        width: '3rem'
-                    }}
-                    onClick={() => {
-                        setShowNavigation(!showNavigation)
-                    }}
-                >
-                    {showNavigation ? (
-                        <FontAwesomeIcon icon={faTimes} />
-                    ) : (
-                        <FontAwesomeIcon icon={faBars} />
-                    )}
-                </button>
             }
-        </div>
-            }
-            
+
         </CheckLogin >
     );
 }

@@ -121,7 +121,35 @@ function CaLamViec() {
     if (activeTab === tabs.tab2) {
         TabComponent = TabCaLamViec;
     }
-
+    const [xemChotCa, setXemChotCa] = useState(false);
+    const [xemCaLamViec, setXemCaLamViec] = useState(false);
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+            if (thongTinDangNhap.NhanVien.Quyen) {
+                const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+                if (quyens.includes('Lấy danh sách Ca Làm Việc')
+                    || quyens.includes('Thêm Ca làm việc')
+                    || quyens.includes('Cập nhật Ca làm việc')
+                    || quyens.includes('Loại bỏ Ca làm việc ra khỏi danh sách Ca làm việc')
+                ) {
+                    setActiveTab(tabs.tab2)
+                    setXemCaLamViec(true);
+                } else {
+                    setXemCaLamViec(false);
+                }
+                
+                if (quyens.includes('Lấy danh sách chốt ca làm việc')
+                    || quyens.includes('Loại bỏ Chốt ca khỏi danh sách chốt ca')
+                ) {
+                    setActiveTab(tabs.tab1)
+                    setXemChotCa(true);
+                } else {
+                    setXemChotCa(false);
+                }
+            
+            }
+        }
+    }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap} >
             {loading && <div className="loading">
@@ -156,6 +184,7 @@ function CaLamViec() {
                                                 {showNavigation ? "<<" : ">>"}
                                             </button>
                                         </li>
+                                        {xemChotCa && 
                                         <li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
@@ -169,6 +198,8 @@ function CaLamViec() {
 
                                             </button>
                                         </li>
+                                        }
+                                        {xemCaLamViec &&
                                         <li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
@@ -182,6 +213,7 @@ function CaLamViec() {
 
                                             </button>
                                         </li>
+                                        }
                                     </ul>
                                     <div className="col-6 d-flex justify-content-end align-items-center">
                                         <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">

@@ -134,7 +134,7 @@ const TableKhachHang = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenKhachHang}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenKhachHang}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDKhachHang) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

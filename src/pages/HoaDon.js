@@ -203,7 +203,11 @@ function HoaDon() {
                                         </button>
                                     </div>
                                 </div>
-                                <TabComponent thongTinDangNhap={thongTinDangNhap.NhanVien} />
+                                <TabComponent 
+                                thongTinDangNhap={thongTinDangNhap.NhanVien} 
+                                logo={thongTinDangNhap.Logo}
+                                diachi={thongTinDangNhap.DiaChi}
+                                 />
                                 {popupChotCa && <Logout_ChotCa
                                     setPopupChotCa={setPopupChotCa}
                                     thongTinDangNhap={thongTinDangNhap}

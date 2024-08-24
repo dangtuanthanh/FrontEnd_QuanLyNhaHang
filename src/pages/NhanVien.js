@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faTimes, faBars, faSignOut,faUserShield,faIdBadge } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faTimes, faBars, faSignOut, faUserShield, faIdBadge } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -110,7 +110,9 @@ function NhanVien() {
     }
 
     const [activeTab, setActiveTab] = useState(tabs.tab1);
-
+    const [xemNhanVien, setXemNhanVien] = useState(false);
+    const [xemVTTC, setXemVTTC] = useState(false);
+    const [xemVTCV, setXemVTCV] = useState(false);
     const handleTabClick = tab => {
         setActiveTab(tab);
     }
@@ -126,7 +128,44 @@ function NhanVien() {
     if (activeTab === tabs.tab3) {
         TabComponent = TabViTriCongViec;
     }
-
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+            if (thongTinDangNhap.NhanVien.Quyen) {
+                const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+                if (quyens.includes('Lấy danh sách vị trí công việc')
+                    || quyens.includes('Thêm Vị trí công việc mới')
+                    || quyens.includes('Cập nhật vị trí công việc')
+                    || quyens.includes('Loại bỏ Vị trí công việc khỏi danh sách Vị Trí Công Việc')
+                ) {
+                    setActiveTab(tabs.tab3)
+                    setXemVTCV(true);
+                } else {
+                    setXemVTCV(false);
+                }
+                
+                if (quyens.includes('Lấy danh sách vai trò')
+                    || quyens.includes('Thêm Vai Trò')
+                    || quyens.includes('Cập nhật vai trò')
+                    || quyens.includes('Loại bỏ vai trò khỏi danh sách vai trò')
+                ) {
+                    setActiveTab(tabs.tab2)
+                    setXemVTTC(true);
+                } else {
+                    setXemVTTC(false);
+                }
+                if (quyens.includes('Lấy Danh Sách Nhân Viên')
+                    || quyens.includes('Thêm Nhân Viên')
+                    || quyens.includes('Cập nhật nhân viên')
+                    || quyens.includes('Loại bỏ nhân viên khỏi danh sách lấy nhân viên')
+                ) {
+                    setActiveTab(tabs.tab1)
+                    setXemNhanVien(true);
+                } else {
+                    setXemNhanVien(false);
+                }
+            }
+        }
+    }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap} >
             {loading && <div className="loading">
@@ -161,43 +200,48 @@ function NhanVien() {
                                                 {showNavigation ? "<<" : ">>"}
                                             </button>
                                         </li>
-                                        <li class="nav-item">
-                                            <button
-                                                style={{ color: '#ff8c00' }}
-                                                className={activeTab === 'TabNhanVien' ? 'nav-link active' : 'nav-link'}
-                                                onClick={() => handleTabClick(tabs.tab1)}>
-                                                {isMobile ? (
-                                                    <FontAwesomeIcon icon={faUser} />
-                                                ) : (
-                                                    'Nhân Viên'
-                                                )}
-                                            </button>
-                                        </li>
-                                        <li class="nav-item">
-                                            <button
-                                                style={{ color: '#ff8c00' }}
-                                                className={activeTab === 'TabVaiTroTruyCap' ? 'nav-link active' : 'nav-link'}
-                                                onClick={() => handleTabClick(tabs.tab2)}>
-                                                {isMobile ? (
-                                                    <FontAwesomeIcon icon={faUserShield} />
-                                                ) : (
-                                                    'Vai Trò Truy Cập'
-                                                )}
-                                            </button>
-                                        </li>
-                                        <li class="nav-item">
-                                            <button
-                                                style={{ color: '#ff8c00' }}
-                                                className={activeTab === 'TabViTriCongViec' ? 'nav-link active' : 'nav-link'}
-                                                onClick={() => handleTabClick(tabs.tab3)}>
-                                                {isMobile ? (
-                                                    <FontAwesomeIcon icon={faIdBadge} />
-                                                ) : (
-                                                    'Vị Trí Công Việc'
-                                                )}
-                                            </button>
-                                        </li>
-
+                                        {xemNhanVien &&
+                                            <li class="nav-item">
+                                                <button
+                                                    style={{ color: '#ff8c00' }}
+                                                    className={activeTab === 'TabNhanVien' ? 'nav-link active' : 'nav-link'}
+                                                    onClick={() => handleTabClick(tabs.tab1)}>
+                                                    {isMobile ? (
+                                                        <FontAwesomeIcon icon={faUser} />
+                                                    ) : (
+                                                        'Nhân Viên'
+                                                    )}
+                                                </button>
+                                            </li>
+                                        }
+                                        {xemVTTC &&
+                                            <li class="nav-item">
+                                                <button
+                                                    style={{ color: '#ff8c00' }}
+                                                    className={activeTab === 'TabVaiTroTruyCap' ? 'nav-link active' : 'nav-link'}
+                                                    onClick={() => handleTabClick(tabs.tab2)}>
+                                                    {isMobile ? (
+                                                        <FontAwesomeIcon icon={faUserShield} />
+                                                    ) : (
+                                                        'Vai Trò Truy Cập'
+                                                    )}
+                                                </button>
+                                            </li>
+                                        }
+                                        {xemVTCV &&
+                                            <li class="nav-item">
+                                                <button
+                                                    style={{ color: '#ff8c00' }}
+                                                    className={activeTab === 'TabViTriCongViec' ? 'nav-link active' : 'nav-link'}
+                                                    onClick={() => handleTabClick(tabs.tab3)}>
+                                                    {isMobile ? (
+                                                        <FontAwesomeIcon icon={faIdBadge} />
+                                                    ) : (
+                                                        'Vị Trí Công Việc'
+                                                    )}
+                                                </button>
+                                            </li>
+                                        }
                                     </ul>
                                     <div className="col-4 d-flex justify-content-end align-items-center">
                                         <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">

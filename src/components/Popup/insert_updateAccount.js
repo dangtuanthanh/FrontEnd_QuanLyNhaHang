@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 import Combobox from "../Combobox";
 import SearchComBoBox from "../SearchCombobox";
@@ -39,6 +39,12 @@ const Insert_updateAccount = (props) => {
             return combo.TenVaiTro.toLowerCase().includes(event.target.value.toLowerCase());
         }))
     };
+    //cảnh báo dữ liệu bị thiếu
+    const [missingDataWarnings, setMissingDataWarnings] = useState([]);
+    const [showWarnings, setShowWarnings] = useState(false);
+    const toggleWarnings = () => {
+        setShowWarnings(!showWarnings);
+    };
     useEffect(() => {
         setCombosVaiTro2(combosVaiTro)
     }, [combosVaiTro]);
@@ -48,6 +54,11 @@ const Insert_updateAccount = (props) => {
     //bắt buộc nhập
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     const [resTaiKhoan, setResTaiKhoan] = useState(false);
+
+    useEffect(() => {
+        if (missingDataWarnings.length > 0)
+            props.addNotification('Dữ liệu phần này bị thiếu có thể dẫn tới việc hiển thị không chính xác', 'warning', 4000)
+    }, [missingDataWarnings]);
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true })
         if (props.iDAction) {
@@ -111,6 +122,29 @@ const Insert_updateAccount = (props) => {
                             setIsChecked(true);
                             setIsDisabled(false);
                         }
+                        const viTriCongViecList = data[1].data;
+                        const missingData = [];
+                        if (viTriCongViecList && viTriCongViecList.length > 0 && !viTriCongViecList.some(item => item.IDViTriCongViec === data[2].IDViTriCongViec)) {
+                            missingData.push({
+                                Combo: 'Vị Trí Công Việc',
+                                ID: data[2].IDViTriCongViec,
+                                Ten: data[2].TenViTriCongViec
+                            });
+                        } else if (viTriCongViecList && viTriCongViecList.length === 0) {
+                            props.openPopupAlert(
+                                `Có vẻ như chưa có vị trí công việc nào. Vui lòng thêm ít nhất 1 vị trí công việc để tiếp tục`,
+                                () => {
+                                    setIDAction();
+                                    setIsInsert(true);
+                                    setThemVTCV(true);
+                                }
+                            )
+                        }
+
+                        if (missingData.length > 0) {
+                            setMissingDataWarnings(prev => [...prev, ...missingData]);
+                        }
+
                     }
                     else setDataReq({
                         ...dataReq,
@@ -160,15 +194,33 @@ const Insert_updateAccount = (props) => {
                 .then(data => {
                     setCombosVaiTro(data[0].data)
                     setCombosViTriCongViec(data[1].data)
-                    setDataReq({
-                        ...dataReq,
-                        IDViTriCongViec: data[1].data[0].IDViTriCongViec
-                    });
+                    if (data[1].data.length>0)
+                        setDataReq({
+                            ...dataReq,
+                            IDViTriCongViec: data[1].data[0].IDViTriCongViec
+                        });
+                    else {
+                        setDataReq({
+                            ...dataReq,
+                            IDViTriCongViec: undefined
+                        });
+                        props.openPopupAlert(
+                            `Có vẻ như chưa có vị trí công việc nào. Vui lòng thêm ít nhất 1 vị trí công việc để tiếp tục`,
+                            () => {
+                                setIDAction();
+                                setIsInsert(true);
+                                setThemVTCV(true);
+                            }
+                        )
+                    }
+                    
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
                 .catch(error => {
                     if (error instanceof TypeError) {
+                        console.log('error', error);
+
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
                     } else {
                         props.addNotification(error.message, 'warning', 5000)
@@ -477,8 +529,13 @@ const Insert_updateAccount = (props) => {
             <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
-                        <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>Thông Tin Nhân Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                        <div className="bg-light px-4 py-3" style={{ position: 'relative' }}>
+                            <h4 id='tieudepop'>Thông Tin Nhân Viên<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span>
+                                {missingDataWarnings.length > 0 &&
+                                    <span onClick={toggleWarnings} style={{ float: 'right', marginRight: '1rem', color: 'red', cursor: 'pointer', }}><FontAwesomeIcon icon={faTriangleExclamation} /></span>
+                                }
+                            </h4>
+
                             <form onSubmit={handleSubmit}
                                 style={{
                                     maxHeight: isMobile ? '74vh' : '530px',
@@ -496,6 +553,47 @@ const Insert_updateAccount = (props) => {
                                         value=''
                                     />
                                 </div> */}
+                                {missingDataWarnings.length > 0 && (
+                                    <>
+                                        {showWarnings && (
+                                            <div>
+                                                <label
+                                                    style={{
+                                                        color: 'red',
+                                                        fontSize: 'small',
+                                                        marginLeft: '10px',
+                                                        fontSize: '0.75rem'
+                                                    }}
+
+                                                >
+                                                    Dữ liệu bị thiếu dẫn đến việc hiển thị không chính xác !
+
+                                                    Nguyên nhân có thể do bạn đã xoá các dữ liệu sau đây:
+                                                </label>
+                                                <table className="table align-items-center mb-0 table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Loại dữ liệu</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {missingDataWarnings.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td>{item.Combo}</td>
+                                                                <td>{item.ID}</td>
+                                                                <td>{item.Ten}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+
+                                                </table>
+                                                <hr class="horizontal dark mt-1" />
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                                 <div className={`${isMobile ? 'flex-column' : 'row'}`}>
                                     <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
                                         <div className="form-group">
@@ -571,7 +669,7 @@ const Insert_updateAccount = (props) => {
                                                 <input
                                                     type="radio"
                                                     value="Nữ"
-                                                    checked={dataReq.GioiTinh === 'Nữ'}
+                                                    checked={dataReq.GioiTinh === 'Nữ' || dataReq.GioiTinh === 'Nu'}
                                                     onChange={(event) => {
                                                         setDataReq({
                                                             ...dataReq,
@@ -842,6 +940,7 @@ const Insert_updateAccount = (props) => {
                                             </label>
                                         </div>
                                         )}
+
                                     </div>
                                 </div>
                             </form>

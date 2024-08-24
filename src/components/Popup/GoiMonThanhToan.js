@@ -12,7 +12,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 import { arialFont } from "../Font";
-import logo from '../../assets/img/logos/logo.png';
 import TabChonBan from "./ChonBan";
 import TabChonMon from "./ChonMon";
 import ChonKhachHang from "./ChonKhachHang";
@@ -126,6 +125,8 @@ const GoiMonThanhToan = (props) => {
                 });
         }
     }, [dataUser]);
+    console.log('props.diachi',props.diachi);
+    
     const InHoaDon = (data) => {
         // Tạo đối tượng PDF
         const doc = new jsPDF();
@@ -138,10 +139,10 @@ const GoiMonThanhToan = (props) => {
 
         // Thêm nội dung vào PDF
         // Thêm hình 
-        doc.addImage(logo, 'PNG', (doc.internal.pageSize.width - 50) / 2, 10, 50, 20);
+        doc.addImage(props.logo, 'PNG', (doc.internal.pageSize.width - 50) / 2, 10, 50, 20);
         const y = 10
         doc.setFontSize(10);
-        doc.text('Nhà Hàng VRes, 36 Huỳnh Văn Nghệ, KP9 P.Bửu Long,\nThành Phố Biên Hoà, Tỉnh Đồng Nai Việt Nam 1675467846', doc.internal.pageSize.getWidth() / 2, y + 25, { align: 'center', fontSize: 9 });
+        doc.text(`${props.diachi}`, doc.internal.pageSize.getWidth() / 2, y + 25, { align: 'center', fontSize: 9 });
         doc.setFontSize(20);
         doc.text('HOÁ ĐƠN BÁN HÀNG', doc.internal.pageSize.getWidth() / 2, y + 45, { align: 'center' });
         doc.setFontSize(13);

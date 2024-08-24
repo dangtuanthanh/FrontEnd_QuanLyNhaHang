@@ -132,7 +132,7 @@ const TableLoaiSanPham = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenLoaiSanPham}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenLoaiSanPham}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDLoaiSanPham) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

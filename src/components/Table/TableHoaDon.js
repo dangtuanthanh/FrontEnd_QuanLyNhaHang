@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faTrash, faCheck, faTimesCircle,faPrint } from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faTrash, faCheck, faTimesCircle, faQrcode } from '@fortawesome/free-solid-svg-icons'
 import ChonInHoaDon from "../Popup/ChonInHoaDon";
 const TableHoaDon = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
@@ -99,8 +99,8 @@ const TableHoaDon = (props) => {
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenBan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Bàn </th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenNhanVien')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Nhân Viên</th>
                     <th style={{ padding: 8 }} onClick={() => handleClickSort('TenKhachHang')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Khách Hàng</th>
-                    <th style={{ textAlign:  'center', padding: 8 }} onClick={() => handleClickSort('NgayLapHoaDon')}  class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày Giờ</th>
-                    <th style={{ textAlign:  'center',padding: 8 }} onClick={() => handleClickSort('TrangThaiThanhToan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Trạng Thái </th>
+                    <th style={{ textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('NgayLapHoaDon')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Ngày Giờ</th>
+                    <th style={{ textAlign: 'center', padding: 8 }} onClick={() => handleClickSort('TrangThaiThanhToan')} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Trạng Thái </th>
                     {/* <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Mô Tả</th> */}
 
                     <th style={{ textAlign: 'center', padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10 ps-2">Hành Động</th>
@@ -114,11 +114,11 @@ const TableHoaDon = (props) => {
                             id='trdata'
                             key={dulieu.IDHoaDon}
                             onClick={() => {
-                                dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false) 
+                                dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false)
                                 props.setIsInsert(false)
                                 props.setIDAction(dulieu.IDHoaDon)
                                 props.setPopupInsertUpdate(true)
-                               
+
                             }} >
                             {/* <td >
                                 <input
@@ -154,9 +154,22 @@ const TableHoaDon = (props) => {
                                 {dulieu.MoTa}
                             </td> */}
                             <td>
+                            {!dulieu.TrangThaiThanhToan &&
                                 <a onClick={(e) => {
                                     e.stopPropagation();
-                                    dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false) 
+                                    props.setIDBan(dulieu.IDBan)
+                                    props.setTenBan(dulieu.TenBan)
+                                    props.setPopupQRCode(true)
+                                }}>
+                                    <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />
+                                    < FontAwesomeIcon icon={faQrcode} />
+                                    {/* < FontAwesomeIcon icon={faPencil}style={{color:'cb0c9f'}} /> */}
+                                </a>
+}
+                                ㅤ
+                                <a onClick={(e) => {
+                                    e.stopPropagation();
+                                    dulieu.TrangThaiThanhToan ? props.setTrangThaiThanhToan(true) : props.setTrangThaiThanhToan(false)
                                     props.setIsInsert(false)
                                     props.setIDAction(dulieu.IDHoaDon)
                                     props.setPopupInsertUpdate(true)
@@ -168,12 +181,12 @@ const TableHoaDon = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá hoá đơn có ID là: ${dulieu.IDHoaDon}`,
-                                        () => { props.deleteData(dulieu.IDHoaDon,dulieu.IDBan) }
+                                        `Bạn có chắc chắn muốn xoá hoá đơn có ID là: ${dulieu.IDHoaDon}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
+                                        () => { props.deleteData(dulieu.IDHoaDon, dulieu.IDBan) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>
-                                 
-                               
+
+
 
                             </td>
 

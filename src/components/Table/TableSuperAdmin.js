@@ -170,7 +170,7 @@ const TableSuperAdmin = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenDoanhNghiep}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenDoanhNghiep}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDDoiTac) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

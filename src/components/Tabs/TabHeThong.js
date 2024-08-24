@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useLocation } from "react-router-dom"
+import { useNavigate } from 'react-router-dom';
 import { getCookie } from "../Cookie";
-import { urlGetPerPointCustomert, urlGetPicturePayment, urlUpdatePicturePayment, urlUpdatePerPointCustomert,urlUpdateLogo } from "../url";
+import { urlGetPerPointCustomert, urlGetPicturePayment, urlUpdatePicturePayment, urlUpdatePerPointCustomert, urlUpdateLogo, urlGetUseSampleData, urlUpdateUseSampleData } from "../url";
+
 function TabHeThong(props) {
+    const navigate = useNavigate();
     //xử lý redux
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({ HinhAnh2: props.thongTinDangNhap.Logo });
     const [tiLe, setTiLe] = useState();
+    const [suDungDuLieuMau, setSuDungDuLieuMau] = useState();
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
@@ -83,7 +86,7 @@ function TabHeThong(props) {
 
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true })
-        //lấy 1 sản phẩm
+        //lấy ảnh thanh toán
         const fetch1 = fetch(`${urlGetPicturePayment}`, {
             method: 'GET',
             headers: {
@@ -91,7 +94,7 @@ function TabHeThong(props) {
                 'iddoitac': getCookie('IDDoiTac'),
             },
         })
-        //lấy danh sách đơn vị tính
+        //lấy % điểm khách hàng
         const fetch2 = fetch(`${urlGetPerPointCustomert}`, {
             method: 'GET',
             headers: {
@@ -99,7 +102,16 @@ function TabHeThong(props) {
                 'ss': getCookie('ss'),
             },
         })
-        Promise.all([fetch1, fetch2])
+        //lấy sử dụng dữ liệu mẫu 
+        const fetch3 = fetch(`${urlGetUseSampleData}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+                'iddoitac': getCookie('IDDoiTac')
+            },
+        })
+        Promise.all([fetch1, fetch2, fetch3])
             .then(responses => {
                 const processedResponses = responses.map(response => {
                     if (response.status === 200) {
@@ -120,6 +132,7 @@ function TabHeThong(props) {
                     HinhAnh: data[0][0].AnhThanhToan
                 })
                 setTiLe(data[1][0].PhanTramDiemTichLuy)
+                setSuDungDuLieuMau(data[2][0].SuDungDuLieuMau)
                 //ẩn loading
                 dispatch({ type: 'SET_LOADING', payload: false })
             })
@@ -360,6 +373,52 @@ function TabHeThong(props) {
         } else
             addNotification('Bạn không nhập gì', 'warning', 4000)
     }
+
+    // sử dụng dữ liệu mẫu
+    const handleSubmitSuDungDuLieuMau = () => {
+        dispatch({ type: 'SET_LOADING', payload: true })
+        const data = { SuDungDuLieuMau: suDungDuLieuMau }
+        fetch(urlUpdateUseSampleData, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'ss': getCookie('ss'),
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else if (response.status === 500) {
+                    return response.json().then(errorData => { throw new Error(errorData.message); });
+                } else {
+                    return;
+                }
+            })
+            .then(data => {
+                addNotification(data.message, 'success', 3000)
+                if(!suDungDuLieuMau){
+                    navigate(0);
+                }
+                
+                //ẩn loading
+                dispatch({ type: 'SET_LOADING', payload: false })
+            })
+            .catch(error => {
+                dispatch({ type: 'SET_LOADING', payload: false })
+                if (error instanceof TypeError) {
+                    openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
+                } else {
+                    addNotification(error.message, 'warning', 5000)
+                }
+
+            });
+
+
+    }
+
     // đổi ảnh thanh toán
     const handleSubmit2 = (isLogo) => {
         const formData = new FormData();
@@ -367,7 +426,7 @@ function TabHeThong(props) {
             formData.append('HinhAnh', dataReq.HinhAnh2)
         else formData.append('HinhAnh', dataReq.HinhAnh)
         var url = urlUpdateLogo
-        if(!isLogo)
+        if (!isLogo)
             url = urlUpdatePicturePayment
         fetch(url, {
             method: 'PUT',
@@ -485,8 +544,34 @@ function TabHeThong(props) {
                                     <hr class="horizontal dark mt-1" />
                                 </div>}
                             <div className={`${isMobile ? 'col-12' : 'col-6 '}`}>
-                                <h4 style={{ textAlign: 'center', opacity: 0.2 }}>Tính năng mới đang được phát triển</h4>
+                                <h4 style={{ textAlign: 'center', width: "100%" }}>Sử dụng dữ liệu mẫu</h4>
+                                <label style={{ textAlign: 'center', width: "100%" }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={suDungDuLieuMau}
+                                        onChange={() => {
+                                            setSuDungDuLieuMau(!suDungDuLieuMau)
+                                        }}
+                                    />
 
+                                    ㅤSử dụng dữ liệu mẫu
+                                </label>
+                            <label style={{ color: 'grey',opacity:'0.5', textAlign:'center', width: "100%" }}>Quá trình này có thể mất tới 1 phút</label>
+                                <button
+                                    style={{ float: 'right', marginTop: '11rem' }}
+                                    className="btn btn-primary"
+                                    onClick={() => {
+                                        if (suDungDuLieuMau === false)
+                                            openPopupAlert(
+                                                `Nếu bạn không sử dụng dữ liệu mẫu nữa, dữ liệu cũ trước đó sẽ bị khởi tạo lại (kể cả tài khoản này). 
+                                                Tài khoản mặc định sẽ được thiết lập lại với Email là EMAIL gốc khi đăng ký và MẬT KHẨU là 1234. 
+                                                Bạn có xác nhận về hành động này ?`,
+                                                () => { handleSubmitSuDungDuLieuMau() }
+                                            )
+                                        else handleSubmitSuDungDuLieuMau()
+                                    }}>
+                                    Xác Nhận
+                                </button>
                             </div>
                         </div>
                     </div>

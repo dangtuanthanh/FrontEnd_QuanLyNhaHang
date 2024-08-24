@@ -10,6 +10,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ThongTinDoanhNghiep from "../components/Popup/ThongTinDoanhNghiep";
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom';
+import loadingGif from '../assets/img/loading/loading1.gif'
 // landing page
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
@@ -29,10 +30,11 @@ import iconDT from '../assets/img/landing/iconDT.png';
 function Landing() {
     const navigate = useNavigate();
     const location = useLocation();
+    const loading = useSelector(state => state.loading.loading)
     //popup thêm,sửa nhân viên
     const [popup1, setPopup1] = useState(false);//trạng thái popup1
     const [dataReq, setDataReq] = useState({
-        SuDungDuLieuMau :true
+        SuDungDuLieuMau: true
     });
     const [err, setErr] = useState(false);
     useEffect(() => {
@@ -305,6 +307,9 @@ function Landing() {
     };
     return (
         <div className={isScrolled ? 'scrolled' : ''} style={{ backgroundColor: '#f9f9f9', overflow: 'hidden' }}>
+            {loading && <div className="loading">
+                <img src={loadingGif} style={{ width: '30%' }} />
+            </div>}
             <NotificationContainer notifications={notifications} />
             <nav className="navbar navbar-expand-lg fixed-top" style={navbarStyle}>
                 <div className="container-fluid">
@@ -422,7 +427,7 @@ function Landing() {
             <div id='tinhNang' className="features-section py-5" style={{ backgroundColor: '#f9f9f9' }}>
                 <div className="container" >
                     <h2
-                    style={{ textAlign: 'center',marginTop:'40px', marginBottom: '30px', color: '#ff8c00' }}>Các tính năng của phần mềm quản lý VRes</h2>
+                        style={{ textAlign: 'center', marginTop: '40px', marginBottom: '30px', color: '#ff8c00' }}>Các tính năng của phần mềm quản lý VRes</h2>
 
                     {features.map((feature, index) => (
                         <div className={`row feature-row ${index % 2 === 0 ? 'align-items-center' : 'align-items-center flex-row-reverse'}`} key={index}>
@@ -440,7 +445,7 @@ function Landing() {
                             </div>
                             <hr className="horizontal dark mt-1" />
                         </div>
-                        
+
                     ))}
                 </div>
             </div>
@@ -501,6 +506,13 @@ function Landing() {
                             });
                         }}
                         onFocus={() => { setErr(false) }}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              // Gọi hàm xử lý click của button
+                              if (dataReq.TenDoanhNghiep) setPopup1(true);
+                              else setErr(true);
+                            }
+                          }}
                     ></input>
                     {err && <p className='mb-0' style={{ color: 'red' }}>Vui lòng nhập tên doanh nghiệp</p>}
                     <button className="btn btn-primary mt-2"
@@ -509,12 +521,13 @@ function Landing() {
                             if (dataReq.TenDoanhNghiep)
                                 setPopup1(true)
                             else setErr(true)
-                        }}>Bắt đầu dùng thử</button>
+                        }}>Bắt đầu dùng thử
+                    </button>
                 </div>
             </section>
             <div id='LienHe' className="contact-section" style={{ padding: '4em 0', backgroundColor: '#f9f9f9' }}>
                 <div className="container">
-                    <h2 
+                    <h2
                         className='mt-3'
                         data-aos="fade-up"
                         style={{ textAlign: 'center', marginBottom: '30px', color: '#ff8c00' }}>
@@ -558,7 +571,7 @@ function Landing() {
                                     />
                                 </div>
                                 <div className='col-md-9 col-sm-12'>
-                                    <h3 style={{ color: 'black',marginTop:'14px' }}>Về Chúng Tôi</h3>
+                                    <h3 style={{ color: 'black', marginTop: '14px' }}>Về Chúng Tôi</h3>
                                     <p style={{ textAlign: 'left' }}>
                                         Chúng tôi là một đội ngũ đầy đam mê với mục tiêu tạo ra những sản phẩm phần mềm
                                         chất lượng cao giúp các doanh nghiệp F&B tối ưu hóa hoạt động và thành công vượt trội.

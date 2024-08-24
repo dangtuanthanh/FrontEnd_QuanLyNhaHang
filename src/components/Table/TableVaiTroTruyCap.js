@@ -141,7 +141,7 @@ const TableVaiTroTruyCap = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenVaiTro}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenVaiTro}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDVaiTro) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

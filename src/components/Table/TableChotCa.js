@@ -142,7 +142,7 @@ const TableChotCa = (props) => {
                             <td>
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.IDChotCa}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.IDChotCa}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDChotCa) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

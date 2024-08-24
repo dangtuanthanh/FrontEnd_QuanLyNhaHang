@@ -120,7 +120,37 @@ function BanVaKhuVuc() {
     if (activeTab === tabs.tab2) {
         TabComponent = TabKhuVuc;
     }
-
+    const [xemBan, setXemBan] = useState(false);
+    const [xemKhuVuc, setXemKhuVuc] = useState(false);
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+            if (thongTinDangNhap.NhanVien.Quyen) {
+                const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+                if (quyens.includes('Lấy danh sách khu vực')
+                    || quyens.includes('Thêm Khu Vực')
+                    || quyens.includes('Cập nhật Khu Vực')
+                    || quyens.includes('Loại bỏ khu vực ra khỏi danh sách')
+                ) {
+                    setActiveTab(tabs.tab2)
+                    setXemKhuVuc(true);
+                } else {
+                    setXemKhuVuc(false);
+                }
+                
+                if (quyens.includes('Lấy danh sách bàn ăn')
+                    || quyens.includes('Thêm Bàn ăn mới')
+                    || quyens.includes('Cập nhật thông tin Bàn ăn')
+                    || quyens.includes('Loại bỏ Bàn khỏi danh sách lấy bàn')
+                ) {
+                    setActiveTab(tabs.tab1)
+                    setXemBan(true);
+                } else {
+                    setXemBan(false);
+                }
+            
+            }
+        }
+    }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap}  >
             {loading && <div className="loading">
@@ -155,6 +185,7 @@ function BanVaKhuVuc() {
                                                 {showNavigation ? "<<" : ">>"}
                                             </button>
                                         </li>
+                                        {xemBan && 
                                         <li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
@@ -167,6 +198,8 @@ function BanVaKhuVuc() {
                                                 )}
                                             </button>
                                         </li>
+                                        }
+                                        {xemKhuVuc &&
                                         <li class="nav-item">
                                             <button
                                                 style={{ color: '#ff8c00' }}
@@ -180,6 +213,7 @@ function BanVaKhuVuc() {
 
                                             </button>
                                         </li>
+                                        }
                                     </ul>
                                     <div className="col-6 d-flex justify-content-end align-items-center">
                                         <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">

@@ -5,12 +5,20 @@ import Combobox from "../Combobox";
 import SearchComBoBox from "../SearchCombobox";
 import Insert_updateKhuVuc from "./Insert_updateKhuVuc";
 import { urlInsertTable, urlGetTable, urlUpdateTable, urlGetArea } from "../url"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 const Insert_updateBan = (props) => {
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    //cảnh báo dữ liệu bị thiếu
+    const [missingDataWarnings, setMissingDataWarnings] = useState([]);
+    const [showWarnings, setShowWarnings] = useState(false);
+    const toggleWarnings = () => {
+        setShowWarnings(!showWarnings);
+    };
     // dùng cho popup khu vực
     const [isInsert, setIsInsert] = useState(false);
     const [iDAction, setIDAction] = useState();
@@ -65,6 +73,28 @@ const Insert_updateBan = (props) => {
                         ...dataReq,
                         IDKhuVuc: data[1].data[0].IDKhuVuc
                     });
+                    //kiểm tra có thiếu dữ liệu hay không
+                    const ListErr = data[1].data;//phụ
+                    const missingData = [];
+                    if (ListErr && ListErr.length > 0 && !ListErr.some(item => item.IDKhuVuc === data[0].IDKhuVuc)) {
+                        missingData.push({//chính
+                            Combo: 'Khu Vực',
+                            ID: data[0].IDKhuVuc,//chính
+                            Ten: data[0].TenKhuVuc
+                        });
+                    }else if(ListErr && ListErr.length ===0){
+                        props.openPopupAlert(
+                            `Có vẻ như chưa có dữ liệu Khu Vực. Vui lòng thêm ít nhất 1 Khu Vực để tiếp tục`,
+                            () => {
+                                setIDAction();
+                                setIsInsert(true);
+                                setPopup1(true);
+                            }
+                        )
+                    }
+                    if (missingData.length > 0) {
+                        setMissingDataWarnings(prev => [...prev, ...missingData]);
+                    }
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
@@ -104,7 +134,14 @@ const Insert_updateBan = (props) => {
                             ...dataReq,
                             IDKhuVuc: undefined
                         });
-                        props.openPopupAlert('Chưa có dữ liệu Khu Vực. Vui lòng thêm ít nhất 1 Khu Vực để có thể thêm bàn ăn!')
+                        props.openPopupAlert(
+                            `Có vẻ như chưa có dữ liệu Khu Vực. Vui lòng thêm ít nhất 1 Khu Vực để tiếp tục`,
+                            () => {
+                                setIDAction();
+                                setIsInsert(true);
+                                setPopup1(true);
+                            }
+                        )
                     }
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
@@ -230,13 +267,56 @@ const Insert_updateBan = (props) => {
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>Thông Tin Bàn Ăn<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <h4 id='tieudepop'>Thông Tin Bàn Ăn<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span>
+                                {missingDataWarnings.length > 0 &&
+                                    <span onClick={toggleWarnings} style={{ float: 'right', marginRight: '1rem', color: 'red', cursor: 'pointer', }}><FontAwesomeIcon icon={faTriangleExclamation} /></span>
+                                }</h4>
                             <form onSubmit={handleSubmit}
                                 style={{
                                     maxHeight: isMobile ? '74vh' : '530px',
                                     overflow: 'auto',
                                     overflowX: 'hidden'
                                 }}>
+                                {missingDataWarnings.length > 0 && (
+                                    <>
+                                        {showWarnings && (
+                                            <div>
+                                                <label
+                                                    style={{
+                                                        color: 'red',
+                                                        fontSize: 'small',
+                                                        marginLeft: '10px'
+                                                    }}
+
+                                                >
+                                                    Dữ liệu bị thiếu dẫn đến việc hiển thị không chính xác !
+
+                                                    Nguyên nhân có thể do bạn đã xoá các dữ liệu sau đây:
+                                                </label>
+                                                <table className="table align-items-center mb-0 table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Loại dữ liệu</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {missingDataWarnings.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td>{item.Combo}</td>
+                                                                <td>{item.ID}</td>
+                                                                <td>{item.Ten}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+
+                                                </table>
+                                                <hr class="horizontal dark mt-1" />
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                                 <div className="form-group">
                                     <label>Tên Bàn {batBuocNhap}</label>
                                     <input

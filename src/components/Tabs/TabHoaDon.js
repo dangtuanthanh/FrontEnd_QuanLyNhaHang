@@ -10,6 +10,7 @@ import ItemsPerPage from "../ItemsPerPage";
 import TableHoaDon from "../Table/TableHoaDon";
 import GoiMon from "../Popup/GoiMon";
 import GoiMonThanhToan from "../Popup/GoiMonThanhToan";
+import QRCodeBan from "../Popup/QRCodeBan";
 function TabHoaDon(props) {
     //xử lý redux
     const dispatch = useDispatch();
@@ -101,6 +102,10 @@ function TabHoaDon(props) {
     const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
     // popup in hoá đơn
     const [popupChonInHoaDon, setPopupChonInHoaDon] = useState(false);//trạng thái popupInsertUpdate
+    // popup mã qr thanh toán
+    const [popupQRCode, setPopupQRCode] = useState(false);
+    const [iDBan, setIDBan] = useState();
+    const [tenBan, setTenBan] = useState();
     useEffect(() => {
         console.log('popupChonInHoaDon', popupChonInHoaDon);
     }, [popupChonInHoaDon]);
@@ -484,7 +489,7 @@ function TabHoaDon(props) {
                                             style={{ display: "inline-block" }}
                                             onClick={() => {
                                                 openPopupAlert(
-                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' |   ')} ? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                                     () => { deleteData(selectedIds) }
                                                 )
                                             }}
@@ -559,6 +564,9 @@ function TabHoaDon(props) {
                             setPopupChonInHoaDon={setPopupChonInHoaDon}
                             thongTinDangNhap={props.thongTinDangNhap}
                             setTrangThaiThanhToan={setTrangThaiThanhToan}
+                            setPopupQRCode={setPopupQRCode}
+                            setTenBan = {setTenBan}
+                            setIDBan = {setIDBan}  
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
 
@@ -607,6 +615,8 @@ function TabHoaDon(props) {
                             openPopupAlert={openPopupAlert}
                             iDAction={iDAction}
                             thongTinDangNhap={props.thongTinDangNhap}
+                            logo={props.logo}
+                            diachi={props.diachi}
                         />
                         :
                         <GoiMon
@@ -630,6 +640,15 @@ function TabHoaDon(props) {
                     onClose={closePopupAlert}
                     onAction={onAction}
                 />
+            }
+            {
+                popupQRCode && <div className="popup">
+                    <QRCodeBan
+                        iDAction={iDBan}
+                        setPopupQRCode={setPopupQRCode}
+                        tenBan = {tenBan}
+                    />
+                </div>
             }
         </div>
     )

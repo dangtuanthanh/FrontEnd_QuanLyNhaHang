@@ -299,7 +299,7 @@ const Insert_updateSPCheBien = (props) => {
                 TenNguyenLieu: Ten,
                 IDNguyenLieu: ID,
                 KhoiLuong: 0,
-                IDDonViTinh: 1,
+                IDDonViTinh: combosDonViTinh[0].IDDonViTinh,
                 TiLeSai: 0
             });
         }

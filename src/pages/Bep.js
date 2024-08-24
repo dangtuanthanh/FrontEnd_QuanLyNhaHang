@@ -120,7 +120,37 @@ function Bep() {
     if (activeTab === tabs.tab2) {
         TabComponent = TabBoiBan;
     }
-
+    // const [xemBep, setXemBep] = useState(false);
+    // const [xemBoiBan, setXemBoiBan] = useState(false);
+    // useEffect(() => {
+    //     if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+    //         if (thongTinDangNhap.NhanVien.Quyen) {
+    //             const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+    //             if (quyens.includes('Lấy danh sách khu vực')
+    //                 || quyens.includes('Thêm Khu Vực')
+    //                 || quyens.includes('Cập nhật Khu Vực')
+    //                 || quyens.includes('Loại bỏ khu vực ra khỏi danh sách')
+    //             ) {
+    //                 setActiveTab(tabs.tab2)
+    //                 setXemBoiBan(true);
+    //             } else {
+    //                 setXemBoiBan(false);
+    //             }
+                
+    //             if (quyens.includes('Lấy danh sách bàn ăn')
+    //                 || quyens.includes('Thêm Bàn ăn mới')
+    //                 || quyens.includes('Cập nhật thông tin Bàn ăn')
+    //                 || quyens.includes('Loại bỏ Bàn khỏi danh sách lấy bàn')
+    //             ) {
+    //                 setActiveTab(tabs.tab1)
+    //                 setXemBep(true);
+    //             } else {
+    //                 setXemBep(false);
+    //             }
+            
+    //         }
+    //     }
+    // }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap}  >
             {loading && <div className="loading">

@@ -122,8 +122,7 @@ const GoiMonChoKhach = (props) => {
             return total + item.SoLuong * item.GiaBan;
         }, 0))
     }, [dataReq]);
-
-
+    
     const [isInsert, setIsInsert] = useState(false);
     useEffect(() => {
         dispatch({ type: 'SET_LOADING', payload: true });
@@ -131,7 +130,7 @@ const GoiMonChoKhach = (props) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'iddoitac': getCookie('IDDoiTac')
+                'iddoitac': params.get('IDDoiTac')
             },
         })
             .then(response => {
@@ -152,7 +151,7 @@ const GoiMonChoKhach = (props) => {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
-                            'iddoitac': getCookie('IDDoiTac'),
+                            'iddoitac': params.get('IDDoiTac'),
                         },
                     })
                         .then(response => {
@@ -240,8 +239,7 @@ const GoiMonChoKhach = (props) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'ss': getCookie('ss'),
-                        'iddoitac': getCookie('IDDoiTac'),
+                        'iddoitac': params.get('IDDoiTac'),
                     },
                     body: JSON.stringify(dataReq)
                 })
@@ -275,7 +273,7 @@ const GoiMonChoKhach = (props) => {
                     headers: {
                         'Content-Type': 'application/json',
                         'ss': getCookie('ss'),
-                        'iddoitac': getCookie('IDDoiTac'),
+                        'iddoitac': params.get('IDDoiTac'),
                     },
                     body: JSON.stringify(dataReq)
                 })

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faTrash} from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faTrash, faQrcode } from '@fortawesome/free-solid-svg-icons'
 const TableBan = (props) => {
     const [isAsc, setIsAsc] = useState(false);//trạng thái sắp xếp tăng dần
     //hàm sắp xếp
@@ -22,7 +22,7 @@ const TableBan = (props) => {
     useEffect(() => {
         setSelectAll(false)
     }, [props.duLieuHienThi]);
-// dùng để reset khi bấm nút quay lại
+    // dùng để reset khi bấm nút quay lại
     useEffect(() => {
         if (props.selectedIds.length == 0) {
             const checkboxes = document.querySelectorAll('.checkboxCon');
@@ -98,15 +98,15 @@ const TableBan = (props) => {
             <tbody>
                 {
                     props.duLieuHienThi.map((dulieu, index) =>
-                        <tr 
-                        style={{ 'textAlign': 'center' }} 
-                        id='trdata' 
-                        key={dulieu.IDBan} 
-                        onClick={() => {
-                            props.setIsInsert(false)
-                            props.setIDAction(dulieu.IDBan)
-                            props.setPopupInsertUpdate(true)
-                        }} >
+                        <tr
+                            style={{ 'textAlign': 'center' }}
+                            id='trdata'
+                            key={dulieu.IDBan}
+                            onClick={() => {
+                                props.setIsInsert(false)
+                                props.setIDAction(dulieu.IDBan)
+                                props.setPopupInsertUpdate(true)
+                            }} >
                             <td >
                                 <input
                                     type="checkbox"
@@ -126,6 +126,17 @@ const TableBan = (props) => {
                             <td>
                                 <a onClick={(e) => {
                                     e.stopPropagation();
+                                    props.setIDAction(dulieu.IDBan)
+                                    props.setTenBan(dulieu.TenBan)
+                                    props.setPopupQRCode(true)
+                                }}>
+                                    <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true" />
+                                    < FontAwesomeIcon icon={faQrcode} />
+                                    {/* < FontAwesomeIcon icon={faPencil}style={{color:'cb0c9f'}} /> */}
+                                </a>
+                                ㅤ
+                                <a onClick={(e) => {
+                                    e.stopPropagation();
                                     props.setIsInsert(false)
                                     props.setIDAction(dulieu.IDBan)
                                     props.setPopupInsertUpdate(true)
@@ -137,7 +148,7 @@ const TableBan = (props) => {
                                 ㅤ
                                 <a onClick={(e) => {
                                     e.stopPropagation(); props.openPopupAlert(
-                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenBan}`,
+                                        `Bạn có chắc chắn muốn xoá ${dulieu.TenBan}? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                         () => { props.deleteData(dulieu.IDBan) }
                                     )
                                 }} class='btnEdit'><FontAwesomeIcon icon={faTrash} /></a>

@@ -125,7 +125,37 @@ function ThucDon() {
     if (activeTab === tabs.tab3) {
         TabComponent = TabLoaiSanPham;
     }
-
+    const [xemSanPham, setXemSanPham] = useState(false);
+    const [xemLoaiSanPham, setXemLoaiSanPham] = useState(false);
+    useEffect(() => {
+        if (Object.keys(thongTinDangNhap.NhanVien).length > 0) {
+            if (thongTinDangNhap.NhanVien.Quyen) {
+                const quyens = thongTinDangNhap.NhanVien.Quyen.split(', ');
+                if (quyens.includes('Lấy danh sách loại sản phẩm')
+                    || quyens.includes('Thêm loại sản phẩm')
+                    || quyens.includes('Cập nhật thông tin Loại sản phẩm')
+                    || quyens.includes('Loại bỏ Loại sản phẩm ra khỏi danh sách Loại sản phẩm')
+                ) {
+                    setActiveTab(tabs.tab3)
+                    setXemLoaiSanPham(true);
+                } else {
+                    setXemLoaiSanPham(false);
+                }
+                
+                if (quyens.includes('Lấy danh sách sản phẩm')
+                    || quyens.includes('Thêm sản phẩm mới')
+                    || quyens.includes('Cập nhật thông tin sản phẩm')
+                    || quyens.includes('Loại bỏ sản phẩm ra khỏi danh sách sản phẩm')
+                ) {
+                    setActiveTab(tabs.tab1)
+                    setXemSanPham(true);
+                } else {
+                    setXemSanPham(false);
+                }
+            
+            }
+        }
+    }, [thongTinDangNhap.NhanVien.Quyen]);
     return (
         <CheckLogin thongTinDangNhap={xuLyLayThongTinDangNhap}  >
             {loading && <div className="loading">
@@ -160,7 +190,7 @@ function ThucDon() {
                                         {showNavigation ? "<<" : ">>"}
                                     </button>
                                 </li>
-                                <li class="nav-item">
+                                {xemSanPham&&<li class="nav-item">
                                     <button
                                      style={{ color: '#ff8c00' }}
                                         className={activeTab === 'TabSanPham' ? 'nav-link active' : 'nav-link'}
@@ -172,8 +202,8 @@ function ThucDon() {
                                                     'Sản Phẩm'
                                                 )}
                                             </button>
-                                </li>
-                                <li class="nav-item">
+                                </li>}
+                                {xemLoaiSanPham&&<li class="nav-item">
                                     <button
                                      style={{ color: '#ff8c00' }}
                                         className={activeTab === 'TabLoaiSanPham' ? 'nav-link active' : 'nav-link'}
@@ -185,7 +215,7 @@ function ThucDon() {
                                                     'Loại Sản Phẩm'
                                                 )}
                                             </button>
-                                </li>
+                                </li>}
                             </ul>
                             <div className="col-6 d-flex justify-content-end align-items-center">
                                 <span style={{ marginLeft: '20px' }} className="mb-0 d-sm-inline d-none text-body font-weight-bold px-0">

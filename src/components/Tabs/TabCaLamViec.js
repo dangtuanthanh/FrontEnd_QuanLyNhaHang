@@ -291,7 +291,7 @@ function TabKhuVuc() {
                                         style={{ display: "inline-block" }}
                                         onClick={() => {
                                             openPopupAlert(
-                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' |   ')} ? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                                 () => { deleteData(selectedIds) }
                                             )
                                         }}

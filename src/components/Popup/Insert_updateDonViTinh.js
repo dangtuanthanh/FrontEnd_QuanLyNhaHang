@@ -213,33 +213,34 @@ const Insert_updateDonViTinh = (props) => {
                 return item.IDDonViTinh === ID;
             }
         );
-    
+
         if (TenCot === 'IDDonViTinh') {
             // Kiểm tra xem IDDonViTinh mới có bị trùng với bất kỳ ID nào đã tồn tại trong DanhSach không
             const isDuplicate = dataReq.DanhSach.some((item, idx) => {
                 return item.IDDonViTinh === Number(value) && idx !== index;
             });
-    
+
             if (isDuplicate) {
                 // Hiển thị thông báo nếu IDDonViTinh bị trùng
                 props.openPopupAlert('Bạn đã chọn đơn vị tính này rồi');
                 return; // Không setDataReq nếu có trùng lặp
             }
-    
+
             // Nếu không trùng lặp, cập nhật IDDonViTinh mới
             dataReq.DanhSach[index][TenCot] = Number(value);
+            dataReq.DanhSach[index]['IDDonViMoi'] = Number(value);
         } else {
             // Nếu TenCot không phải là IDDonViTinh, cập nhật giá trị như bình thường
             dataReq.DanhSach[index][TenCot] = value;
         }
-    
+
         // Cập nhật state với dataReq đã được chỉnh sửa
         setDataReq({
             ...dataReq,
             DanhSach: [...dataReq.DanhSach]
         });
     }
-    
+
     const ThemDonViTinh = () => {
         const existingIDs = dataReq.DanhSach.map(item => item.IDDonViTinh);
         const filteredCombos = combosDonViTinh.filter(item =>
@@ -247,10 +248,18 @@ const Insert_updateDonViTinh = (props) => {
         );
         if (filteredCombos.length > 0) {
             const DanhSach = dataReq.DanhSach;
-            DanhSach.push({
-                IDDonViTinh: filteredCombos[0].IDDonViTinh,
-                HeSoChuyenDoi: null
-            });
+            if (props.isInsert)
+                DanhSach.push({
+                    IDDonViTinh: filteredCombos[0].IDDonViTinh,
+                    HeSoChuyenDoi: null
+                });
+            else
+                DanhSach.push({
+                    IDDonViTinh: filteredCombos[0].IDDonViTinh,
+                    HeSoChuyenDoi: null,
+                    IDDonViCu:props.iDAction,
+                    IDDonViMoi:filteredCombos[0].IDDonViTinh
+                });
             setDataReq({
                 ...dataReq,
                 DanhSach

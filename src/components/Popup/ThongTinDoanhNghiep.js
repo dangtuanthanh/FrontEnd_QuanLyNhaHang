@@ -6,6 +6,7 @@ import { getCookie } from "../Cookie";
 import Insert_updateRole from "./Insert_updateRole";
 import { urlRegister, urlRegisterCode } from "../url"
 import { useNavigate } from 'react-router-dom';
+import LoadingBar from "../LoadingBar";
 
 const ThongTinDoanhNghiep = (props) => {
     //xử lý redux
@@ -17,6 +18,8 @@ const ThongTinDoanhNghiep = (props) => {
     const batBuocNhap = <span style={{ color: 'red' }}>*</span>;
     const [isCode, setIsCode] = useState(false);// hiển thị form mã xác thực
     const [code, setCode] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
     //xử lý xác nhận
     const emailRegex = /^[^ @]+@[^ @]+\.[^ @]+$/;
@@ -90,8 +93,8 @@ const ThongTinDoanhNghiep = (props) => {
     const handleCodeChange = (event) => {
         setCode(event.target.value);
     };
-    // xử lý xác thực code
-    const handleSubmit2 = () => {
+
+    const handleSubmit2 = async () => {
         if (code) {
             dispatch({ type: 'SET_LOADING', payload: true })
             // Gọi API
@@ -121,11 +124,18 @@ const ThongTinDoanhNghiep = (props) => {
                     }
                 })
                 .then(data => {
+                    setIsLoading(false);
                     dispatch({ type: 'SET_LOADING', payload: false })
-                    props.addNotification('Đăng Ký Thành Công', 'success', 3000)
-                    navigate(`/Login`);
+                    props.addNotification(`Đăng Ký Thành Công, ứng dụng sẽ tự chuyển hướng đến trang đăng nhập sau ít giây ...`, 'success', 5000);
+    
+    
+                    // Tạo timeout để sau khi đếm ngược xong sẽ chuyển hướng
+                    setTimeout(() => {
+                        navigate(`/Login`); // Chuyển hướng sau khi countdown kết thúc
+                    }, 5000); // Sau số giây đã định
                 })
                 .catch(error => {
+                    setIsLoading(false);
                     dispatch({ type: 'SET_LOADING', payload: false })
                     if (error instanceof TypeError) {
                         props.openPopupAlert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra đường truyền kết nối!')
@@ -140,6 +150,7 @@ const ThongTinDoanhNghiep = (props) => {
     }
     return (
         <div className="popup-box" >
+            <LoadingBar isLoading={isLoading} progress={progress} />
             <div className="box" style={{
                 width: isMobile && '100%'
             }}>
@@ -260,15 +271,15 @@ const ThongTinDoanhNghiep = (props) => {
                                         <div
                                             className="form-group"
                                             style={{ marginBottom: '0px' }}
-                                            // onClick={() => {
-                                            //     alert("Tính năng này đang được phát triển")
-                                            // }}
+                                        // onClick={() => {
+                                        //     alert("Tính năng này đang được phát triển")
+                                        // }}
                                         >
                                             <label >
                                                 <input
                                                     type="checkbox"
-                                                     checked={props.dataReq.SuDungDuLieuMau}
-                                                     onChange={() => {
+                                                    checked={props.dataReq.SuDungDuLieuMau}
+                                                    onChange={() => {
                                                         props.setDataReq({
                                                             ...props.dataReq,
                                                             SuDungDuLieuMau: !props.dataReq.SuDungDuLieuMau
@@ -277,6 +288,9 @@ const ThongTinDoanhNghiep = (props) => {
                                                 />
 
                                                 ㅤSử dụng dữ liệu mẫu
+                                            </label>
+                                            <label style={{ opacity: '0.4', color: 'red', fontStyle: 'italic' }}>
+                                                ㅤ ( Quá trình này có thể mất tới 1 phút)
                                             </label>
                                         </div>
                                     </form>

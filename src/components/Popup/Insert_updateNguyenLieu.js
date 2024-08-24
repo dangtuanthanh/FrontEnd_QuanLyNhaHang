@@ -5,12 +5,20 @@ import Combobox from "../Combobox";
 import SearchComBoBox from "../SearchCombobox";
 import Insert_updateDonViTinh from "./Insert_updateDonViTinh";
 import { urlInsertIngredient, urlGetIngredient, urlUpdateIngredient, urlGetUnit } from "../url"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlusCircle, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 const Insert_updateNguyenLieu = (props) => {
     const dispatch = useDispatch()
     const [dataReq, setDataReq] = useState({});
     useEffect(() => {
         console.log('dữ liệu gửi đi: ', dataReq);
     }, [dataReq]);
+    //cảnh báo dữ liệu bị thiếu
+    const [missingDataWarnings, setMissingDataWarnings] = useState([]);
+    const [showWarnings, setShowWarnings] = useState(false);
+    const toggleWarnings = () => {
+        setShowWarnings(!showWarnings);
+    };
     // combobox
     const [combosDonViTinh, setCombosDonViTinh] = useState([]);//danh sách đơn vị tính
     const [popupSearch, setPopupSearch] = useState(false);
@@ -62,6 +70,28 @@ const Insert_updateNguyenLieu = (props) => {
                         ...dataReq,
                         IDDonViTinh: data[1].data[0].IDDonViTinh
                     });
+                    //kiểm tra có thiếu dữ liệu hay không
+                    const ListErr = data[1].data;//phụ
+                    const missingData = [];
+                    if (ListErr && ListErr.length > 0 && !ListErr.some(item => item.IDDonViTinh === data[0].IDDonViTinh)) {
+                        missingData.push({//chính
+                            Combo: 'Đơn Vị Tính',
+                            ID: data[0].IDDonViTinh,//chính
+                            Ten: data[0].TenDonViTinh
+                        });
+                    } else if (ListErr && ListErr.length === 0) {
+                        props.openPopupAlert(
+                            `Có vẻ như chưa có Đơn Vị Tính nào. Vui lòng thêm ít nhất 1 Đơn Vị Tính để tiếp tục`,
+                            () => {
+                                setIDAction();
+                                setIsInsert(true);
+                                setDonViTinh(true);
+                            }
+                        )
+                    }
+                    if (missingData.length > 0) {
+                        setMissingDataWarnings(prev => [...prev, ...missingData]);
+                    }
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
@@ -89,10 +119,25 @@ const Insert_updateNguyenLieu = (props) => {
                 })
                 .then(data => {
                     setCombosDonViTinh(data.data)
-                    setDataReq({
-                        ...dataReq,
-                        IDDonViTinh: data.data[0].IDDonViTinh
-                    });
+                    if (data.data.length > 0)
+                        setDataReq({
+                            ...dataReq,
+                            IDDonViTinh: data.data[0].IDDonViTinh
+                        });
+                    else {
+                        setDataReq({
+                            ...dataReq,
+                            IDDonViTinh: undefined
+                        });
+                        props.openPopupAlert(
+                            `Có vẻ như chưa có Đơn Vị Tính nào. Vui lòng thêm ít nhất 1 Đơn Vị Tính để tiếp tục`,
+                            () => {
+                                setIDAction();
+                                setIsInsert(true);
+                                setDonViTinh(true);
+                            }
+                        )
+                    }
                     //ẩn loading
                     dispatch({ type: 'SET_LOADING', payload: false })
                 })
@@ -210,17 +255,60 @@ const Insert_updateNguyenLieu = (props) => {
 
     return (
         <div className="popup-box">
-            <div className="box" style={{marginTop:'1%',padding:'1rem', width: isMobile && '100%'}}>
+            <div className="box" style={{ marginTop: '1%', padding: '1rem', width: isMobile && '100%' }}>
                 <div className="conten-modal">
                     <div>
                         <div className="bg-light px-4 py-3">
-                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span></h4>
+                            <h4 id='tieudepop'>{props.tieuDe}<span style={{ color: 'blue' }}>ㅤ{props.iDAction}</span>
+                                {missingDataWarnings.length > 0 &&
+                                    <span onClick={toggleWarnings} style={{ float: 'right', marginRight: '1rem', color: 'red', cursor: 'pointer', }}><FontAwesomeIcon icon={faTriangleExclamation} /></span>
+                                }</h4>
                             <form onSubmit={handleSubmit}
-                            style={{
-                                maxHeight:  isMobile ? '74vh':'530px',
-                                overflow: 'auto',
-                                overflowX: 'hidden'
-                            }}>
+                                style={{
+                                    maxHeight: isMobile ? '74vh' : '530px',
+                                    overflow: 'auto',
+                                    overflowX: 'hidden'
+                                }}>
+                                {missingDataWarnings.length > 0 && (
+                                    <>
+                                        {showWarnings && (
+                                            <div>
+                                                <label
+                                                    style={{
+                                                        color: 'red',
+                                                        fontSize: 'small',
+                                                        marginLeft: '10px'
+                                                    }}
+
+                                                >
+                                                    Dữ liệu bị thiếu dẫn đến việc hiển thị không chính xác !
+
+                                                    Nguyên nhân có thể do bạn đã xoá các dữ liệu sau đây:
+                                                </label>
+                                                <table className="table align-items-center mb-0 table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Loại dữ liệu</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">ID</th>
+                                                            <th style={{ padding: 8 }} class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-10">Tên</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {missingDataWarnings.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td>{item.Combo}</td>
+                                                                <td>{item.ID}</td>
+                                                                <td>{item.Ten}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+
+                                                </table>
+                                                <hr class="horizontal dark mt-1" />
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                                 <div className="form-group">
                                     <label>Tên Nguyên Liệu {batBuocNhap}</label>
                                     <input

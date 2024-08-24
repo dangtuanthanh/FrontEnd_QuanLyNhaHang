@@ -222,7 +222,7 @@ function LoginSuperAdmin() {
                         <NotificationContainer notifications={notifications} />
 
                         <div class="card-header pb-0 text-left bg-transparent">
-                            <h3 class="font-weight-bolder text-info text-gradient">Đăng Nhập</h3>
+                            <h3 class="font-weight-bolder text-primary">Đăng Nhập</h3>
                             <p class="mb-3">Truy Cập Vào Hệ Thống Với SuperAdmin</p>
                         </div>
 
@@ -244,7 +244,7 @@ function LoginSuperAdmin() {
                                     </div>
                                     {error && <div style={{ color: 'red' }}>{titleError}</div>}
                                     <div className="text-center">
-                                        <button onClick={handleSubmit2} disabled={isSubmitting} type="button" className="btn bg-gradient-info w-100 mb-0">
+                                        <button onClick={handleSubmit2} disabled={isSubmitting} type="button" className="btn bg-gradient-primary w-100 mb-0">
                                             {isSubmitting ? 'Đang xử lý...' : 'Xác Thực'}
                                         </button>
                                     </div>
@@ -252,17 +252,17 @@ function LoginSuperAdmin() {
                                         {
                                             timeLeft > 0 ?
                                                 <span
-                                                    style={{ color: '#17c1e8', textAlign: 'center' }}
+                                                    style={{ color: '#ff8c00', textAlign: 'center' }}
                                                     onClick={(e) => { e.preventDefault(); }}
                                                 >Gửi Lại Mã ({timeLeft} giây)
                                                 </span>
                                                 : <span
-                                                    style={{ color: '#17c1e8', textAlign: 'center' }}
+                                                    style={{ color: '#ff8c00', textAlign: 'center' }}
                                                     onClick={(e) => { e.preventDefault(); handleSubmit() }}
                                                 >Gửi Lại Mã
                                                 </span>
                                         }
-                                        <span style={{ color: '#17c1e8', textAlign: 'center', fontWeight: 'bolder' }}
+                                        <span style={{ color: '#ff8c00', textAlign: 'center', fontWeight: 'bolder' }}
                                             onClick={() => { window.location.reload(); }}
                                         >Quay Lại</span>
                                     </div>
@@ -286,7 +286,7 @@ function LoginSuperAdmin() {
                                     </div>
                                     {error && <p class="mb-0" style={{ color: 'red' }}>{titleError}</p>}
                                     <div className="text-center">
-                                        <button onClick={handleSubmit} disabled={isSubmitting} type="button" className="btn bg-gradient-info w-100 mt-4 mb-0">
+                                        <button onClick={handleSubmit} disabled={isSubmitting} type="button" className="btn bg-gradient-primary w-100 mt-4 mb-0">
                                             {isSubmitting ? 'Đang xử lý...' : 'Gửi Mã Xác Thực'}
                                         </button>
                                     </div>

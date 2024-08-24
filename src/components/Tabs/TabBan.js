@@ -9,6 +9,7 @@ import Pagination from "../Pagination";
 import ItemsPerPage from "../ItemsPerPage";
 import TableBan from "../Table/TableBan";
 import Insert_updateBan from "../Popup/Insert_updateBan";
+import QRCodeBan from "../Popup/QRCodeBan";
 function TabBan() {
     //xử lý redux
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ function TabBan() {
         searchExact: 'false'
     });//
     const [dataRes, setDataRes] = useState({});
-
+    
     // popup hộp thoại thông báo
     const [popupAlert, setPopupAlert] = useState(false);//trạng thái thông báo
     const [popupMessageAlert, setPopupMessageAlert] = useState('');
@@ -98,8 +99,8 @@ function TabBan() {
     const [popupInsertUpdate, setPopupInsertUpdate] = useState(false);//trạng thái popupInsertUpdate
     const [isInsert, setIsInsert] = useState(true);//trạng thái thêm
     const [iDAction, setIDAction] = useState();//giá trị của id khi thực hiện sửa xoá
-
-
+    const [popupQRCode, setPopupQRCode] = useState(false);
+    const [tenBan, setTenBan] = useState();
     //hàm tìm kiếm
     const handleSearch = (event) => {
         setdataUser({
@@ -292,7 +293,7 @@ function TabBan() {
                                             style={{ display: "inline-block" }}
                                             onClick={() => {
                                                 openPopupAlert(
-                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' | ')}`,
+                                                    `Bạn có chắc chắn muốn xoá các lựa chọn này:  ${Object.values(selectedIds).join(' |  ')} ? Một số ràng buộc liên quan đến dữ liệu này sẽ bị mất dẫn đến việc hiển thị dữ liệu không chính xác!`,
                                                     () => { deleteData(selectedIds) }
                                                 )
                                             }}
@@ -362,6 +363,8 @@ function TabBan() {
                             deleteData={deleteData}
                             selectedIds={selectedIds}
                             setSelectedIds={setSelectedIds}
+                            setPopupQRCode={setPopupQRCode}
+                            setTenBan = {setTenBan}
                         />
                         {duLieuHienThi.length === 0 ? <h5 style={{ color: 'darkgray', 'textAlign': 'center' }}>Rất tiếc! Không có dữ liệu để hiển thị</h5> : null}
                     </div>
@@ -410,6 +413,15 @@ function TabBan() {
                     onClose={closePopupAlert}
                     onAction={onAction}
                 />
+            }
+            {
+                popupQRCode && <div className="popup">
+                    <QRCodeBan
+                        iDAction={iDAction}
+                        setPopupQRCode={setPopupQRCode}
+                        tenBan = {tenBan}
+                    />
+                </div>
             }
         </div>
     )
